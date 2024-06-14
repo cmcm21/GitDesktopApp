@@ -1,0 +1,73 @@
+QMainWindow {
+    background-color: #2e2e2e;
+    color: #ffffff;
+}
+
+QWidget {
+    background-color: #2e2e2e;
+    color: #ffffff;
+}
+
+QMenuBar {
+    background-color: #3c3c3c;
+    color: #ffffff;
+}
+
+QMenuBar::item {
+    background-color: #3c3c3c;
+    color: #ffffff;
+}
+
+QMenuBar::item:selected {
+    background-color: #555555;
+}
+
+QMenu {
+    background-color: #3c3c3c;
+    color: #ffffff;
+}
+
+QMenu::item {
+    background-color: #3c3c3c;
+    color: #ffffff;
+}
+
+QMenu::item:selected {
+    background-color: #555555;
+}
+
+QPushButton {
+    background-color: #3c3c3c;
+    color: #ffffff;
+    border: 1px solid #555555;
+}
+
+QPushButton:hover {
+    background-color: #555555;
+}
+
+QLineEdit {
+    background-color: #3c3c3c;
+    color: #ffffff;
+    border: 1px solid #555555;
+}
+
+QComboBox {
+    background-color: #3c3c3c;
+    color: #ffffff;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #3c3c3c;
+    color: #ffffff;
+}
+
+QStatusBar {
+    background-color: #3c3c3c;
+    color: #ffffff;
+}
+
+QToolBar {
+    background-color: #3c3c3c;
+    color: #ffffff;
+}
