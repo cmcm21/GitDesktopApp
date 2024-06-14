@@ -36,22 +36,25 @@ class LauncherWindow(BaseWindow):
         self.footer_layout = QHBoxLayout()
 
         """Buttons"""
-        self.get_latest_btn = QPushButton("Get Latest")
-        self.update_btn = QPushButton("Upload workspace")
-        self.new_workspace_btn = QPushButton("New Workspace")
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        icon_path = os.path.join(script_dir, "../../Resources/Img/", "mayaico.png")
-        self.pixMap = QPixmap(icon_path)
-        self.maya_btn = QPushButton(
-            icon=QIcon(self.pixMap),
-            text="Maya",
-            parent=self
-        )
+        self.get_latest_btn = self._create_button("arrowDown.png", "Get latest")
+        self.update_btn = self._create_button("arrowUp.png","Upload")
+        self.new_workspace_btn = self._create_button("plus.png","New Workspace")
+        self.maya_btn = self._create_button("mayaico.png", "Open Maya")
 
         """Custom Widgets"""
         self.workspace = Color('red')
         self.dialog = Color('red')
         self._build()
+
+    def _create_button(self, image_name: str, button_text: str) -> QPushButton:
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        icon_path = os.path.join(script_dir, "../../Resources/Img/", image_name)
+        pix_map = QPixmap(icon_path)
+        return QPushButton(
+            icon=QIcon(pix_map),
+            text=button_text,
+            parent=self
+        )
 
     def _build(self):
         """Header"""
