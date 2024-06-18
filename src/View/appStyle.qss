@@ -40,11 +40,37 @@ QPushButton {
     background-color: #3c3c3c;
     color: #ffffff;
     border: 1px solid #555555;
+    padding: 5px;
+    font-size: 12px;
+}
+
+#UILoggerClearButton{
+    margin-left: 60px;
+    margin-right: 60px;
+    font-size: 14px;
+    padding: 0;
+}
+#MayaButton, #NewWorkspaceButton{
+    icon-size: 32px 32px;
+}
+
+#UpdateButton, #GetLatestButton{
 }
 
 QPushButton:hover {
     background-color: #555555;
 }
+
+#SoleilLabel{
+    font-size: 24px;
+    border: 1px solid ghostwhite;
+    text-align: center;
+}
+
+#LoggerLabel{
+    text-align: center;
+}
+
 
 QLineEdit {
     background-color: #3c3c3c;

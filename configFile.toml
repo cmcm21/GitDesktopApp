@@ -1,0 +1,8 @@
+[git]
+username = "user-name"
+repository_name="repository-name"
+personal_access_token= "token"
+repository_url = "https://username:personal_access_token@gitlab.com/username/repository_name.git"
+
+[general]
+working_path = 'D://RiggingLauncher/git/'
