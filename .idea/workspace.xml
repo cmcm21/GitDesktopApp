@@ -4,9 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="First Commit">
+    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="Setup Configuration file&#10;Setup Git&#10;Add GitController">
+      <change afterPath="$PROJECT_DIR$/src/View/UICommitWindow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/pythonProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pythonProject.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configFile.toml" beforeDir="false" afterPath="$PROJECT_DIR$/configFile.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Controller/GitController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GitController.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/BaseWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/BaseWindow.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/View/LauncherWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/LauncherWindow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/UIManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/UIManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/View/WindowID.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/WindowID.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +32,22 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitLabMergeRequestFiltersHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPENED&quot;,
+    &quot;assignee&quot;: {
+      &quot;type&quot;: &quot;org.jetbrains.plugins.gitlab.mergerequest.ui.filters.GitLabMergeRequestsFiltersValue.MergeRequestsMemberFilterValue.MergeRequestsAssigneeFilterValue&quot;,
+      &quot;username&quot;: &quot;m-correa&quot;,
+      &quot;fullname&quot;: &quot;Correa Miguel&quot;
+    }
+  }
+}</component>
+  <component name="GitLabMergeRequestsSettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;first&quot;: &quot;https://gitlab.com/m-correa/rigginglauncher&quot;,
+    &quot;second&quot;: &quot;20c856ab-8d5c-43c6-9040-1877bad8f087&quot;
+  }
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -94,11 +119,40 @@
       <option name="project" value="LOCAL" />
       <updated>1718357805193</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Adding icons to buttons">
+      <option name="closed" value="true" />
+      <created>1718358213775</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1718358213775</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Setup Configuration file&#10;Setup Git&#10;Add GitController">
+      <option name="closed" value="true" />
+      <created>1718676183666</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1718676183666</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="First Commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="First Commit" />
+    <MESSAGE value="Adding icons to buttons" />
+    <MESSAGE value="Setup Configuration file&#10;Setup Git&#10;Add GitController" />
+    <option name="LAST_COMMIT_MESSAGE" value="Setup Configuration file&#10;Setup Git&#10;Add GitController" />
   </component>
 </project>

@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal
+from PySide6.QtCore import QObject, Signal, Slot
 from threading import Thread
 import os
 from pathlib import Path
@@ -28,7 +28,7 @@ class GitController(QObject):
             shell=True,
             text=True,
             check=True,
-            capture_output=True
+            capture_output=True,
         )
 
         self.logger.debug(result.stdout)
@@ -43,13 +43,13 @@ class GitController(QObject):
     def _setup_thread(self):
         try:
             # Check if the directory exists
-            if self.working_path.is_dir():
+            if self.repo_exist():
                 self.logger.debug(f"The directory '{self.working_path}' already exists.")
                 return
             else:
                 self.logger.debug(f"The directory '{self.working_path}' does not exist. Creating it now.")
-
-                self.working_path.mkdir(parents=True)
+                if not self.working_path.exists():
+                    self.working_path.mkdir(parents=True)
 
             # Clone the repository
             clone_command = f'git clone {self.repository_url} {self.working_path}'
@@ -77,3 +77,45 @@ class GitController(QObject):
             # Send setup signal
             self.setup_completed.emit(self.repo_exist())
 
+    def _get_branch_name(self) -> str:
+        # Change to the repository directory
+        subprocess.run(['cd', self.working_path], shell=True)
+
+        command = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
+        result = subprocess.run(
+            command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        if result.returncode != 0:
+            self.logger.debug(result.stderr)
+            return "main"
+
+        return result.stdout.strip()
+
+    @Slot()
+    def get_latest(self):
+        print("Get latest button clicked")
+
+    @Slot(str)
+    def upload_repository(self, message):
+        print("From GitController: " + message)
+
+    @Slot(str)
+    def push_changes(self, commit_message: str):
+        # Change to the repository directory
+        subprocess.run(['cd', self.working_path], shell=True)
+
+        # Add all changes to the staging area
+        self._run_git_command(['git', 'add', '--all'])
+
+        # Commit changes with a specified message
+        self._run_git_command(['git', 'commit', '-m', commit_message])
+
+        # Push changes to the remote repository
+        self._run_git_command(['git', 'push', '-force', 'origin', self._get_branch_name()])
+
+        # Check the status of the repository
+        self._run_git_command(['git', 'status'])
