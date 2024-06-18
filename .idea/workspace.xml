@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="Setup Configuration file&#10;Setup Git&#10;Add GitController">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/file.log" beforeDir="false" afterPath="$PROJECT_DIR$/file.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controller/GitController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GitController.py" afterDir="false" />
     </list>

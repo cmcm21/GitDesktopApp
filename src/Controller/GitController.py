@@ -33,8 +33,8 @@ class GitController(QObject):
         )
 
         self.logger.debug(result.stdout)
-        if result.stderr and result.stderr:
-            self.logger.error(result.stderr)
+        if result.stderr:
+            self.logger.debug(result.stderr)
 
     def setup(self):
         setup_thread = Thread(target=self._setup_thread)
