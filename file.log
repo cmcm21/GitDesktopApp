@@ -666,3 +666,32 @@ no changes added to commit (use "git add" and/or "git commit -a")
 2024-06-18 15:29:19,898 - UILogger - DEBUG - 
 2024-06-18 15:29:19,898 - UILogger - DEBUG - Fetching updates: git fetch origin
 2024-06-18 15:29:21,379 - UILogger - DEBUG - 
+2024-06-18 15:31:43,486 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:32:38,707 - UILogger - DEBUG - 
+2024-06-18 15:32:38,707 - UILogger - DEBUG - warning: in the working copy of '.idea/workspace.xml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'file.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/Controller/GitController.py', CRLF will be replaced by LF the next time Git touches it
+
+2024-06-18 15:32:38,785 - UILogger - DEBUG - [master e928a55] This is my first commit
+ 4 files changed, 39 insertions(+), 3 deletions(-)
+
+2024-06-18 15:32:41,131 - UILogger - DEBUG - 
+2024-06-18 15:32:41,131 - UILogger - DEBUG - warning: redirecting to https://gitlab.com/m-correa/rigginglauncher.git/
+remote: 
+remote: To create a merge request for master, visit:        
+remote:   https://gitlab.com/m-correa/rigginglauncher/-/merge_requests/new?merge_request%5Bsource_branch%5D=master        
+remote: 
+To https://gitlab.com/m-correa/rigginglauncher
+   12bfb79..e928a55  master -> master
+
+2024-06-18 15:32:41,174 - UILogger - DEBUG - On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   file.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+2024-06-18 15:37:15,198 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.

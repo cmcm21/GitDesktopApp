@@ -79,9 +79,6 @@ class GitController(QObject):
             self.setup_completed.emit(self.repo_exist())
 
     def _get_branch_name(self) -> str:
-        # Change to the repository directory
-        subprocess.run(['cd', self.working_path], shell=True)
-
         command = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
         result = subprocess.run(
             command,
@@ -99,10 +96,6 @@ class GitController(QObject):
     @Slot()
     def get_latest(self):
         print("Get latest button clicked")
-
-    @Slot(str)
-    def upload_repository(self, message):
-        print("From GitController: " + message)
 
     @Slot(str)
     def push_changes(self, message: str):
