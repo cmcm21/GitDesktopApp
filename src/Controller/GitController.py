@@ -112,6 +112,9 @@ class GitController(QObject):
         # Commit changes with a specified message
         self._run_git_command(['git', 'commit', '-m', commit_message])
 
+        # Ensure that the remote origin is correct
+        self._run_git_command(['git', 'remote', 'set-url', 'origin', self.repository_url])
+
         # Push changes to the remote repository
         self._run_git_command(['git', 'push', '--force', 'origin', self._get_branch_name()])
 
