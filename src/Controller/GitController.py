@@ -13,6 +13,7 @@ class GitController(QObject):
         super().__init__()
         self.repository_name = config["git"]["repository_name"]
         self.username = config["git"]["username"]
+        self.raw_working_path = config["general"]["working_path"]
         self.working_path = Path(config["general"]["working_path"])
         self.personal_access_token = config["git"]["personal_access_token"]
         self.repository_url = config["git"]["repository_url"]
@@ -104,9 +105,13 @@ class GitController(QObject):
         print("From GitController: " + message)
 
     @Slot(str)
-    def push_changes(self, commit_message: str):
+    def push_changes(self, message: str):
+        setup_thread = Thread(target=lambda: self._push_changes(message))
+        setup_thread.run()
+
+    def _push_changes(self, commit_message: str):
         # Change to the repository directory
-        subprocess.run(['cd', self.working_path], shell=True)
+        subprocess.run(['cd', self.raw_working_path], shell=True)
 
         # Add all changes to the staging area
         self._run_git_command(['git', 'add', '--all'])
@@ -115,7 +120,8 @@ class GitController(QObject):
         self._run_git_command(['git', 'commit', '-m', commit_message])
 
         # Push changes to the remote repository
-        self._run_git_command(['git', 'push', '-force', 'origin', self._get_branch_name()])
+        self._run_git_command(['git', 'push', '--force', 'origin', self._get_branch_name()])
 
         # Check the status of the repository
         self._run_git_command(['git', 'status'])
+

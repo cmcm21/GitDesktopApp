@@ -587,3 +587,45 @@
 2024-06-18 15:16:17,810 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
 2024-06-18 15:16:36,093 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
 2024-06-18 15:17:10,493 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:17:41,898 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:17:55,961 - UILogger - DEBUG - 
+2024-06-18 15:17:55,961 - UILogger - ERROR - warning: in the working copy of '.idea/misc.xml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of '.idea/pythonProject.iml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of '.idea/workspace.xml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'configFile.toml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/App.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/Controller/GitController.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/BaseWindow.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/LauncherWindow.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/UICommitWindow.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/UIManager.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/WindowID.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'file.log', CRLF will be replaced by LF the next time Git touches it
+
+2024-06-18 15:17:56,127 - UILogger - DEBUG - [master cb83c59] Chenging HelloSumath.py
+ 32 files changed, 822 insertions(+), 40 deletions(-)
+ create mode 100644 Resources/Img/checkmark.png
+ create mode 100644 Resources/Img/cross.png
+ create mode 100644 Resources/Img/singleplayer.png
+ create mode 100644 Resources/Img/soleil_default.jpg
+ create mode 100644 file.log
+ create mode 100644 src/Controller/__pycache__/GitController.cpython-312.pyc
+ create mode 100644 src/Controller/__pycache__/__init__.cpython-312.pyc
+ create mode 100644 src/View/UICommitWindow.py
+ create mode 100644 src/View/__pycache__/BaseWindow.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/BaseWindow.cpython-37.pyc
+ create mode 100644 src/View/__pycache__/LauncherWindow.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/LauncherWindow.cpython-37.pyc
+ create mode 100644 src/View/__pycache__/UICommitWindow.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/UILogger.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/UIManager.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/UIManager.cpython-37.pyc
+ create mode 100644 src/View/__pycache__/UIWorkspace.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/WindowID.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/__init__.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/__init__.cpython-37.pyc
+ create mode 100644 src/__pycache__/App.cpython-312.pyc
+ create mode 100644 src/__pycache__/App.cpython-37.pyc
+
+2024-06-18 15:23:57,509 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:24:01,486 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.

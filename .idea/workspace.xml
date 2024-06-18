@@ -5,17 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="Setup Configuration file&#10;Setup Git&#10;Add GitController">
-      <change afterPath="$PROJECT_DIR$/src/View/UICommitWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/pythonProject.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pythonProject.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configFile.toml" beforeDir="false" afterPath="$PROJECT_DIR$/configFile.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/file.log" beforeDir="false" afterPath="$PROJECT_DIR$/file.log" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Controller/GitController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GitController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/BaseWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/BaseWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/LauncherWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/LauncherWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/UIManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/UIManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/View/WindowID.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/View/WindowID.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
