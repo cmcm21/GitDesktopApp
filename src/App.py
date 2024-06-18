@@ -32,8 +32,9 @@ class Application:
         self.git_controller.setup()
 
     def connect_git_controller_ui_manager(self):
-        self.ui_manager.connect_button.clicked.connect(self.git_controller.setup)
         self.git_controller.setup_completed.connect(self.ui_manager.on_setup_completed)
+        self.ui_manager.lw_get_latest_clicked.connect(self.git_controller.get_latest)
+        self.ui_manager.lw_uploaded_clicked.connect(self.git_controller.push_changes)
 
     def _set_style_sheet(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))

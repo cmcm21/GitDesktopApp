@@ -2,23 +2,29 @@ from .BaseWindow import BaseWindow
 from .UILogger import LoggerWidget
 from .UIWorkspace import WorkspaceWidget
 from .WindowID import WindowID
+from .UICommitWindow import CommitWindow
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QGridLayout,
-    QPushButton,
     QLabel,
     QWidget,
 )
-from PySide6.QtGui import QIcon, QPixmap
-from PySide6.QtCore import Qt
-import os
+from PySide6.QtCore import Qt, Signal, Slot
 
 
 class LauncherWindow(BaseWindow):
+    upload_repository_signal = Signal(str)
+
     def __init__(self, config: dict, window_id: WindowID, width=900, height=500):
         super(LauncherWindow, self).__init__("Rigging Launcher", window_id, width, height)
         self.config = config
+        self.commit_window = None
+        self._create_all_element()
+        self._build()
+        self._connect_buttons()
+
+    def _create_all_element(self):
         """Layouts"""
         self.main_layout = QGridLayout()
         self.header_layout = QHBoxLayout()
@@ -26,7 +32,6 @@ class LauncherWindow(BaseWindow):
         self.body_left = QVBoxLayout()
         self.body_right = QVBoxLayout()
         self.footer_layout = QHBoxLayout()
-
         """Labels"""
         self.soleil_label = QLabel("Soleil")
         self.soleil_label.setObjectName("SoleilLabel")
@@ -34,8 +39,8 @@ class LauncherWindow(BaseWindow):
         self.get_latest_btn = self._create_button("arrowDown.png", "Get latest")
         self.get_latest_btn.setObjectName("GetLatestButton")
         """Update Button"""
-        self.update_btn = self._create_button("arrowUp.png", "Upload")
-        self.update_btn.setObjectName("UpdateButton")
+        self.upload_btn = self._create_button("arrowUp.png", "Upload")
+        self.upload_btn.setObjectName("UpdateButton")
         """New Workspace Button"""
         self.new_workspace_btn = self._create_button("plus.png", "")
         self.new_workspace_btn.setToolTip("New Workspace")
@@ -50,23 +55,12 @@ class LauncherWindow(BaseWindow):
         """Custom Widgets"""
         self.workspace = WorkspaceWidget(self.config["general"]["working_path"])
         self.logger_widget = LoggerWidget()
-        self._build()
-
-    def _create_button(self, image_name: str, button_text: str) -> QPushButton:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        icon_path = os.path.join(script_dir, "../../Resources/Img/", image_name)
-        pix_map = QPixmap(icon_path)
-        return QPushButton(
-            icon=QIcon(pix_map),
-            text=button_text,
-            parent=self
-        )
 
     def _build(self):
         """Header"""
         self.header_layout.addWidget(self.soleil_label)
         self.header_layout.addWidget(self.get_latest_btn, 0, Qt.AlignmentFlag.AlignLeft)
-        self.header_layout.addWidget(self.update_btn, 5, Qt.AlignmentFlag.AlignLeft)
+        self.header_layout.addWidget(self.upload_btn, 5, Qt.AlignmentFlag.AlignLeft)
         """Body left"""
         self.body_left.addWidget(self.new_workspace_btn, 0, Qt.AlignmentFlag.AlignTop)
         self.body_left.addWidget(self.maya_btn, 5, Qt.AlignmentFlag.AlignTop)
@@ -85,9 +79,32 @@ class LauncherWindow(BaseWindow):
         widget = QWidget()
         widget.setLayout(self.main_layout)
         self.setCentralWidget(widget)
+
+    def _connect_buttons(self):
+        self.upload_btn.clicked.connect(self, self.create_commit_windows)
+        return
+
+    def create_commit_windows(self):
+        self.commit_window = CommitWindow()
+        self.commit_window.show()
+        self.commit_window.accept_clicked_signal.connect(self._on_commit_window_accept)
+        self.commit_window.cancel_clicked_signal.connect(self._on_commit_window_cancel)
+
+    @Slot(str)
+    def _on_commit_window_accept(self, message):
+        self.upload_repository_signal.emit(message)
+        self._close_commit_window()
+
+    @Slot()
+    def _on_commit_window_cancel(self):
+        self._close_commit_window()
+
+    def _close_commit_window(self):
+        if self.commit_window is not None:
+            self.commit_window.close()
+            self.commit_window = None
         return
 
     def on_setup_completed(self, success: bool):
         if success:
             self.workspace.set_root_directory()
-

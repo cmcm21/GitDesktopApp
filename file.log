@@ -1,0 +1,697 @@
+2024-06-17 14:59:26,173 - UILogger - DEBUG - This is a debug message
+2024-06-17 14:59:26,173 - UILogger - INFO - this is a info message
+2024-06-17 14:59:26,174 - UILogger - INFO - this is a info message
+2024-06-17 14:59:26,174 - UILogger - INFO - this is a info message
+2024-06-17 14:59:26,174 - UILogger - INFO - this is a info message
+2024-06-17 14:59:26,174 - UILogger - INFO - this is a info message
+2024-06-17 14:59:26,174 - UILogger - INFO - this is a info message
+2024-06-17 14:59:26,174 - UILogger - INFO - this is a info message
+2024-06-17 14:59:26,174 - UILogger - WARNING - this is a warning message
+2024-06-17 14:59:26,174 - UILogger - ERROR - This is an error message
+2024-06-17 14:59:26,174 - UILogger - ERROR - This is an error message
+2024-06-17 14:59:26,174 - UILogger - ERROR - This is an error message
+2024-06-17 14:59:26,174 - UILogger - ERROR - This is an error message
+2024-06-17 14:59:26,175 - UILogger - ERROR - This is an error message
+2024-06-17 14:59:26,175 - UILogger - ERROR - This is an error message
+2024-06-17 14:59:26,175 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:47,470 - UILogger - DEBUG - This is a debug message
+2024-06-17 15:01:47,471 - UILogger - INFO - this is a info message
+2024-06-17 15:01:47,471 - UILogger - INFO - this is a info message
+2024-06-17 15:01:47,471 - UILogger - INFO - this is a info message
+2024-06-17 15:01:47,471 - UILogger - INFO - this is a info message
+2024-06-17 15:01:47,471 - UILogger - INFO - this is a info message
+2024-06-17 15:01:47,471 - UILogger - INFO - this is a info message
+2024-06-17 15:01:47,471 - UILogger - INFO - this is a info message
+2024-06-17 15:01:47,471 - UILogger - WARNING - this is a warning message
+2024-06-17 15:01:47,471 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:47,471 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:47,471 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:47,471 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:47,471 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:47,471 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:47,471 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:56,051 - UILogger - DEBUG - This is a debug message
+2024-06-17 15:01:56,052 - UILogger - INFO - this is a info message
+2024-06-17 15:01:56,052 - UILogger - INFO - this is a info message
+2024-06-17 15:01:56,052 - UILogger - INFO - this is a info message
+2024-06-17 15:01:56,052 - UILogger - INFO - this is a info message
+2024-06-17 15:01:56,052 - UILogger - INFO - this is a info message
+2024-06-17 15:01:56,052 - UILogger - INFO - this is a info message
+2024-06-17 15:01:56,052 - UILogger - INFO - this is a info message
+2024-06-17 15:01:56,052 - UILogger - WARNING - this is a warning message
+2024-06-17 15:01:56,052 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:56,052 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:56,052 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:56,052 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:56,052 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:56,052 - UILogger - ERROR - This is an error message
+2024-06-17 15:01:56,053 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:10,117 - UILogger - DEBUG - This is a debug message
+2024-06-17 15:02:10,118 - UILogger - INFO - this is a info message
+2024-06-17 15:02:10,118 - UILogger - INFO - this is a info message
+2024-06-17 15:02:10,118 - UILogger - INFO - this is a info message
+2024-06-17 15:02:10,118 - UILogger - INFO - this is a info message
+2024-06-17 15:02:10,118 - UILogger - INFO - this is a info message
+2024-06-17 15:02:10,118 - UILogger - INFO - this is a info message
+2024-06-17 15:02:10,118 - UILogger - INFO - this is a info message
+2024-06-17 15:02:10,118 - UILogger - WARNING - this is a warning message
+2024-06-17 15:02:10,118 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:10,118 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:10,118 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:10,118 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:10,118 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:10,118 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:10,118 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:56,775 - UILogger - DEBUG - This is a debug message
+2024-06-17 15:02:56,775 - UILogger - INFO - this is a info message
+2024-06-17 15:02:56,775 - UILogger - INFO - this is a info message
+2024-06-17 15:02:56,775 - UILogger - INFO - this is a info message
+2024-06-17 15:02:56,776 - UILogger - INFO - this is a info message
+2024-06-17 15:02:56,776 - UILogger - INFO - this is a info message
+2024-06-17 15:02:56,776 - UILogger - INFO - this is a info message
+2024-06-17 15:02:56,776 - UILogger - INFO - this is a info message
+2024-06-17 15:02:56,776 - UILogger - WARNING - this is a warning message
+2024-06-17 15:02:56,776 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:56,776 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:56,776 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:56,776 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:56,776 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:56,777 - UILogger - ERROR - This is an error message
+2024-06-17 15:02:56,777 - UILogger - ERROR - This is an error message
+2024-06-17 15:07:53,061 - UILogger - DEBUG - This is a debug message
+2024-06-17 15:07:53,061 - UILogger - INFO - this is a info message
+2024-06-17 15:07:53,061 - UILogger - INFO - this is a info message
+2024-06-17 15:07:53,061 - UILogger - INFO - this is a info message
+2024-06-17 15:07:53,061 - UILogger - INFO - this is a info message
+2024-06-17 15:07:53,061 - UILogger - INFO - this is a info message
+2024-06-17 15:07:53,061 - UILogger - INFO - this is a info message
+2024-06-17 15:07:53,061 - UILogger - INFO - this is a info message
+2024-06-17 15:07:53,061 - UILogger - WARNING - this is a warning message
+2024-06-17 15:07:53,061 - UILogger - ERROR - This is an error message
+2024-06-17 15:07:53,061 - UILogger - ERROR - This is an error message
+2024-06-17 15:07:53,061 - UILogger - ERROR - This is an error message
+2024-06-17 15:07:53,061 - UILogger - ERROR - This is an error message
+2024-06-17 15:07:53,062 - UILogger - ERROR - This is an error message
+2024-06-17 15:07:53,062 - UILogger - ERROR - This is an error message
+2024-06-17 15:07:53,062 - UILogger - ERROR - This is an error message
+2024-06-17 15:09:30,197 - UILogger - DEBUG - This is a debug message
+2024-06-17 15:09:30,198 - UILogger - INFO - this is a info message
+2024-06-17 15:09:30,198 - UILogger - INFO - this is a info message
+2024-06-17 15:09:30,198 - UILogger - INFO - this is a info message
+2024-06-17 15:09:30,198 - UILogger - INFO - this is a info message
+2024-06-17 15:09:30,198 - UILogger - INFO - this is a info message
+2024-06-17 15:09:30,198 - UILogger - INFO - this is a info message
+2024-06-17 15:09:30,198 - UILogger - INFO - this is a info message
+2024-06-17 15:09:30,198 - UILogger - WARNING - this is a warning message
+2024-06-17 15:09:30,198 - UILogger - ERROR - This is an error message
+2024-06-17 15:09:30,198 - UILogger - ERROR - This is an error message
+2024-06-17 15:09:30,198 - UILogger - ERROR - This is an error message
+2024-06-17 15:09:30,198 - UILogger - ERROR - This is an error message
+2024-06-17 15:09:30,198 - UILogger - ERROR - This is an error message
+2024-06-17 15:09:30,199 - UILogger - ERROR - This is an error message
+2024-06-17 15:09:30,199 - UILogger - ERROR - This is an error message
+2024-06-17 17:04:47,747 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-17 17:04:47,749 - UILogger - DEBUG - Cloning the repository: git clone https://glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 17:05:01,251 - UILogger - ERROR - An error occurred while running the command: Command 'git clone https://glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git' returned non-zero exit status 128.
+2024-06-17 17:19:00,850 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 17:19:00,850 - UILogger - DEBUG - Cloning the repository: git clone https://glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 17:20:26,149 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 17:20:26,149 - UILogger - DEBUG - Cloning the repository: git clone https://glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 17:20:41,945 - UILogger - DEBUG - 
+2024-06-17 17:21:28,069 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-17 17:21:28,071 - UILogger - DEBUG - Cloning the repository: git clone https://glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 17:21:38,304 - UILogger - ERROR - An error occurred while running the command: Command 'git clone https://glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git' returned non-zero exit status 128.
+2024-06-17 17:23:26,060 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-17 17:23:26,061 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 17:23:27,924 - UILogger - DEBUG - 
+2024-06-17 17:23:27,924 - UILogger - ERROR - Cloning into 'D:\RiggingLauncher\git'...
+
+2024-06-17 17:23:27,924 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 17:23:27,963 - UILogger - DEBUG - 
+2024-06-17 17:23:27,964 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 17:23:29,337 - UILogger - DEBUG - 
+2024-06-17 17:59:37,741 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 17:59:37,741 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 17:59:37,787 - UILogger - ERROR - An error occurred while running the command: Command 'git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git' returned non-zero exit status 128.
+2024-06-17 18:12:46,806 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:12:46,807 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:12:46,812 - UILogger - DEBUG - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:12:46,812 - UILogger - ERROR - <_io.TextIOWrapper name=6 encoding='cp932'>
+2024-06-17 18:12:46,812 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:12:46,818 - UILogger - DEBUG - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:12:46,818 - UILogger - ERROR - <_io.TextIOWrapper name=6 encoding='cp932'>
+2024-06-17 18:12:46,819 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:12:46,823 - UILogger - DEBUG - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:12:46,823 - UILogger - ERROR - <_io.TextIOWrapper name=6 encoding='cp932'>
+2024-06-17 18:14:32,321 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:14:32,321 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:14:32,327 - UILogger - DEBUG - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:14:32,359 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-17 18:14:32,359 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:14:32,364 - UILogger - DEBUG - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:14:32,398 - UILogger - ERROR - 
+2024-06-17 18:14:32,398 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:14:32,403 - UILogger - DEBUG - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:14:33,750 - UILogger - ERROR - 
+2024-06-17 18:15:02,193 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:15:02,193 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:15:02,198 - UILogger - DEBUG - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:15:02,199 - UILogger - ERROR - True
+2024-06-17 18:15:02,199 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:15:02,203 - UILogger - DEBUG - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:15:02,203 - UILogger - ERROR - True
+2024-06-17 18:15:02,204 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:15:02,208 - UILogger - DEBUG - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:15:02,208 - UILogger - ERROR - True
+2024-06-17 18:15:26,903 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:15:26,904 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:15:26,909 - UILogger - DEBUG - True
+2024-06-17 18:15:26,910 - UILogger - ERROR - True
+2024-06-17 18:15:26,910 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:15:26,914 - UILogger - DEBUG - True
+2024-06-17 18:15:26,914 - UILogger - ERROR - True
+2024-06-17 18:15:26,914 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:15:26,919 - UILogger - DEBUG - True
+2024-06-17 18:15:26,919 - UILogger - ERROR - True
+2024-06-17 18:17:16,286 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:17:16,286 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:17:16,292 - UILogger - DEBUG - True
+2024-06-17 18:18:17,798 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:18:17,798 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:18:17,804 - UILogger - DEBUG - True
+2024-06-17 18:18:17,804 - UILogger - ERROR - True
+2024-06-17 18:18:17,804 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:18:17,808 - UILogger - DEBUG - True
+2024-06-17 18:18:17,809 - UILogger - ERROR - True
+2024-06-17 18:18:17,809 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:18:17,813 - UILogger - DEBUG - True
+2024-06-17 18:18:17,814 - UILogger - ERROR - True
+2024-06-17 18:19:26,014 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:19:26,014 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:19:26,019 - UILogger - DEBUG - True
+2024-06-17 18:19:26,020 - UILogger - ERROR - True
+2024-06-17 18:19:26,020 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:19:26,026 - UILogger - DEBUG - True
+2024-06-17 18:19:26,026 - UILogger - ERROR - True
+2024-06-17 18:19:26,026 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:19:26,030 - UILogger - DEBUG - True
+2024-06-17 18:19:26,030 - UILogger - ERROR - True
+2024-06-17 18:19:57,119 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:19:57,119 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:19:57,124 - UILogger - DEBUG - <_io.TextIOWrapper name=4 encoding='cp932'>
+2024-06-17 18:19:57,124 - UILogger - ERROR - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:19:57,125 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:19:57,129 - UILogger - DEBUG - <_io.TextIOWrapper name=4 encoding='cp932'>
+2024-06-17 18:19:57,129 - UILogger - ERROR - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:19:57,129 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:19:57,133 - UILogger - DEBUG - <_io.TextIOWrapper name=4 encoding='cp932'>
+2024-06-17 18:19:57,134 - UILogger - ERROR - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-17 18:20:27,459 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:20:27,459 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:20:27,465 - UILogger - DEBUG - True
+2024-06-17 18:20:27,465 - UILogger - ERROR - True
+2024-06-17 18:20:27,465 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:20:27,469 - UILogger - DEBUG - True
+2024-06-17 18:20:27,469 - UILogger - ERROR - True
+2024-06-17 18:20:27,469 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:20:27,474 - UILogger - DEBUG - True
+2024-06-17 18:20:27,474 - UILogger - ERROR - True
+2024-06-17 18:21:12,128 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:21:12,128 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:21:12,134 - UILogger - DEBUG - True
+2024-06-17 18:21:12,134 - UILogger - ERROR - True
+2024-06-17 18:21:12,134 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:21:12,138 - UILogger - DEBUG - True
+2024-06-17 18:21:12,138 - UILogger - ERROR - True
+2024-06-17 18:21:12,139 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:21:12,143 - UILogger - DEBUG - True
+2024-06-17 18:21:12,144 - UILogger - ERROR - True
+2024-06-17 18:21:32,163 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:21:32,163 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:21:32,167 - UILogger - DEBUG - True
+2024-06-17 18:21:32,168 - UILogger - ERROR - True
+2024-06-17 18:21:32,168 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:21:32,171 - UILogger - DEBUG - True
+2024-06-17 18:21:32,171 - UILogger - ERROR - True
+2024-06-17 18:21:32,172 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:21:32,175 - UILogger - DEBUG - True
+2024-06-17 18:21:32,175 - UILogger - ERROR - True
+2024-06-17 18:22:12,251 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:22:12,252 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:22:12,257 - UILogger - DEBUG - True
+2024-06-17 18:22:12,257 - UILogger - ERROR - True
+2024-06-17 18:22:12,257 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:22:12,263 - UILogger - DEBUG - True
+2024-06-17 18:22:12,263 - UILogger - ERROR - True
+2024-06-17 18:22:12,263 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:22:12,268 - UILogger - DEBUG - True
+2024-06-17 18:22:12,268 - UILogger - ERROR - True
+2024-06-17 18:27:28,472 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:27:28,473 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:27:28,478 - UILogger - DEBUG - True
+2024-06-17 18:27:28,478 - UILogger - ERROR - True
+2024-06-17 18:27:28,479 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:27:28,483 - UILogger - DEBUG - True
+2024-06-17 18:27:28,484 - UILogger - ERROR - True
+2024-06-17 18:27:28,484 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:27:28,488 - UILogger - DEBUG - True
+2024-06-17 18:27:28,488 - UILogger - ERROR - True
+2024-06-17 18:29:08,990 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:29:08,990 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:29:08,996 - UILogger - DEBUG - True
+2024-06-17 18:29:08,996 - UILogger - ERROR - True
+2024-06-17 18:29:08,996 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:29:09,001 - UILogger - DEBUG - True
+2024-06-17 18:29:09,001 - UILogger - ERROR - True
+2024-06-17 18:29:09,001 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:29:09,005 - UILogger - DEBUG - True
+2024-06-17 18:29:09,005 - UILogger - ERROR - True
+2024-06-17 18:29:31,164 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:29:31,165 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:29:31,170 - UILogger - DEBUG - True
+2024-06-17 18:29:31,170 - UILogger - ERROR - True
+2024-06-17 18:29:31,170 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:29:31,175 - UILogger - DEBUG - True
+2024-06-17 18:29:31,175 - UILogger - ERROR - True
+2024-06-17 18:29:31,175 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:29:31,179 - UILogger - DEBUG - True
+2024-06-17 18:29:31,180 - UILogger - ERROR - True
+2024-06-17 18:30:26,664 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:30:26,664 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:30:26,669 - UILogger - DEBUG - True
+2024-06-17 18:30:26,670 - UILogger - ERROR - True
+2024-06-17 18:30:26,670 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:30:26,674 - UILogger - DEBUG - True
+2024-06-17 18:30:26,674 - UILogger - ERROR - True
+2024-06-17 18:30:26,674 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:30:26,679 - UILogger - DEBUG - True
+2024-06-17 18:30:26,679 - UILogger - ERROR - True
+2024-06-17 18:30:36,309 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:30:36,309 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:30:36,314 - UILogger - DEBUG - True
+2024-06-17 18:30:36,314 - UILogger - ERROR - True
+2024-06-17 18:30:36,315 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:30:36,320 - UILogger - DEBUG - True
+2024-06-17 18:30:36,320 - UILogger - ERROR - True
+2024-06-17 18:30:36,320 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:30:36,325 - UILogger - DEBUG - True
+2024-06-17 18:30:36,325 - UILogger - ERROR - True
+2024-06-17 18:31:01,744 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:31:01,745 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:31:01,750 - UILogger - DEBUG - True
+2024-06-17 18:31:01,750 - UILogger - ERROR - True
+2024-06-17 18:31:01,750 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:31:01,755 - UILogger - DEBUG - True
+2024-06-17 18:31:01,756 - UILogger - ERROR - True
+2024-06-17 18:31:01,756 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:31:01,760 - UILogger - DEBUG - True
+2024-06-17 18:31:01,760 - UILogger - ERROR - True
+2024-06-17 18:31:54,347 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:31:54,347 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:31:54,353 - UILogger - DEBUG - True
+2024-06-17 18:31:54,353 - UILogger - ERROR - True
+2024-06-17 18:31:54,353 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:31:54,357 - UILogger - DEBUG - True
+2024-06-17 18:31:54,357 - UILogger - ERROR - True
+2024-06-17 18:31:54,358 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:31:54,362 - UILogger - DEBUG - True
+2024-06-17 18:31:54,362 - UILogger - ERROR - True
+2024-06-17 18:32:11,438 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:32:11,438 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:32:11,444 - UILogger - DEBUG - True
+2024-06-17 18:32:11,444 - UILogger - ERROR - True
+2024-06-17 18:32:11,444 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:32:11,449 - UILogger - DEBUG - True
+2024-06-17 18:32:11,449 - UILogger - ERROR - True
+2024-06-17 18:32:11,449 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:32:11,453 - UILogger - DEBUG - True
+2024-06-17 18:32:11,453 - UILogger - ERROR - True
+2024-06-17 18:32:27,699 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:32:27,700 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:32:27,705 - UILogger - DEBUG - True
+2024-06-17 18:32:27,705 - UILogger - ERROR - True
+2024-06-17 18:32:27,706 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:32:27,710 - UILogger - DEBUG - True
+2024-06-17 18:32:27,710 - UILogger - ERROR - True
+2024-06-17 18:32:27,711 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:32:27,715 - UILogger - DEBUG - True
+2024-06-17 18:32:27,715 - UILogger - ERROR - True
+2024-06-17 18:33:50,062 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-17 18:33:50,062 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-17 18:33:50,102 - UILogger - DEBUG - 
+2024-06-17 18:33:50,102 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-17 18:33:50,102 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-17 18:33:50,141 - UILogger - DEBUG - 
+2024-06-17 18:33:50,142 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-17 18:33:51,498 - UILogger - DEBUG - 
+2024-06-18 09:18:19,906 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 09:18:19,906 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 09:18:19,951 - UILogger - DEBUG - 
+2024-06-18 09:18:19,951 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 09:18:19,952 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 09:18:19,991 - UILogger - DEBUG - 
+2024-06-18 09:18:19,992 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 09:18:22,161 - UILogger - DEBUG - 
+2024-06-18 09:18:44,591 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 09:18:44,591 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 09:18:44,632 - UILogger - DEBUG - 
+2024-06-18 09:18:44,632 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 09:18:44,632 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 09:18:44,673 - UILogger - DEBUG - 
+2024-06-18 09:18:44,673 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 09:18:46,027 - UILogger - DEBUG - 
+2024-06-18 09:20:42,669 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 09:20:42,669 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 09:20:42,709 - UILogger - DEBUG - 
+2024-06-18 09:20:42,709 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 09:20:42,709 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 09:20:42,750 - UILogger - DEBUG - 
+2024-06-18 09:20:42,750 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 09:20:44,470 - UILogger - DEBUG - 
+2024-06-18 09:21:01,803 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 09:21:01,803 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 09:21:01,844 - UILogger - DEBUG - 
+2024-06-18 09:21:01,844 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 09:21:01,844 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 09:21:01,886 - UILogger - DEBUG - 
+2024-06-18 09:21:01,886 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 09:21:03,330 - UILogger - DEBUG - 
+2024-06-18 09:49:08,503 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 09:49:08,503 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 09:49:08,549 - UILogger - DEBUG - 
+2024-06-18 09:49:08,549 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 09:49:08,549 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 09:49:08,590 - UILogger - DEBUG - 
+2024-06-18 09:49:08,591 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 09:49:09,987 - UILogger - DEBUG - 
+2024-06-18 09:50:24,850 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 09:50:24,851 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 09:50:24,890 - UILogger - DEBUG - 
+2024-06-18 09:50:24,890 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 09:50:24,890 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 09:50:24,932 - UILogger - DEBUG - 
+2024-06-18 09:50:24,932 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 09:50:26,257 - UILogger - DEBUG - 
+2024-06-18 10:00:35,808 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:00:35,809 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:00:35,849 - UILogger - DEBUG - 
+2024-06-18 10:00:35,849 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 10:00:35,849 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:00:35,891 - UILogger - DEBUG - 
+2024-06-18 10:00:35,891 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:00:37,614 - UILogger - DEBUG - 
+2024-06-18 10:08:42,141 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:08:42,141 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:08:42,181 - UILogger - DEBUG - 
+2024-06-18 10:08:42,182 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 10:08:42,182 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:08:42,222 - UILogger - DEBUG - 
+2024-06-18 10:08:42,222 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:08:43,590 - UILogger - DEBUG - 
+2024-06-18 10:10:15,792 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:10:15,792 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:10:15,831 - UILogger - DEBUG - 
+2024-06-18 10:10:15,832 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 10:10:15,832 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:10:15,873 - UILogger - DEBUG - 
+2024-06-18 10:10:15,873 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:10:17,713 - UILogger - DEBUG - 
+2024-06-18 10:11:07,814 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:11:07,814 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:11:07,856 - UILogger - DEBUG - 
+2024-06-18 10:11:07,856 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 10:11:07,857 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:11:07,898 - UILogger - DEBUG - 
+2024-06-18 10:11:07,898 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:11:09,344 - UILogger - DEBUG - 
+2024-06-18 10:11:48,829 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:11:48,829 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:11:48,870 - UILogger - DEBUG - 
+2024-06-18 10:11:48,870 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 10:11:48,870 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:11:48,912 - UILogger - DEBUG - 
+2024-06-18 10:11:48,912 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:11:50,216 - UILogger - DEBUG - 
+2024-06-18 10:12:58,309 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:12:58,310 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:12:58,351 - UILogger - DEBUG - 
+2024-06-18 10:12:58,351 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 10:12:58,351 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:12:58,393 - UILogger - DEBUG - 
+2024-06-18 10:12:58,393 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:12:59,796 - UILogger - DEBUG - 
+2024-06-18 10:13:18,211 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:13:18,212 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:13:18,253 - UILogger - DEBUG - 
+2024-06-18 10:13:18,253 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 10:13:18,253 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:13:18,293 - UILogger - DEBUG - 
+2024-06-18 10:13:18,294 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:13:19,733 - UILogger - DEBUG - 
+2024-06-18 10:14:39,577 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:14:39,578 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:14:39,618 - UILogger - DEBUG - 
+2024-06-18 10:14:39,619 - UILogger - ERROR - fatal: destination path 'D:\RiggingLauncher\git' already exists and is not an empty directory.
+
+2024-06-18 10:14:39,619 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:14:39,660 - UILogger - DEBUG - 
+2024-06-18 10:14:39,661 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:14:41,350 - UILogger - DEBUG - 
+2024-06-18 10:15:03,213 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:29:08,280 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:30:38,582 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:32:00,613 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-18 10:32:00,614 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:32:02,568 - UILogger - DEBUG - 
+2024-06-18 10:32:02,568 - UILogger - ERROR - Cloning into 'D:\RiggingLauncher\git'...
+
+2024-06-18 10:32:02,568 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:32:02,607 - UILogger - DEBUG - 
+2024-06-18 10:32:02,608 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:32:03,967 - UILogger - DEBUG - 
+2024-06-18 10:34:14,870 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:34:41,393 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-18 10:34:41,394 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:34:43,358 - UILogger - DEBUG - 
+2024-06-18 10:34:43,358 - UILogger - ERROR - Cloning into 'D:\RiggingLauncher\git'...
+
+2024-06-18 10:34:43,359 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:34:43,398 - UILogger - DEBUG - 
+2024-06-18 10:34:43,398 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:34:44,977 - UILogger - DEBUG - 
+2024-06-18 10:34:56,339 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-18 10:34:56,340 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:34:58,378 - UILogger - DEBUG - 
+2024-06-18 10:34:58,379 - UILogger - ERROR - Cloning into 'D:\RiggingLauncher\git'...
+
+2024-06-18 10:34:58,379 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:34:58,419 - UILogger - DEBUG - 
+2024-06-18 10:34:58,419 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:35:00,714 - UILogger - DEBUG - 
+2024-06-18 10:35:46,573 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:36:15,506 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-18 10:36:15,506 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:36:15,512 - UILogger - DEBUG - <_io.TextIOWrapper name=4 encoding='cp932'>
+2024-06-18 10:36:15,512 - UILogger - ERROR - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-18 10:36:15,512 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:36:15,517 - UILogger - DEBUG - <_io.TextIOWrapper name=4 encoding='cp932'>
+2024-06-18 10:36:15,517 - UILogger - ERROR - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-18 10:36:15,517 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:36:15,522 - UILogger - DEBUG - <_io.TextIOWrapper name=4 encoding='cp932'>
+2024-06-18 10:36:15,522 - UILogger - ERROR - <_io.TextIOWrapper name=5 encoding='cp932'>
+2024-06-18 10:39:36,901 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 10:39:53,044 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-18 10:39:53,046 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 10:39:54,824 - UILogger - DEBUG - 
+2024-06-18 10:39:54,825 - UILogger - ERROR - Cloning into 'D:\RiggingLauncher\git'...
+
+2024-06-18 10:39:54,825 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 10:39:54,866 - UILogger - DEBUG - 
+2024-06-18 10:39:54,866 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 10:39:56,272 - UILogger - DEBUG - 
+2024-06-18 10:59:10,622 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 11:02:14,987 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 11:02:30,364 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-18 11:02:30,367 - UILogger - DEBUG - Cloning the repository: git clone https://username:personal_access_token@gitlab.com/username/repository_name.git D:\RiggingLauncher\git
+2024-06-18 11:02:31,768 - UILogger - ERROR - An error occurred while running the command: Command 'git clone https://username:personal_access_token@gitlab.com/username/repository_name.git D:\RiggingLauncher\git' returned non-zero exit status 128.
+2024-06-18 11:07:06,598 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 11:27:55,299 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' already exists.
+2024-06-18 11:28:20,379 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-18 11:28:45,601 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\git' does not exist. Creating it now.
+2024-06-18 11:28:45,601 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\git
+2024-06-18 11:28:47,676 - UILogger - DEBUG - 
+2024-06-18 11:28:47,676 - UILogger - ERROR - Cloning into 'D:\RiggingLauncher\git'...
+
+2024-06-18 11:28:47,676 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 11:28:47,716 - UILogger - DEBUG - 
+2024-06-18 11:28:47,716 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 11:28:49,093 - UILogger - DEBUG - 
+2024-06-18 11:33:37,101 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' does not exist. Creating it now.
+2024-06-18 11:33:37,102 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\workingSpaces\default
+2024-06-18 11:33:38,928 - UILogger - DEBUG - 
+2024-06-18 11:33:38,928 - UILogger - ERROR - Cloning into 'D:\RiggingLauncher\workingSpaces\default'...
+
+2024-06-18 11:33:38,929 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 11:33:38,970 - UILogger - DEBUG - 
+2024-06-18 11:33:38,971 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 11:33:40,402 - UILogger - DEBUG - 
+2024-06-18 11:59:43,713 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 12:00:05,445 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 12:00:23,270 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 13:29:31,599 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 13:53:20,041 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 13:53:36,222 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 13:55:34,356 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 13:56:19,982 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 13:58:59,460 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:00:10,634 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:33:19,349 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:38:44,733 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:39:13,592 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:39:36,112 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:40:13,732 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:40:41,712 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:42:50,647 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:44:17,711 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:44:45,525 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:50:26,329 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:50:43,407 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:52:11,345 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:58:45,741 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 14:59:48,680 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:01:50,269 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:02:44,168 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:08:37,821 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:08:58,885 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:11:41,617 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:12:05,519 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:12:28,739 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:13:56,418 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:14:42,069 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:15:50,957 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:16:17,810 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:16:36,093 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:17:10,493 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:17:41,898 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:17:55,961 - UILogger - DEBUG - 
+2024-06-18 15:17:55,961 - UILogger - ERROR - warning: in the working copy of '.idea/misc.xml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of '.idea/pythonProject.iml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of '.idea/workspace.xml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'configFile.toml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/App.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/Controller/GitController.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/BaseWindow.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/LauncherWindow.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/UICommitWindow.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/UIManager.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/View/WindowID.py', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'file.log', CRLF will be replaced by LF the next time Git touches it
+
+2024-06-18 15:17:56,127 - UILogger - DEBUG - [master cb83c59] Chenging HelloSumath.py
+ 32 files changed, 822 insertions(+), 40 deletions(-)
+ create mode 100644 Resources/Img/checkmark.png
+ create mode 100644 Resources/Img/cross.png
+ create mode 100644 Resources/Img/singleplayer.png
+ create mode 100644 Resources/Img/soleil_default.jpg
+ create mode 100644 file.log
+ create mode 100644 src/Controller/__pycache__/GitController.cpython-312.pyc
+ create mode 100644 src/Controller/__pycache__/__init__.cpython-312.pyc
+ create mode 100644 src/View/UICommitWindow.py
+ create mode 100644 src/View/__pycache__/BaseWindow.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/BaseWindow.cpython-37.pyc
+ create mode 100644 src/View/__pycache__/LauncherWindow.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/LauncherWindow.cpython-37.pyc
+ create mode 100644 src/View/__pycache__/UICommitWindow.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/UILogger.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/UIManager.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/UIManager.cpython-37.pyc
+ create mode 100644 src/View/__pycache__/UIWorkspace.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/WindowID.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/__init__.cpython-312.pyc
+ create mode 100644 src/View/__pycache__/__init__.cpython-37.pyc
+ create mode 100644 src/__pycache__/App.cpython-312.pyc
+ create mode 100644 src/__pycache__/App.cpython-37.pyc
+
+2024-06-18 15:23:57,509 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:24:01,486 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:26:52,551 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:27:01,494 - UILogger - DEBUG - 
+2024-06-18 15:27:01,495 - UILogger - ERROR - warning: in the working copy of '.idea/workspace.xml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'file.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/Controller/GitController.py', CRLF will be replaced by LF the next time Git touches it
+
+2024-06-18 15:27:01,573 - UILogger - DEBUG - [master 12bfb79] This is my Comment
+ 4 files changed, 52 insertions(+), 12 deletions(-)
+
+2024-06-18 15:27:04,566 - UILogger - DEBUG - 
+2024-06-18 15:27:04,566 - UILogger - ERROR - warning: redirecting to https://gitlab.com/m-correa/rigginglauncher.git/
+remote: 
+remote: To create a merge request for master, visit:        
+remote:   https://gitlab.com/m-correa/rigginglauncher/-/merge_requests/new?merge_request%5Bsource_branch%5D=master        
+remote: 
+To https://gitlab.com/m-correa/rigginglauncher
+ * [new branch]      master -> master
+
+2024-06-18 15:27:04,615 - UILogger - DEBUG - On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   file.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+2024-06-18 15:29:18,130 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' does not exist. Creating it now.
+2024-06-18 15:29:18,132 - UILogger - DEBUG - Cloning the repository: git clone https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git D:\RiggingLauncher\workingSpaces\default
+2024-06-18 15:29:19,857 - UILogger - DEBUG - 
+2024-06-18 15:29:19,857 - UILogger - ERROR - Cloning into 'D:\RiggingLauncher\workingSpaces\default'...
+
+2024-06-18 15:29:19,857 - UILogger - DEBUG - Setting the remote URL: git remote set-url origin https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git
+2024-06-18 15:29:19,898 - UILogger - DEBUG - 
+2024-06-18 15:29:19,898 - UILogger - DEBUG - Fetching updates: git fetch origin
+2024-06-18 15:29:21,379 - UILogger - DEBUG - 
+2024-06-18 15:31:43,486 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:32:38,707 - UILogger - DEBUG - 
+2024-06-18 15:32:38,707 - UILogger - DEBUG - warning: in the working copy of '.idea/workspace.xml', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'file.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/Controller/GitController.py', CRLF will be replaced by LF the next time Git touches it
+
+2024-06-18 15:32:38,785 - UILogger - DEBUG - [master e928a55] This is my first commit
+ 4 files changed, 39 insertions(+), 3 deletions(-)
+
+2024-06-18 15:32:41,131 - UILogger - DEBUG - 
+2024-06-18 15:32:41,131 - UILogger - DEBUG - warning: redirecting to https://gitlab.com/m-correa/rigginglauncher.git/
+remote: 
+remote: To create a merge request for master, visit:        
+remote:   https://gitlab.com/m-correa/rigginglauncher/-/merge_requests/new?merge_request%5Bsource_branch%5D=master        
+remote: 
+To https://gitlab.com/m-correa/rigginglauncher
+   12bfb79..e928a55  master -> master
+
+2024-06-18 15:32:41,174 - UILogger - DEBUG - On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   file.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+2024-06-18 15:37:15,198 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
