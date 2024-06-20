@@ -6,3 +6,9 @@ repository_url = "https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-corre
 
 [general]
 working_path = 'D://RiggingLauncher/workingSpaces/default/'
+maya24_path = "C://Program Files/Autodesk/Maya2024/bin/maya.exe"
+maya25_path = "C://Program Files/Autodesk/Maya2025/bin/maya.exe"
+maya22_path = "C://Program Files/Autodesk/Maya2022/bin/maya.exe"
+git_path = "C://Program Files/Git/git-cmd.exe"
+# Replace with the latest Git installer URL if needed
+git_installer_url = "https://github.com/git-for-windows/git/releases/download/v2.41.0.windows.1/Git-2.41.0-64-bit.exe"

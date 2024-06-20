@@ -35,9 +35,23 @@ class UIManager(QObject):
     def _connect_launcher_windows(self):
         self.launcher_window.get_latest_btn.clicked.connect(lambda: self.lw_get_latest_clicked.emit())
         self.launcher_window.upload_repository_signal.connect(lambda message: self.lw_uploaded_clicked.emit(message))
+        self.launcher_window.maya_btn.clicked.connect(lambda: self.lw_open_maya_clicked.emit())
 
     @Slot(bool)
     def on_setup_completed(self, success: bool):
         if self.launcher_window.window_id != WindowID.LAUNCHER:
             return
         self.launcher_window.on_setup_completed(success)
+
+    @Slot(str)
+    def on_log_signal_received(self, log_message: str):
+        self.logger.debug(log_message)
+
+    @Slot(str)
+    def on_err_signal_received(self, error_message: str):
+        self.logger.error(error_message)
+
+    @Slot(bool)
+    def on_maya_checked(self, is_installed):
+        if not is_installed:
+            self.launcher_window.maya_btn.setToolTip("Maya is Not installed in the Operation System")

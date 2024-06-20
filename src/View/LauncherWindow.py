@@ -32,9 +32,6 @@ class LauncherWindow(BaseWindow):
         self.body_left = QVBoxLayout()
         self.body_right = QVBoxLayout()
         self.footer_layout = QHBoxLayout()
-        """Labels"""
-        self.soleil_label = QLabel("Soleil")
-        self.soleil_label.setObjectName("SoleilLabel")
         """Get Latest Button"""
         self.get_latest_btn = self._create_button("arrowDown.png", "Get latest")
         self.get_latest_btn.setObjectName("GetLatestButton")
@@ -58,9 +55,8 @@ class LauncherWindow(BaseWindow):
 
     def _build(self):
         """Header"""
-        self.header_layout.addWidget(self.soleil_label)
-        self.header_layout.addWidget(self.get_latest_btn, 0, Qt.AlignmentFlag.AlignLeft)
-        self.header_layout.addWidget(self.upload_btn, 5, Qt.AlignmentFlag.AlignLeft)
+        self.header_layout.addWidget(self.get_latest_btn, 5, Qt.AlignmentFlag.AlignRight)
+        self.header_layout.addWidget(self.upload_btn, 0, Qt.AlignmentFlag.AlignRight)
         """Body left"""
         self.body_left.addWidget(self.new_workspace_btn, 0, Qt.AlignmentFlag.AlignTop)
         self.body_left.addWidget(self.maya_btn, 5, Qt.AlignmentFlag.AlignTop)
@@ -106,5 +102,4 @@ class LauncherWindow(BaseWindow):
         return
 
     def on_setup_completed(self, success: bool):
-        if success:
-            self.workspace.set_root_directory()
+        self.workspace.set_root_directory()

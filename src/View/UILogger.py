@@ -52,21 +52,9 @@ class LoggerWidget(QWidget):
         self.text_edit.setReadOnly(True)
         self.text_edit.setMaximumHeight(110)
 
-        """Label"""
-        self.label = QLabel("Log")
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label.setObjectName("LoggerLabel")
-
-        """Clear Button"""
-        self.clear_button = QPushButton("Clear")
-        self.clear_button.clicked.connect(self._clear_log)
-        self.clear_button.setObjectName("UILoggerClearButton")
-
         """Layout"""
         layout = QVBoxLayout(self)
-        layout.addWidget(self.label)
         layout.addWidget(self.text_edit)
-        layout.addWidget(self.clear_button)
 
     def _clear_log(self):
         self.text_edit.clear()
