@@ -1,7 +1,7 @@
-from .LauncherWindow import LauncherWindow
+from View.LauncherWindow import LauncherWindow
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import Slot, Signal, QObject
-from .WindowID import WindowID
+from View.WindowID import WindowID
 
 
 class UIManager(QObject):
@@ -10,6 +10,7 @@ class UIManager(QObject):
     lw_uploaded_clicked = Signal(str)
     lw_open_maya_clicked = Signal()
     lw_new_workspace_clicked = Signal()
+    lw_window_closed = Signal()
 
     def __init__(self, config: dict):
         super().__init__()
@@ -36,6 +37,7 @@ class UIManager(QObject):
         self.launcher_window.get_latest_btn.clicked.connect(lambda: self.lw_get_latest_clicked.emit())
         self.launcher_window.upload_repository_signal.connect(lambda message: self.lw_uploaded_clicked.emit(message))
         self.launcher_window.maya_btn.clicked.connect(lambda: self.lw_open_maya_clicked.emit())
+        self.launcher_window.window_closed.connect(lambda: self.lw_window_closed.emit())
 
     @Slot(bool)
     def on_setup_completed(self, success: bool):

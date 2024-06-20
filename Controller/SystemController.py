@@ -1,4 +1,4 @@
-from PySide6.QtCore import QObject, Signal, Slot, QThread
+from PySide6.QtCore import QObject, Signal, Slot
 from pathlib import Path
 import shutil
 import winreg

@@ -1,8 +1,8 @@
-from .BaseWindow import BaseWindow
-from .UILogger import LoggerWidget
-from .UIWorkspace import WorkspaceWidget
-from .WindowID import WindowID
-from .UICommitWindow import CommitWindow
+from View.BaseWindow import BaseWindow
+from View.WindowID import WindowID
+from View.UILogger import LoggerWidget
+from View.UIWorkspace import WorkspaceWidget
+from View.UICommitWindow import CommitWindow
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -15,6 +15,7 @@ from PySide6.QtCore import Qt, Signal, Slot
 
 class LauncherWindow(BaseWindow):
     upload_repository_signal = Signal(str)
+    window_closed = Signal()
 
     def __init__(self, config: dict, window_id: WindowID, width=900, height=500):
         super(LauncherWindow, self).__init__("Rigging Launcher", window_id, width, height)

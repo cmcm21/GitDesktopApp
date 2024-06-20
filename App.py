@@ -15,7 +15,7 @@ class ConfigManager:
     @staticmethod
     def get_config() -> dict:
         script_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file_path = os.path.join(script_dir, "../", "configFile.toml")
+        config_file_path = os.path.join(script_dir,  "configFile.toml")
         with open(config_file_path, "rb") as config_file:
             config = tomli.load(config_file)
 
@@ -32,10 +32,14 @@ class Application(QApplication):
         self._set_style_sheet()
         self.config = ConfigManager.get_config()
         self.ui_manager = UIManager(self.config)
+        self.connect_ui_manager()
         self.logger = self.ui_manager.logger
         self.git_installed = False
         self._create_git_controller_thread()
         self._create_system_controller_thread()
+
+    def connect_ui_manager(self):
+        self.ui_manager.lw_window_closed.connect(self.on_main_window_closed)
 
     def _create_git_controller_thread(self):
         self.git_controller_thread = QThread(self)
@@ -99,3 +103,14 @@ class Application(QApplication):
         self.system_controller_setup.emit()
         self.exec()
 
+    @Slot()
+    def on_main_window_closed(self):
+        print("Main window closed")
+        if self.system_controller_thread is not None:
+            self.system_controller_thread.exit()
+        if self.git_controller_thread is not None:
+            self.git_controller_thread.exit()
+        self.__del__()
+
+    def __del__(self):
+        return

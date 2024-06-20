@@ -1,7 +1,7 @@
-from .BaseWindow import BaseWindow
+from View.BaseWindow import BaseWindow
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QWidget
 from PySide6.QtCore import Signal, Qt
-from .WindowID import WindowID
+from View.WindowID import WindowID
 
 
 class CommitWindow(BaseWindow):
