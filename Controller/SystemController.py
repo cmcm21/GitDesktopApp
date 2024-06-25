@@ -28,6 +28,9 @@ class SystemController(QObject):
         self.config = config
         self.git_path = config["general"]["git_path"]
         self.git_installer_url = config["general"]["git_installer_url"]
+        self.git_token = config["git"]["personal_access_token"]
+        self.git_api_url = config["git"]["gitlab_api_url"]
+        self.git_user = config["git"]["username"]
         self.maya_installed = False
 
     def setup(self):
@@ -130,3 +133,6 @@ class SystemController(QObject):
         self.log_message.emit(result.stdout)
         if result.stderr:
             self.error_message.emit(result.stderr)
+
+
+
