@@ -10,6 +10,7 @@ from enum import Enum
 class CreateRepDir(Enum):
     ALREADY_EXIST = 1
     DIR_CREATED = 2
+    JUST_DIR = 3
 
 
 class GitProtocolAbstract(metaclass=abc.ABCMeta):
@@ -32,10 +33,13 @@ class GitProtocolAbstract(metaclass=abc.ABCMeta):
             self.git_controller.log_message.emit(f"The directory '{self.git_controller.working_path}' already exists.")
             return CreateRepDir.ALREADY_EXIST
         else:
-            self.git_controller.log_message.emit(f"Creating directory : {self.git_controller.working_path} ")
+            self.git_controller.log_message.emit(f"Creating directory : {self.git_controller.working_path} "
+                                                 f"using protocol: {self.__str__()}")
             if not self.git_controller.working_path.exists():
                 self.git_controller.working_path.mkdir(parents=True)
                 return CreateRepDir.DIR_CREATED
+            else:
+                return CreateRepDir.JUST_DIR
 
     @abc.abstractmethod
     def setup(self) -> bool:
@@ -57,18 +61,19 @@ class GitProtocolSSH(GitProtocolAbstract):
         if return_code == return_code.ALREADY_EXIST:
             return True
 
+        self.git_controller.log_message.emit(f"Running git clone command...")
         process = subprocess.Popen(
             ['git', 'clone', self.git_controller.repository_url_ssh, self.git_controller.working_path],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True,
-            shell=True
+            text=True
         )
         stdout, stderr = process.communicate(input="yes\n")
         if stdout:
             self.git_controller.log_message.emit(stdout)
         if stderr:
+            self.git_controller.error_message.emit(stderr)
             return self.git_controller.repo_exist()
 
         return True
@@ -86,10 +91,16 @@ class GitProtocolSSH(GitProtocolAbstract):
             public_key_path = os.path.join(ssh_dir, 'id_rsa.pub')
 
             self.generate_ssh_keys(ssh_dir, private_key_path, public_key_path)
-            self.add_ssh_key_to_gitlab(self.get_ssh_public_key(public_key_path))
+            ssh_public_key = self.get_ssh_public_key(public_key_path)
+            self.add_ssh_key_to_gitlab(ssh_public_key)
+            self.add_host_key(ssh_dir)
             return True
         else:
+            self.git_controller.error_message.emit("")
             return False
+
+    def ssh_keys_exists(self):
+        return
 
     def check_ssh_installed(self) -> bool:
         try:
@@ -144,8 +155,11 @@ class GitProtocolSSH(GitProtocolAbstract):
 
     @staticmethod
     def get_ssh_public_key(public_key_path: str):
+        public_key = ""
         with open(public_key_path, 'r') as f:
-            return f.read().strip()
+            public_key = f.read().strip()
+
+        return public_key
 
     def add_ssh_key_to_gitlab(self, ssh_key: str):
         headers = {
@@ -166,6 +180,24 @@ class GitProtocolSSH(GitProtocolAbstract):
             self.git_controller.log_message.emit(f"Failed to add SSH key to GitLab: "
                                                  f"{response.status_code} - {response.text}")
 
+    def add_host_key(self, ssh_dir):
+        host = 'gitlab.com'
+        print(ssh_dir)
+        known_hosts_path = os.path.join(ssh_dir, 'known_hosts')
+
+        # Use ssh-keyscan to fetch the host key
+        result = subprocess.run(['ssh-keyscan', host], capture_output=True, text=True, shell=True)
+        if result.returncode == 0:
+            # Ensure the .ssh directory exists
+            if not os.path.exists(ssh_dir):
+                os.makedirs(ssh_dir)
+            # Append the host key to known_hosts
+            with open(known_hosts_path, 'a') as f:
+                f.write(result.stdout)
+            self.git_controller.log_message.emit(f"Host key for {host} added to known_hosts.")
+        else:
+            self.git_controller.log_message.emit(f"Failed to fetch host key for {host}: {result.stderr}")
+
 
 class GitProtocolHTTPS(GitProtocolAbstract):
     def __init__(self, git_controller: GitController):
@@ -173,15 +205,18 @@ class GitProtocolHTTPS(GitProtocolAbstract):
         self.repository_url = self.git_controller.repository_url_https
 
     def setup(self) -> bool:
-        self.create_repository_dir()
+        result = self.create_repository_dir()
+        if result == CreateRepDir.ALREADY_EXIST:
+            return True
+
         process = subprocess.Popen(
-            ['git', 'clone', self.git_controller.repository_url_ssh, self.git_controller.raw_working_path],
+            ['git', 'clone', self.repository_url, self.git_controller.raw_working_path],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
-            shell=True
         )
+
         stdout, stderr = process.communicate()
         if stdout:
             self.git_controller.log_message.emit(stdout)

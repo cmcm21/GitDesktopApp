@@ -1,6 +1,8 @@
 import logging
 from PySide6.QtCore import Qt, QMetaObject, Q_ARG
 from PySide6.QtWidgets import QWidget, QTextEdit, QLabel, QVBoxLayout, QPushButton
+from PySide6.QtGui import QFont
+from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 
 
 # Create a custom logger
@@ -50,7 +52,7 @@ class LoggerWidget(QWidget):
         """Text edit"""
         self.text_edit = QTextEdit(self)
         self.text_edit.setReadOnly(True)
-        self.text_edit.setMaximumHeight(110)
+        CustomStyleSheetApplier.set_q_text_edit_style_and_colour(self.text_edit, "Black", textColour="White")
 
         """Layout"""
         layout = QVBoxLayout(self)

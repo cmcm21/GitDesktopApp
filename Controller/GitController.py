@@ -65,7 +65,7 @@ class GitController(QObject):
                 self.git_protocol = GitProtocolHTTPS(self)
                 if not self.git_protocol.setup():
                     self.error_message.emit(f"Communication with remote repository failed, canceling setup...")
-                    return False
+                return False
 
             """ TODO: Check the first state set up, if it not finished with success code then change protocol"""
             # Change directory to the cloned repository
@@ -80,7 +80,6 @@ class GitController(QObject):
             self._run_git_command(fetch_command)
 
             # Send setup signal
-
             self.log_message.emit(f" Setup Completed ")
             self.setup_completed.emit(self.repo_exist())
         except subprocess.CalledProcessError as e:

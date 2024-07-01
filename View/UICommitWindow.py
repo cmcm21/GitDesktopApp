@@ -1,7 +1,9 @@
 from View.BaseWindow import BaseWindow
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QWidget
 from PySide6.QtCore import Signal, Qt
+from PySide6.QtGui import QFont
 from View.WindowID import WindowID
+from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 
 
 class CommitWindow(BaseWindow):
@@ -14,12 +16,16 @@ class CommitWindow(BaseWindow):
         self.main_layout = QVBoxLayout()
         self.buttons_layout = QHBoxLayout()
         """Buttons"""
-        self.accept_button = self._create_button("checkmark.png", "Accept")
-        self.cancel_button = self._create_button("cross.png", "Cancel")
+        self.accept_button = self.create_button(self, "checkmark.png", "Accept")
+        self.cancel_button = self.create_button(self, "cross.png", "Cancel")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.cancel_button, "Blue")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.accept_button, "Blue")
         "Others"
         self.input_message = QLineEdit()
+        self.input_message.setFont(QFont("Courier New", 10))
         self.input_message.setPlaceholderText("")
         self.input_label = QLabel("Insert a commit message")
+        self.input_label.setFont(QFont("Courier New", 10))
         self._build()
         self._connect_buttons()
 
@@ -53,5 +59,3 @@ class CommitWindow(BaseWindow):
     def _on_cancel_clicked_signal(self):
         self.cancel_clicked_signal.emit()
         return
-
-

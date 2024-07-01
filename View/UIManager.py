@@ -34,7 +34,7 @@ class UIManager(QObject):
         self.launcher_window.open()
 
     def _connect_launcher_windows(self):
-        self.launcher_window.get_latest_btn.clicked.connect(lambda: self.lw_get_latest_clicked.emit())
+        self.launcher_window.git_tab.download_btn.clicked.connect(lambda: self.lw_get_latest_clicked.emit())
         self.launcher_window.upload_repository_signal.connect(lambda message: self.lw_uploaded_clicked.emit(message))
         self.launcher_window.maya_btn.clicked.connect(lambda: self.lw_open_maya_clicked.emit())
         self.launcher_window.window_closed.connect(lambda: self.lw_window_closed.emit())

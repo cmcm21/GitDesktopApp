@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QPushButton, QMessageBox
+from PySide6.QtWidgets import QMainWindow, QPushButton, QMessageBox, QWidget
 from PySide6.QtGui import QPixmap, QIcon
 from PySide6.QtCore import Signal
 from View.WindowID import WindowID
@@ -40,14 +40,15 @@ class BaseWindow(QMainWindow):
         pix_map = QPixmap(icon_path)
         self.setWindowIcon(QIcon(pix_map))
 
-    def _create_button(self, image_name: str, button_text: str) -> QPushButton:
+    @staticmethod
+    def create_button(parent, image_name: str, button_text: str = "") -> QPushButton:
         script_dir = os.path.dirname(os.path.abspath(__file__))
         icon_path = os.path.join(script_dir, "../Resources/Img/", image_name)
         pix_map = QPixmap(icon_path)
         return QPushButton(
             icon=QIcon(pix_map),
             text=button_text,
-            parent=self
+            parent=parent
         )
 
     def open(self):
