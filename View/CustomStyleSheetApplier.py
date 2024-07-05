@@ -301,6 +301,11 @@ class CustomStyleSheetApplier:
             QListView::item:selected:active {{
                 background-color: {style_data['pressed_bg']};
             }}
+            QToolTip{{
+                background-color: {style_data['background_color']};
+                border: 2px solid {style_data['border_color']};
+                color: {textColour};
+            }}
         """)
         widgetId.setFont(QtGui.QFont("Courier New", 10))  # Monospaced font for alignment
 

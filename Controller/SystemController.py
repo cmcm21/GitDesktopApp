@@ -133,6 +133,3 @@ class SystemController(QObject):
         self.log_message.emit(result.stdout)
         if result.stderr:
             self.error_message.emit(result.stderr)
-
-
-

@@ -10,8 +10,8 @@ from PySide6.QtWidgets import (
     QGridLayout,
     QWidget,
     QComboBox,
-    QFrame,
-    QTabWidget
+    QTabWidget,
+    QFrame
 )
 from PySide6.QtCore import Qt, Signal, Slot, QSize
 
@@ -64,6 +64,7 @@ class LauncherWindow(BaseWindow):
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.settings_btn, "Black")
         """Other Widgets"""
         self.left_frame = LauncherWindow.create_default_frame("MainWindowLeftFrame")
+        self.left_frame.setMaximumWidth(120)
         self.git_tab_frame = LauncherWindow.create_default_frame("GitTabFrame")
         self.pv4_tab_frame = LauncherWindow.create_default_frame("Pv4TabFrame")
         self.body_tap = QTabWidget()
@@ -116,15 +117,6 @@ class LauncherWindow(BaseWindow):
         widget.setLayout(self.main_layout)
         self.setCentralWidget(widget)
 
-    @staticmethod
-    def create_default_frame(frame_name: str) -> QFrame:
-        frame = QFrame()
-        frame.setFrameShape(QFrame.Box)
-        frame.setFrameShadow(QFrame.Raised)
-        frame.setLineWidth(2)
-        frame.setObjectName(frame_name)
-        return frame
-
     def _connect_buttons(self):
         self.git_tab.upload_btn.clicked.connect(self, self.create_commit_windows)
         self.git_tab.download_btn.clicked.connect(lambda: self.download_repository_signal.emit())
@@ -146,6 +138,14 @@ class LauncherWindow(BaseWindow):
     @Slot()
     def _on_commit_window_cancel(self):
         self._close_commit_window()
+
+    @Slot(str)
+    def _on_get_main_branch(self, main_branch):
+        return
+
+    @Slot(list)
+    def _on_get_all_branch(self, branches):
+        return
 
     def _close_commit_window(self):
         if self.commit_window is not None:

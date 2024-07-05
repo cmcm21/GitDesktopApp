@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QPushButton, QMessageBox, QWidget
+from PySide6.QtWidgets import QMainWindow, QPushButton, QMessageBox, QWidget, QFrame
 from PySide6.QtGui import QPixmap, QIcon
 from PySide6.QtCore import Signal
 from View.WindowID import WindowID
@@ -39,6 +39,15 @@ class BaseWindow(QMainWindow):
         icon_path = os.path.join(script_dir, "../Resources/Img/", "soleil_default.jpg")
         pix_map = QPixmap(icon_path)
         self.setWindowIcon(QIcon(pix_map))
+
+    @staticmethod
+    def create_default_frame(frame_name: str) -> QFrame:
+        frame = QFrame()
+        frame.setFrameShape(QFrame.Box)
+        frame.setFrameShadow(QFrame.Raised)
+        frame.setLineWidth(2)
+        frame.setObjectName(frame_name)
+        return frame
 
     @staticmethod
     def create_button(parent, image_name: str, button_text: str = "") -> QPushButton:

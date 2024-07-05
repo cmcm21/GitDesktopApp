@@ -44,25 +44,8 @@ QPushButton {
     font-size: 12px;
 }
 
-#MayaButton, #NewWorkspaceButton, #SettingsButton{
-    icon-size: 32px 32px;
-}
-
-#UpdateButton, #GetLatestButton{
-}
-
 QPushButton:hover {
     background-color: #555555;
-}
-
-#SoleilLabel{
-    font-size: 24px;
-    border: 1px solid ghostwhite;
-    text-align: center;
-}
-
-#LoggerLabel{
-    text-align: center;
 }
 
 QLineEdit {
@@ -117,7 +100,7 @@ QFileSystemModel{
 
 QTabWidget::pane {
     border: 0px solid black;
-    background: #ffffff;
+    background: transparent;
 }
 
 QTabWidget::tab-bar:top {
@@ -134,18 +117,6 @@ QTabWidget::tab-bar:left {
 
 QTabWidget::tab-bar:right {
     left: 1px;
-}
-
-#History_tab{
-    border-radius: 10px;
-    border: 2px solid black;
-    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, stop: 1 #333333);
-}
-
-#Changes_list{
-    border-radius: 10px;
-    border: 2px solid black;
-    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, stop: 1 #333333);
 }
 
 QTabBar::tab {
@@ -249,16 +220,15 @@ QScrollArea{
     border: 5px solid black;
 }
 
-QDockWidget{
-    background-color: "#666666";
-    border: 5px solid black;
+QToolTip{
+    background-color: whitesmoke;
+    color: black;
 }
 
 #MainWindowLeftFrame{
     border: 2px solid black;
     border-radius: 5px;
 }
-
 #MainWindowTabs, #GitTabFrame, #Pv4TabFrame{
     border: 2px solid black;
     border-radius: 5px;
@@ -268,3 +238,31 @@ QDockWidget{
     border-radius: 3px;
 }
 
+#CommentTextEdit{
+    max-height: 30px;
+}
+
+#ChangesListTab, #HistoryTab, #MergeRequestTab{
+    border-radius: 10px;
+    border: 2px solid black;
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, stop: 1 #333333);
+}
+
+#MayaButton, #NewWorkspaceButton, #SettingsButton{
+    icon-size: 32px 32px;
+}
+
+#UpdateButton, #GetLatestButton{
+}
+
+#LoggerLabel{
+    text-align: center;
+}
+
+#DiscussionTab, #CommitsTab, #ChangeListTab{
+    background: transparent;
+}
+
+#MergeRequestInsideTabs{
+    background: transparent;
+}

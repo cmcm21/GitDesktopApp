@@ -32,45 +32,64 @@ class Application(QApplication):
         self._set_style_sheet()
         self.config = ConfigManager.get_config()
         self.ui_manager = UIManager(self.config)
-        self.connect_ui_manager()
         self.logger = self.ui_manager.logger
         self.git_installed = False
         self._create_git_controller_thread()
         self._create_system_controller_thread()
-
-    def connect_ui_manager(self):
-        self.ui_manager.lw_window_closed.connect(self.on_main_window_closed)
+        self._connect_ui_manager()
+        self._connect_git_controller()
+        self._connect_system_controller()
 
     def _create_git_controller_thread(self):
+        """ Git controller thread creation"""
         self.git_controller_thread = QThread(self)
         self.git_controller = GitController(self.config)
-
+        """ Git controller setup """
         self.git_controller.setup_completed.connect(self.ui_manager.on_setup_completed)
-        self.git_controller.log_message.connect(self.ui_manager.on_log_signal_received)
-        self.git_controller.error_message.connect(self.ui_manager.on_err_signal_received)
         self.git_setup.connect(self.git_controller.setup)
-
-        self.ui_manager.lw_get_latest_clicked.connect(self.git_controller.get_latest)
-        self.ui_manager.lw_uploaded_clicked.connect(self.git_controller.push_changes)
+        """ Git controller start thread """
         self.git_controller.moveToThread(self.git_controller_thread)
         self.git_controller_thread.start()
+
+    def _connect_ui_manager(self):
+        self.ui_manager.lw_window_closed.connect(self.on_main_window_closed)
+        self.ui_manager.lw_git_merge_request_tab_clicked.connect(self.git_controller.get_main_branch)
+        self.ui_manager.lw_git_merge_request_tab_clicked.connect(self.git_controller.get_all_branches)
+        self.ui_manager.lw_git_merge_request_tab_clicked.connect(self.git_controller.load_merge_requests)
+        self.ui_manager.lw_get_latest_clicked.connect(self.git_controller.get_latest)
+        self.ui_manager.lw_uploaded_clicked.connect(self.git_controller.push_changes)
+        self.ui_manager.lw_open_maya_clicked.connect(self.system_controller.open_maya)
+        self.ui_manager.lw_get_merge_request_changed.connect(self.git_controller.get_merge_request_commits)
+        self.ui_manager.lw_get_merge_request_changed.connect(self.git_controller.get_merge_request_changes)
+        self.ui_manager.lw_get_merge_request_changed.connect(self.git_controller.get_merge_requests_comments)
+        self.ui_manager.lw_merge_request_add_comment.connect(self.git_controller.merge_request_add_comment)
+        self.ui_manager.lw_accept_merge_request_and_merge.connect(self.git_controller.merge_request_accept_and_merge)
+
+    def _connect_git_controller(self):
+        self.git_controller.log_message.connect(self.ui_manager.on_log_signal_received)
+        self.git_controller.error_message.connect(self.ui_manager.on_err_signal_received)
+        self.git_controller.send_main_branch.connect(self.ui_manager.on_get_main_branch)
+        self.git_controller.send_all_branches.connect(self.ui_manager.on_get_all_branches)
+        self.git_controller.send_merge_requests.connect(self.ui_manager.on_get_all_merge_requests)
+        self.git_controller.send_merge_request_commits.connect(self.ui_manager.on_get_merge_request_commits)
+        self.git_controller.send_merge_requests_changes.connect(self.ui_manager.on_get_merge_request_changes)
+        self.git_controller.send_merge_requests_comments.connect(self.ui_manager.on_get_merge_requests_comments)
 
     def _create_system_controller_thread(self):
         self.system_controller_thread = QThread(self)
         self.system_controller = SystemController(self.config)
+        self.system_controller.moveToThread(self.system_controller_thread)
+        self.system_controller_thread.start()
 
+    def _connect_system_controller(self):
         self.system_controller.log_message.connect(self.ui_manager.on_log_signal_received)
         self.system_controller.error_message.connect(self.ui_manager.on_err_signal_received)
-
         self.system_controller.maya_checked.connect(self.ui_manager.on_maya_checked)
         self.system_controller.git_checked.connect(self.on_git_checked)
         self.system_controller.git_installed.connect(self.on_git_installed)
         self.system_controller.setup_finished.connect(self.on_system_controller_setup_finished)
         self.system_controller_setup.connect(self.system_controller.setup)
-
-        self.ui_manager.lw_open_maya_clicked.connect(self.system_controller.open_maya)
-        self.system_controller.moveToThread(self.system_controller_thread)
-        self.system_controller_thread.start()
+        return
 
     @Slot()
     def on_system_controller_setup_finished(self):

@@ -11,6 +11,9 @@ class UIManager(QObject):
     lw_open_maya_clicked = Signal()
     lw_new_workspace_clicked = Signal()
     lw_window_closed = Signal()
+    lw_get_merge_request_changed = Signal(int)
+    lw_merge_request_add_comment = Signal(str, int)
+    lw_accept_merge_request_and_merge = Signal(int, str)
 
     def __init__(self, config: dict):
         super().__init__()
@@ -34,10 +37,17 @@ class UIManager(QObject):
         self.launcher_window.open()
 
     def _connect_launcher_windows(self):
-        self.launcher_window.git_tab.download_btn.clicked.connect(lambda: self.lw_get_latest_clicked.emit())
-        self.launcher_window.upload_repository_signal.connect(lambda message: self.lw_uploaded_clicked.emit(message))
-        self.launcher_window.maya_btn.clicked.connect(lambda: self.lw_open_maya_clicked.emit())
-        self.launcher_window.window_closed.connect(lambda: self.lw_window_closed.emit())
+        """ Using UIManager signals to make a bridge between UI Signals and Controllers """
+        self.lw_git_history_tab_clicked = self.launcher_window.git_tab.history_tab_clicked
+        self.lw_git_changes_list_tab_clicked = self.launcher_window.git_tab.changes_list_clicked
+        self.lw_git_merge_request_tab_clicked = self.launcher_window.git_tab.merge_request_clicked
+        self.lw_get_latest_clicked = self.launcher_window.git_tab.download_btn.clicked
+        self.lw_uploaded_clicked = self.launcher_window.upload_repository_signal
+        self.lw_open_maya_clicked = self.launcher_window.maya_btn.clicked
+        self.lw_window_closed = self.launcher_window.window_closed
+        self.lw_get_merge_request_changed = self.launcher_window.git_tab.git_sniffer.merge_request.selected_mr_changed
+        self.lw_merge_request_add_comment = self.launcher_window.git_tab.git_sniffer.merge_request.add_comment
+        self.lw_accept_merge_request_and_merge = self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge
 
     @Slot(bool)
     def on_setup_completed(self, success: bool):
@@ -57,3 +67,29 @@ class UIManager(QObject):
     def on_maya_checked(self, is_installed):
         if not is_installed:
             self.launcher_window.maya_btn.setToolTip("Maya is Not installed in the Operation System")
+
+    @Slot(str)
+    def on_get_main_branch(self, main_branch: str):
+        self.launcher_window.git_tab.set_main_branch_in_merge_request_tab(main_branch)
+
+    @Slot(list)
+    def on_get_all_branches(self, branches: str):
+        self.launcher_window.git_tab.set_all_branches_in_merge_request_tab(branches)
+
+    @Slot(list)
+    def on_get_all_merge_requests(self, merge_requests: list):
+        self.launcher_window.git_tab.set_all_merge_requests(merge_requests)
+
+    @Slot(list)
+    def on_get_merge_request_commits(self, merge_request_commits: list):
+        self.launcher_window.git_tab.set_merge_request_commits(merge_request_commits)
+        return
+
+    @Slot(list)
+    def on_get_merge_request_changes(self, changes: list):
+        self.launcher_window.git_tab.set_merge_request_changes(changes)
+
+    @Slot(list)
+    def on_get_merge_requests_comments(self, comments: list):
+        self.launcher_window.git_tab.set_merge_requests_comments(comments)
+
