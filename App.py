@@ -66,6 +66,8 @@ class Application(QApplication):
         self.ui_manager.lw_accept_merge_request_and_merge.connect(self.git_controller.merge_request_accept_and_merge)
 
     def _connect_git_controller(self):
+        self.git_controller.push_completed.connect(self.ui_manager.on_upload_completed)
+        self.git_controller.get_latest_completed.connect(self.ui_manager.on_get_latest_completed)
         self.git_controller.log_message.connect(self.ui_manager.on_log_signal_received)
         self.git_controller.error_message.connect(self.ui_manager.on_err_signal_received)
         self.git_controller.send_main_branch.connect(self.ui_manager.on_get_main_branch)
@@ -89,7 +91,6 @@ class Application(QApplication):
         self.system_controller.git_installed.connect(self.on_git_installed)
         self.system_controller.setup_finished.connect(self.on_system_controller_setup_finished)
         self.system_controller_setup.connect(self.system_controller.setup)
-        return
 
     @Slot()
     def on_system_controller_setup_finished(self):
@@ -98,7 +99,6 @@ class Application(QApplication):
 
     @Slot(bool)
     def on_git_checked(self, success: bool):
-        print("Git is Installed: " + str(success))
         self.git_installed = success
 
     @Slot(bool)
@@ -117,19 +117,19 @@ class Application(QApplication):
             qss = file.read()
             self.setStyleSheet(qss)
 
-    def run(self):
-        self.ui_manager.open_window(WindowID.LAUNCHER)
-        self.system_controller_setup.emit()
-        self.exec()
-
     @Slot()
     def on_main_window_closed(self):
-        print("Main window closed")
         if self.system_controller_thread is not None:
             self.system_controller_thread.exit()
         if self.git_controller_thread is not None:
             self.git_controller_thread.exit()
+        self.ui_manager.loading_screen.stop_anim_screen()
         self.__del__()
 
     def __del__(self):
         return
+
+    def run(self):
+        self.ui_manager.open_window(WindowID.LAUNCHER)
+        self.system_controller_setup.emit()
+        self.exec()

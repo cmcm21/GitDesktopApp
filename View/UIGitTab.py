@@ -6,7 +6,9 @@ from PySide6.QtWidgets import (
     QTabWidget,
     QListWidgetItem,
     QLabel,
-    QPushButton
+    QPushButton,
+    QSplitter,
+    QSizePolicy
 )
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap, QIcon, QAction, QFont
@@ -131,6 +133,8 @@ class UIGitTab(QWidget):
         """ Custom Widgets """
         self.repository_viewer = RepositoryViewerWidget(working_path)
         self.git_sniffer = GitSnifferWidget()
+        """ Other widgets """
+        self.splitter = QSplitter(Qt.Horizontal)
         #TODO: Remove this after
         self.git_sniffer.fill_history()
         self.git_sniffer.fill_changed_list()
@@ -145,8 +149,9 @@ class UIGitTab(QWidget):
         self.header.addWidget(self.upload_btn, 0, Qt.AlignmentFlag.AlignLeft)
         self.header.addWidget(self.download_btn, 10, Qt.AlignmentFlag.AlignLeft)
         """ Body layout """
-        self.body_layout.addWidget(self.repository_viewer)
-        self.body_layout.addWidget(self.git_sniffer)
+        self.splitter.addWidget(self.repository_viewer)
+        self.splitter.addWidget(self.git_sniffer)
+        self.body_layout.addWidget(self.splitter)
         """ Main layout """
         self.main_layout.addLayout(self.header)
         self.main_layout.addLayout(self.body_layout)

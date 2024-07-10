@@ -1,4 +1,5 @@
 from View.LauncherWindow import LauncherWindow
+from View.UILoginWindow import LoginWindow
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import Slot, Signal, QObject
 from View.WindowID import WindowID
@@ -18,13 +19,17 @@ class UIManager(QObject):
     def __init__(self, config: dict):
         super().__init__()
         self.launcher_window = LauncherWindow(config, WindowID.LAUNCHER)
+        self.login_window = LoginWindow(WindowID.LOGING)
         self.logger = self.launcher_window.logger_widget.logger
+        self.loading_screen = self.launcher_window.loading
         self.connect_button: QPushButton = self.launcher_window.connect_button
         self.windows = {
-            WindowID.LAUNCHER: self.launcher_window
+            WindowID.LAUNCHER: self.launcher_window,
+            WindowID.LOGING: self.login_window
         }
         self.config = config
         self._connect_launcher_windows()
+        self._connect_launcher_windows_to_loading_screen()
 
     def open_window(self, window_id: WindowID):
         if window_id not in self.windows:
@@ -35,6 +40,7 @@ class UIManager(QObject):
 
         self.launcher_window = self.windows[window_id]
         self.launcher_window.open()
+        self.loading_screen.show_anim_screen()
 
     def _connect_launcher_windows(self):
         """ Using UIManager signals to make a bridge between UI Signals and Controllers """
@@ -49,11 +55,19 @@ class UIManager(QObject):
         self.lw_merge_request_add_comment = self.launcher_window.git_tab.git_sniffer.merge_request.add_comment
         self.lw_accept_merge_request_and_merge = self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge
 
+    def _connect_launcher_windows_to_loading_screen(self):
+        self.lw_get_merge_request_changed.connect(lambda: self.loading_screen.show_anim_screen())
+        self.lw_merge_request_add_comment.connect(lambda: self.loading_screen.show_anim_screen())
+        self.lw_accept_merge_request_and_merge.connect(lambda: self.loading_screen.show_anim_screen())
+        self.lw_uploaded_clicked.connect(lambda: self.loading_screen.show_anim_screen())
+        self.lw_get_latest_clicked.connect(lambda: self.loading_screen.show_anim_screen())
+
     @Slot(bool)
     def on_setup_completed(self, success: bool):
         if self.launcher_window.window_id != WindowID.LAUNCHER:
             return
         self.launcher_window.on_setup_completed(success)
+        self.loading_screen.stop_anim_screen()
 
     @Slot(str)
     def on_log_signal_received(self, log_message: str):
@@ -62,6 +76,7 @@ class UIManager(QObject):
     @Slot(str)
     def on_err_signal_received(self, error_message: str):
         self.logger.error(error_message)
+        self.loading_screen.stop_anim_screen()
 
     @Slot(bool)
     def on_maya_checked(self, is_installed):
@@ -79,17 +94,28 @@ class UIManager(QObject):
     @Slot(list)
     def on_get_all_merge_requests(self, merge_requests: list):
         self.launcher_window.git_tab.set_all_merge_requests(merge_requests)
+        self.loading_screen.stop_anim_screen()
 
     @Slot(list)
     def on_get_merge_request_commits(self, merge_request_commits: list):
         self.launcher_window.git_tab.set_merge_request_commits(merge_request_commits)
-        return
+        self.loading_screen.stop_anim_screen()
 
     @Slot(list)
     def on_get_merge_request_changes(self, changes: list):
         self.launcher_window.git_tab.set_merge_request_changes(changes)
+        self.loading_screen.stop_anim_screen()
 
     @Slot(list)
     def on_get_merge_requests_comments(self, comments: list):
         self.launcher_window.git_tab.set_merge_requests_comments(comments)
+        self.loading_screen.stop_anim_screen()
+
+    @Slot()
+    def on_get_latest_completed(self):
+        self.loading_screen.stop_anim_screen()
+
+    @Slot()
+    def on_upload_completed(self):
+        self.loading_screen.stop_anim_screen()
 

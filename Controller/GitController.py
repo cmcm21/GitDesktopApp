@@ -8,6 +8,8 @@ import os
 class GitController(QObject):
     """Signals"""
     setup_completed = Signal(bool)
+    push_completed = Signal()
+    get_latest_completed = Signal()
     log_message = Signal(str)
     error_message = Signal(str)
     send_main_branch = Signal(str)
@@ -122,6 +124,7 @@ class GitController(QObject):
 
         # Check the status of the repository
         self._run_git_command(['git', 'status'])
+        self.get_latest_completed.emit()
 
     @Slot(str)
     def push_changes(self, message: str):
@@ -143,6 +146,7 @@ class GitController(QObject):
 
         # Check the status of the repository
         self._run_git_command(['git', 'status'])
+        self.push_completed.emit()
 
     @Slot()
     def load_merge_requests(self):

@@ -195,7 +195,7 @@ QListWidget{
 
 QListWidget::item{
     border-radius: 5px;
-    border: 1px solid #CCCCCC;
+    border: 1px solid white;
     padding: 2px;
 }
 
@@ -265,4 +265,9 @@ QToolTip{
 
 #MergeRequestInsideTabs{
     background: transparent;
+}
+
+#IconFrame{
+    border: 2px solid black;
+    border-radius: 20px;
 }

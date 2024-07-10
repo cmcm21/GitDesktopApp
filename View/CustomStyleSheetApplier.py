@@ -285,6 +285,7 @@ class CustomStyleSheetApplier:
             }}
 
             QListView::item {{
+                border: 2px solid {style_data['border_color']};
                 color: {textColour}; /* Set the text color to black */
             }}
 

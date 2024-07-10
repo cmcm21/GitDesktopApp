@@ -4,6 +4,7 @@ from View.UILogger import LoggerWidget
 from View.UICommitWindow import CommitWindow
 from View.UIGitTab import UIGitTab
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View.UILoadingWidget import LoadingScreen
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -11,7 +12,6 @@ from PySide6.QtWidgets import (
     QWidget,
     QComboBox,
     QTabWidget,
-    QFrame
 )
 from PySide6.QtCore import Qt, Signal, Slot, QSize
 
@@ -72,6 +72,7 @@ class LauncherWindow(BaseWindow):
         """ Custom Widgets """
         self.git_tab = UIGitTab(self.config["general"]["working_path"])
         self.pv4_tab = UIGitTab(self.config["general"]["working_path"])
+        self.loading = LoadingScreen(self)
         self.git_tab.setObjectName("GitTab")
         self.pv4_tab.setObjectName("PV4Tab")
         self.logger_widget = LoggerWidget()
@@ -82,6 +83,7 @@ class LauncherWindow(BaseWindow):
         self.connect_button.setObjectName("ConnectButton")
         """ Header """
         self.header_layout.addWidget(self.project_combo_box, 0, Qt.AlignmentFlag.AlignLeft)
+        self.header_layout.addWidget(self.loading, 0, Qt.AlignmentFlag.AlignRight)
         self.header_layout.setSpacing(0)
         """ Body left """
         self.left_frame.setLayout(self.body_left)
