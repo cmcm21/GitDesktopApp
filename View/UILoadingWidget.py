@@ -47,15 +47,15 @@ class CircularProgressBar(QWidget):
         painter.drawEllipse(self.rect().center(), inner_radius, inner_radius)
 
 
-class LoadingScreen(QWidget):
+class LoadingWidget(QWidget):
 
     def __init__(self, parent: QWidget):
         super().__init__()
-        self.custom_parent = parent
 
         layout = QVBoxLayout(self)
         label = QLabel("Loading...")
         label.setStyleSheet("background: transparent;")
+        self.custom_parent = parent
 
         # Create the circular progress bar
         self.progress_bar = CircularProgressBar()
@@ -79,7 +79,6 @@ class LoadingScreen(QWidget):
     def stop_anim_screen(self):
         if self.progress_thread is not None:
             self.progress_thread.exit()
-            self.progress_bar = None
         self.custom_parent.setDisabled(False)
         self.hide()
 

@@ -7,6 +7,7 @@ import os
 
 class GitController(QObject):
     """Signals"""
+    setup_started = Signal()
     setup_completed = Signal(bool)
     push_completed = Signal()
     get_latest_completed = Signal()
@@ -67,6 +68,7 @@ class GitController(QObject):
 
     @Slot()
     def setup(self):
+        self.setup_started.emit()
         no_errors = True
         try:
             if not self.git_protocol.setup():

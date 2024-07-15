@@ -1,10 +1,10 @@
 from App import Application
 from PySide6.QtGui import QIcon
+from Utils.FileManager import FileManager
 import os
 
 if __name__ == "__main__":
     application = Application()
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    icon_path = os.path.join(script_dir, "/Resources/Img/", "default_icon.ico")
+    icon_path = os.path.join(FileManager.get_img_path(), "default_icon.ico")
     application.setWindowIcon(QIcon(icon_path))
     application.run()

@@ -4,7 +4,7 @@ from View.UILogger import LoggerWidget
 from View.UICommitWindow import CommitWindow
 from View.UIGitTab import UIGitTab
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
-from View.UILoadingWidget import LoadingScreen
+from View.UILoadingWidget import LoadingWidget
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -72,7 +72,6 @@ class LauncherWindow(BaseWindow):
         """ Custom Widgets """
         self.git_tab = UIGitTab(self.config["general"]["working_path"])
         self.pv4_tab = UIGitTab(self.config["general"]["working_path"])
-        self.loading = LoadingScreen(self)
         self.git_tab.setObjectName("GitTab")
         self.pv4_tab.setObjectName("PV4Tab")
         self.logger_widget = LoggerWidget()

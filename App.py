@@ -4,41 +4,43 @@ from View.UIManager import WindowID
 from Controller.GitController import GitController
 from Controller.SystemController import SystemController
 from PySide6.QtCore import QThread, Signal, Slot
+from Utils.DataBaseManager import DataBaseManager
 import tomli
 import os
 
 
-class ConfigManager:
-    def __init__(self):
-        return
+def get_config() -> dict:
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    config_file_path = os.path.join(script_dir,  "configFile.toml")
+    with open(config_file_path, "rb") as config_file:
+        config = tomli.load(config_file)
 
-    @staticmethod
-    def get_config() -> dict:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        config_file_path = os.path.join(script_dir,  "configFile.toml")
-        with open(config_file_path, "rb") as config_file:
-            config = tomli.load(config_file)
-
-        return config
+    return config
 
 
 class Application(QApplication):
 
     git_setup = Signal()
     system_controller_setup = Signal()
+    db_setup = Signal()
 
     def __init__(self):
         super().__init__([])
+        """ Control variables """
         self._set_style_sheet()
-        self.config = ConfigManager.get_config()
+        self.config = get_config()
         self.ui_manager = UIManager(self.config)
         self.logger = self.ui_manager.logger
         self.git_installed = False
+        """ Create objects threads"""
         self._create_git_controller_thread()
         self._create_system_controller_thread()
+        self._create_db_manager_thread()
+        """ Connect objects signals """
         self._connect_ui_manager()
         self._connect_git_controller()
         self._connect_system_controller()
+        self._connect_db_manager()
 
     def _create_git_controller_thread(self):
         """ Git controller thread creation"""
@@ -47,11 +49,36 @@ class Application(QApplication):
         """ Git controller setup """
         self.git_controller.setup_completed.connect(self.ui_manager.on_setup_completed)
         self.git_setup.connect(self.git_controller.setup)
-        """ Git controller start thread """
+        """ Move git controller to its own thread"""
         self.git_controller.moveToThread(self.git_controller_thread)
+        """ Git controller start thread """
         self.git_controller_thread.start()
 
+    def _create_system_controller_thread(self):
+        """Create system controller thread"""
+        self.system_controller_thread = QThread(self)
+        """ Create system controller"""
+        self.system_controller = SystemController(self.config)
+        """ Move System controller to its own thread"""
+        self.system_controller.moveToThread(self.system_controller_thread)
+        """ Start Thread """
+        self.system_controller_thread.start()
+
+    def _create_db_manager_thread(self):
+        """ Create db manager """
+        self.db_manager_thread = QThread(self)
+        """ Create db manager """
+        self.db_manager = DataBaseManager(self.config)
+        """ Move db manager to its own thread"""
+        self.db_manager.moveToThread(self.db_manager_thread)
+        """ Start db manager thread"""
+        self.db_manager_thread.start()
+
     def _connect_ui_manager(self):
+        self._connect_ui_manager_launcher()
+        self._connect_ui_manager_login()
+
+    def _connect_ui_manager_launcher(self):
         self.ui_manager.lw_window_closed.connect(self.on_main_window_closed)
         self.ui_manager.lw_git_merge_request_tab_clicked.connect(self.git_controller.get_main_branch)
         self.ui_manager.lw_git_merge_request_tab_clicked.connect(self.git_controller.get_all_branches)
@@ -65,7 +92,11 @@ class Application(QApplication):
         self.ui_manager.lw_merge_request_add_comment.connect(self.git_controller.merge_request_add_comment)
         self.ui_manager.lw_accept_merge_request_and_merge.connect(self.git_controller.merge_request_accept_and_merge)
 
+    def _connect_ui_manager_login(self):
+        self.ui_manager.lg_login_accepted.connect(self.login_accepted)
+
     def _connect_git_controller(self):
+        self.git_controller.setup_started.connect(self.ui_manager.on_git_setup_started)
         self.git_controller.push_completed.connect(self.ui_manager.on_upload_completed)
         self.git_controller.get_latest_completed.connect(self.ui_manager.on_get_latest_completed)
         self.git_controller.log_message.connect(self.ui_manager.on_log_signal_received)
@@ -77,13 +108,8 @@ class Application(QApplication):
         self.git_controller.send_merge_requests_changes.connect(self.ui_manager.on_get_merge_request_changes)
         self.git_controller.send_merge_requests_comments.connect(self.ui_manager.on_get_merge_requests_comments)
 
-    def _create_system_controller_thread(self):
-        self.system_controller_thread = QThread(self)
-        self.system_controller = SystemController(self.config)
-        self.system_controller.moveToThread(self.system_controller_thread)
-        self.system_controller_thread.start()
-
     def _connect_system_controller(self):
+        self.system_controller.setup_started.connect(self.ui_manager.on_system_controller_setup_started)
         self.system_controller.log_message.connect(self.ui_manager.on_log_signal_received)
         self.system_controller.error_message.connect(self.ui_manager.on_err_signal_received)
         self.system_controller.maya_checked.connect(self.ui_manager.on_maya_checked)
@@ -91,6 +117,18 @@ class Application(QApplication):
         self.system_controller.git_installed.connect(self.on_git_installed)
         self.system_controller.setup_finished.connect(self.on_system_controller_setup_finished)
         self.system_controller_setup.connect(self.system_controller.setup)
+
+    def _connect_db_manager(self):
+        self.db_manager.message_signal.connect(self.ui_manager.on_log_signal_received)
+        self.db_manager.error_message_signal.connect(self.ui_manager.on_err_signal_received)
+        self.db_manager.db_setup_start.connect(self.ui_manager.on_db_setup_start)
+        self.db_manager.db_setup_done.connect(self.ui_manager.on_db_setup_done)
+        self.db_setup.connect(self.db_manager.setup_db)
+
+    @Slot()
+    def login_accepted(self):
+        self.ui_manager.open_window(WindowID.LAUNCHER)
+        self.system_controller_setup.emit()
 
     @Slot()
     def on_system_controller_setup_finished(self):
@@ -123,13 +161,13 @@ class Application(QApplication):
             self.system_controller_thread.exit()
         if self.git_controller_thread is not None:
             self.git_controller_thread.exit()
-        self.ui_manager.loading_screen.stop_anim_screen()
+        self.ui_manager.current_window.loading.stop_anim_screen()
         self.__del__()
+
+    def run(self):
+        self.ui_manager.open_window(WindowID.LOGING)
+        self.db_setup.emit()
+        self.exec()
 
     def __del__(self):
         return
-
-    def run(self):
-        self.ui_manager.open_window(WindowID.LAUNCHER)
-        self.system_controller_setup.emit()
-        self.exec()

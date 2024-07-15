@@ -9,6 +9,7 @@ import urllib.request
 
 class SystemController(QObject):
     """Signals"""
+    setup_started = Signal()
     maya_checked = Signal(bool)
     git_checked = Signal(bool)
     git_installed = Signal(bool)
@@ -34,6 +35,7 @@ class SystemController(QObject):
         self.maya_installed = False
 
     def setup(self):
+        self.setup_started.emit()
         self._check_for_maya()
         if not self._check_for_git():
             self.install_git()

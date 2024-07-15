@@ -2,6 +2,8 @@ from PySide6.QtWidgets import QMainWindow, QPushButton, QMessageBox, QWidget, QF
 from PySide6.QtGui import QPixmap, QIcon
 from PySide6.QtCore import Signal
 from View.WindowID import WindowID
+from View.UILoadingWidget import LoadingWidget
+from Utils.FileManager import FileManager
 import os
 
 
@@ -13,6 +15,8 @@ class BaseWindow(QMainWindow):
         self.width = width
         self.height = height
         self.window_id = window_id
+        self.loading: LoadingWidget = LoadingWidget(self)
+        self.loading.hide()
 
         self.setWindowTitle(title)
         self.setMinimumWidth(width)
@@ -36,8 +40,8 @@ class BaseWindow(QMainWindow):
 
     @staticmethod
     def get_pixmap(img_name: str):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        icon_path = os.path.join(script_dir, "../Resources/Img/", img_name)
+        img_path = FileManager.get_img_path()
+        icon_path = os.path.join(img_path, img_name)
         pix_map = QPixmap(icon_path)
         return pix_map
 
@@ -55,11 +59,8 @@ class BaseWindow(QMainWindow):
 
     @staticmethod
     def create_button(parent, image_name: str, button_text: str = "") -> QPushButton:
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        icon_path = os.path.join(script_dir, "../Resources/Img/", image_name)
-        pix_map = QPixmap(icon_path)
         return QPushButton(
-            icon=QIcon(pix_map),
+            icon=QIcon(BaseWindow.get_pixmap(image_name)),
             text=button_text,
             parent=parent
         )

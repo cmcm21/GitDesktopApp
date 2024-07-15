@@ -266,8 +266,3 @@ QToolTip{
 #MergeRequestInsideTabs{
     background: transparent;
 }
-
-#IconFrame{
-    border: 2px solid black;
-    border-radius: 20px;
-}
