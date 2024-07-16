@@ -7,8 +7,7 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QLabel,
     QPushButton,
-    QSplitter,
-    QSizePolicy
+    QSplitter
 )
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap, QIcon, QAction, QFont
@@ -90,6 +89,12 @@ class GitSnifferWidget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
+    def remove_merge_request_tab(self):
+        self.tabs.removeTab(2)
+
+    def add_merge_request_tab(self):
+        self.tabs.addTab(self.merge_request_tab, "Merge Request")
+
     def fill_changed_list(self):
         for entry in ["file 1", "file 2", "file 3", "file 4", "file 5"]:
             self.add_change_item(entry)
@@ -140,6 +145,7 @@ class UIGitTab(QWidget):
         self.git_sniffer.fill_changed_list()
         self.build()
         self.connect_signals()
+        self.user_session = None
 
     def build(self):
         """Buttons"""

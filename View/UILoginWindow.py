@@ -11,7 +11,7 @@ import Utils.Environment as Env
 
 
 class LoginWindow(BaseWindow):
-    login_signal = Signal()
+    login_signal = Signal(str)
     sign_up_signal = Signal()
 
     def __init__(self, window_id: WindowID, width=350, height=450):
@@ -124,7 +124,7 @@ class LoginWindow(BaseWindow):
             self.log_error("There was an error trying to login, username or password is incorrect")
         else:
             Env.SEASON_USER = self.user_controller
-            self.login_signal.emit()
+            self.login_signal.emit(username)
 
         self.loading.stop_anim_screen()
 

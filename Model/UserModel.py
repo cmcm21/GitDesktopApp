@@ -57,7 +57,7 @@ class UserModel(QObject):
     def get_user_by_id(self, user_id: int) -> tuple:
         try:
             return self.conn.execute_query_fetchone('''
-            SELECT users.id, users.username, users.password, users.email, roles.user_role
+            SELECT users.id, users.username, users.password, users.email, roles.user_role, users.role_id
             FROM users
             JOIN roles ON users.role_id = roles.id
             WHERE users.id = ?
@@ -69,7 +69,7 @@ class UserModel(QObject):
     def get_user_by_username(self, username: str) -> tuple:
         try:
             return self.conn.execute_query_fetchone('''
-            SELECT users.id, users.username, users.password, users.email, roles.user_role
+            SELECT users.id, users.username, users.password, users.email, roles.user_role, users.role_id
             FROM users
             JOIN roles ON users.role_id = roles.id
             WHERE users.username = ?

@@ -1,5 +1,7 @@
-from PySide6.QtCore import QObject, Signal, Slot, QThread
+from PySide6.QtCore import QObject, Signal, Slot
 from pathlib import Path
+from Utils.UserSession import UserSession
+from Utils.Environment import ROLE_ID
 import subprocess
 import requests
 import os
@@ -32,9 +34,13 @@ class GitController(QObject):
         self.git_api_url = config["git"]["gitlab_api_url"]
         self.git_hosts = config["git"]["git_hosts"]
         self.project_id = config["git"]["project_id"]
+        self.user_session = None
         # avoid circular import
         from Controller.GitProtocol.GitProtocols import GitProtocolSSH
         self.git_protocol = GitProtocolSSH(self)
+
+    def restore_git_to_last_commit(self):
+        self._run_git_command('git reset --hard')
 
     def repo_exist(self) -> bool:
         git_directory = self.working_path.joinpath(".git/")
@@ -97,7 +103,39 @@ class GitController(QObject):
         except subprocess.CalledProcessError as e:
             self.log_message.emit(f"An error occurred : {e.stderr}")
 
-    def _get_branch_name(self) -> str:
+    def arrange_dev_push(self, comment: str):
+        branch_name = self.get_dev_branch_name()
+        if not self.branch_exists(branch_name):
+            self.create_branch(branch_name, self._get_main_branch_name())
+
+        self._commit_and_push_everything(comment, branch_name)
+        if not self.merge_request_exists(branch_name):
+            merge_request_id = self.create_merge_request(branch_name)
+            if merge_request_id == -1:
+                self.error_message.emit(f"Failed to create merge request for branch : {branch_name}")
+            else:
+                self.log_message.emit(f"merge request for branch : {branch_name} created successfully!!")
+                self.add_commits_to_merge_request(merge_request_id, branch_name)
+                self.load_merge_requests()
+
+    def create_local_branch(self, branch_name, source_branch):
+        # Fetch latest changes from remote
+        if not self._run_git_command('git fetch'):
+            return False
+
+        # Checkout to source branch and pull latest changes
+        if not self._run_git_command(f'git checkout {source_branch}'):
+            return False
+        if not self._run_git_command(f'git pull origin {source_branch}'):
+            return False
+
+        # Create and checkout to the new branch
+        if not self._run_git_command(f'git checkout -b {branch_name}'):
+            return False
+
+        return True
+
+    def _get_main_branch_name(self) -> str:
         command = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
         result = subprocess.run(
             command,
@@ -112,6 +150,90 @@ class GitController(QObject):
 
         return result.stdout.strip()
 
+    def branch_exists(self, branch_name):
+        url = f"{self.git_api_url}/projects/{self.project_id}/repository/branches/{branch_name}"
+        headers = {'PRIVATE-TOKEN': self.personal_access_token}
+        response = requests.get(url, headers=headers)
+        return response.status_code == 200
+
+    def merge_request_exists(self, branch_name):
+        url = f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
+        headers = {'PRIVATE-TOKEN': self.personal_access_token}
+        params = {'source_branch': branch_name, 'state': 'opened'}
+        response = requests.get(url, headers=headers, params=params)
+        if response.status_code == 200:
+            merge_requests = response.json()
+            return len(merge_requests) > 0
+        else:
+            self.error_message.emit(f"error trying to check if merge request exists url: {url}, "
+                                    f"code: {response.status_code}")
+        return False
+
+    def create_branch(self, branch_name, source_branch):
+        url = f"{self.git_api_url}/projects/{self.project_id}/repository/branches"
+        headers = {'PRIVATE-TOKEN': self.personal_access_token}
+        data = {'branch': branch_name, 'ref': source_branch}
+        response = requests.post(url, headers=headers, data=data)
+        if response.status_code == 201:
+            return True
+        else:
+            self.error_message.emit(f"error trying to create branch in remote url: {url}, code: {response.status_code}")
+            return False
+
+    def create_merge_request(self, branch_name) -> int:
+        url = f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
+        headers = {'PRIVATE-TOKEN': self.personal_access_token}
+        data = {
+            'source_branch': branch_name,
+            'target_branch': 'main',  # The branch into which the changes are merged
+            'title': f'Merge request for {branch_name}',
+            'remove_source_branch': True,
+            'target_project_id': self.project_id
+        }
+        response = requests.post(url, headers=headers, data=data)
+        if response.status_code == 201:
+            merge_request_id = response.json()['iid']
+            print(response.json())
+            if merge_request_id is not None:
+                return merge_request_id
+        else:
+            self.error_message.emit(f"error trying to create merge request url: {url}, code: {response.status_code}")
+            return -1
+
+    def get_dev_branch_name(self):
+        self.user_session = UserSession()
+        return f"branch_{self.user_session.username}"
+
+    def _commit_and_push_everything(self, comment: str, branch: str):
+        # Change to the repository directory
+        os.chdir(self.raw_working_path)
+
+        # Add all changes to the staging area
+        self._run_git_command(['git', 'add', '--all'])
+
+        # Commit changes with a specified message
+        self._run_git_command(['git', 'commit', '-m', comment])
+
+        # Ensure that the remote origin is correct
+        self._run_git_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
+
+        # Push changes to the remote repository
+        self._run_git_command(['git', 'push', '--force', 'origin', branch])
+
+        # Check the status of the repository
+        self._run_git_command(['git', 'status'])
+
+    def add_commits_to_merge_request(self, merge_request_id: int, branch_name: str):
+        url = f"{self.git_api_url}/api/v4/projects/{self.project_id}/merge_requests/{merge_request_id}/commits"
+        headers = {'PRIVATE-TOKEN': self.personal_access_token}
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            commits = response.json()
+            for commit in commits:
+                self.log_message.emit(f"Commit {commit['id']} added to merge request.")
+            return True
+        return False
+
     @Slot()
     def get_latest(self):
         self.log_message.emit("getting latest...")
@@ -122,32 +244,32 @@ class GitController(QObject):
         self._run_git_command(['git', 'fetch', 'origin'])
 
         # Pull the changes directly
-        self._run_git_command(['git', 'pull', 'origin', self._get_branch_name()])
+        self._run_git_command(['git', 'pull', 'origin', self._get_main_branch_name()])
 
         # Check the status of the repository
         self._run_git_command(['git', 'status'])
         self.get_latest_completed.emit()
 
+    def check_user_session(self):
+        if self.user_session is None:
+            self.user_session = UserSession()
+
+    def get_current_branch(self):
+        result = subprocess.run('git branch --show-current', shell=True, capture_output=True, text=True)
+        if result.returncode == 0:
+            return result.stdout.strip()
+        else:
+            self.error_message.emit(f"Error getting current branch: {result.stderr}")
+            return None
+
     @Slot(str)
     def push_changes(self, message: str):
+        self.check_user_session()
         self.log_message.emit("pushing changes...")
-        # Change to the repository directory
-        os.chdir(self.raw_working_path)
-
-        # Add all changes to the staging area
-        self._run_git_command(['git', 'add', '--all'])
-
-        # Commit changes with a specified message
-        self._run_git_command(['git', 'commit', '-m', message])
-
-        # Ensure that the remote origin is correct
-        self._run_git_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
-
-        # Push changes to the remote repository
-        self._run_git_command(['git', 'push', '--force', 'origin', self._get_branch_name()])
-
-        # Check the status of the repository
-        self._run_git_command(['git', 'status'])
+        if self.user_session.role_id == ROLE_ID.DEV.value:
+            self.arrange_dev_push(message)
+        else:
+            self._commit_and_push_everything(message, self._get_main_branch_name())
         self.push_completed.emit()
 
     @Slot()
@@ -267,7 +389,14 @@ class GitController(QObject):
             self.log_message.emit("Merge request accepted and merged successfully")
             self.load_merge_requests()
         else:
-            self.error_message.emit(f"Failed to accept and merge merge request: {response.status_code}")
+            self.error_message.emit(f"Failed to accept and merge merge request: {response.status_code}, url: {url}")
+
+    @Slot()
+    def on_user_session_login(self):
+        self.check_user_session()
+        current_branch = self.get_current_branch()
+        if current_branch != self.get_dev_branch_name():
+            self.create_local_branch(self.get_dev_branch_name(), self._get_main_branch_name())
 
     def _get_merge_request_url(self):
         return f"{self.git_api_url}/projects/{self.project_id}/merge_requests"

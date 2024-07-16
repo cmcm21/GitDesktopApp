@@ -3,8 +3,8 @@ from View.WindowID import WindowID
 from View.UILogger import LoggerWidget
 from View.UICommitWindow import CommitWindow
 from View.UIGitTab import UIGitTab
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UILoadingWidget import LoadingWidget
+from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -14,6 +14,8 @@ from PySide6.QtWidgets import (
     QTabWidget,
 )
 from PySide6.QtCore import Qt, Signal, Slot, QSize
+from Utils.UserSession import UserSession
+import Utils.Environment as Env
 
 
 class LauncherWindow(BaseWindow):
@@ -29,6 +31,7 @@ class LauncherWindow(BaseWindow):
         self._create_all_element()
         self._build()
         self._connect_buttons()
+        self.user_session: UserSession = None
 
     def _create_all_element(self):
         """ Layouts """
@@ -58,7 +61,7 @@ class LauncherWindow(BaseWindow):
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.maya_btn, "Black")
         """settings Button"""
         self.settings_btn = self.create_button(self, "gear.png", "")
-        self.settings_btn .setToolTip("Open Settings")
+        self.settings_btn.setToolTip("Open Settings")
         self.settings_btn.setObjectName("SettingsButton")
         self.settings_btn.setFixedSize(QSize(80, 40))
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.settings_btn, "Black")
@@ -127,6 +130,23 @@ class LauncherWindow(BaseWindow):
         self.commit_window.accept_clicked_signal.connect(self._on_commit_window_accept)
         self.commit_window.cancel_clicked_signal.connect(self._on_commit_window_cancel)
         self.commit_window.show()
+
+    def set_user_session(self, user_session: UserSession):
+        self.user_session = user_session
+        self.set_user_buttons()
+
+    def set_user_buttons(self):
+        if self.user_session.role_id == Env.ROLE_ID.ANIMATOR.value:
+            self.git_tab.upload_btn.hide()
+            self.git_tab.git_sniffer.hide()
+
+        if self.user_session.role_id == Env.ROLE_ID.DEV.value:
+            self.git_tab.git_sniffer.merge_request.accept_btn.hide()
+            self.git_tab.git_sniffer.show()
+
+        if self.user_session.role_id == Env.ROLE_ID.ADMIN.value:
+            self.git_tab.upload_btn.show()
+            self.git_tab.git_sniffer.show()
 
     def project_selected_changed(self):
         return

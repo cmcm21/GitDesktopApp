@@ -15,6 +15,8 @@ from PySide6.QtCore import Qt, QSize, Signal
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UICommitWindow import CommitWindow
 from View.UIDiffsWidget import DiffsWidget
+from Utils.UserSession import UserSession
+from Utils.Environment import ROLE_ID
 
 
 class MergeRequestTab(QWidget):
@@ -144,16 +146,20 @@ class MergeRequestTab(QWidget):
                 self.check_merge_request_state(merge_request_data)
 
     def check_merge_request_state(self, merge_request_data: dict):
-        self.accept_btn.setVisible(merge_request_data['state'] != 'merged')
+        user_session = UserSession()
+        if user_session is None:
+            return
+        self.accept_btn.setVisible(merge_request_data['state'] != 'merged' and
+                                   user_session.role_id == ROLE_ID.ADMIN.value)
 
     def _on_accept_clicked(self):
         self.commit_window = CommitWindow("Insert merge message")
-        self.commit_window.accept_clicked_signal.connect(
-            lambda commit_message: self.accept_and_merge.emit(self._get_merge_request_id(), commit_message))
-        self.commit_window.cancel_clicked_signal.connect(self._on_commit_window_accept)
+        self.commit_window.accept_clicked_signal.connect(self._on_commit_window_accept)
+        self.commit_window.cancel_clicked_signal.connect(self._on_commit_window_cancel)
         self.commit_window.show()
 
-    def _on_commit_window_accept(self):
+    def _on_commit_window_accept(self, message: str):
+        self.accept_and_merge.emit(self._get_merge_request_id(), message)
         return
 
     def _on_commit_window_cancel(self):

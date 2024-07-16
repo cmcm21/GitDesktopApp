@@ -5,6 +5,7 @@ from Controller.GitController import GitController
 from Controller.SystemController import SystemController
 from PySide6.QtCore import QThread, Signal, Slot
 from Utils.DataBaseManager import DataBaseManager
+from Utils.UserSession import UserSession
 import tomli
 import os
 
@@ -21,6 +22,7 @@ def get_config() -> dict:
 class Application(QApplication):
 
     git_setup = Signal()
+    user_login = Signal()
     system_controller_setup = Signal()
     db_setup = Signal()
 
@@ -32,6 +34,7 @@ class Application(QApplication):
         self.ui_manager = UIManager(self.config)
         self.logger = self.ui_manager.logger
         self.git_installed = False
+        self.user_session = UserSession()
         """ Create objects threads"""
         self._create_git_controller_thread()
         self._create_system_controller_thread()
@@ -93,6 +96,7 @@ class Application(QApplication):
         self.ui_manager.lw_accept_merge_request_and_merge.connect(self.git_controller.merge_request_accept_and_merge)
 
     def _connect_ui_manager_login(self):
+        self.user_login.connect(self.git_controller.on_user_session_login)
         self.ui_manager.lg_login_accepted.connect(self.login_accepted)
 
     def _connect_git_controller(self):
@@ -125,8 +129,11 @@ class Application(QApplication):
         self.db_manager.db_setup_done.connect(self.ui_manager.on_db_setup_done)
         self.db_setup.connect(self.db_manager.setup_db)
 
-    @Slot()
-    def login_accepted(self):
+    @Slot(str)
+    def login_accepted(self, username: str):
+        self.user_session.login(username)
+        self.user_login.emit()
+        self.ui_manager.launcher_window.set_user_session(self.user_session)
         self.ui_manager.open_window(WindowID.LAUNCHER)
         self.system_controller_setup.emit()
 
