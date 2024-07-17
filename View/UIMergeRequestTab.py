@@ -162,8 +162,7 @@ class MergeRequestTab(QWidget):
         self.accept_and_merge.emit(self._get_merge_request_id(), message)
         return
 
-    def _on_commit_window_cancel(self):
-        if self.commit_window:
+        if self.commit_window is not None:
             self.commit_window.close()
             self.commit_window = None
 
@@ -241,12 +240,23 @@ class MergeRequestTab(QWidget):
         )
 
         if reply == QMessageBox.Yes:
+            comment = self.add_username(comment)
             self.add_comment.emit(comment, self._get_merge_request_id())
             self.add_comment_text.clear()
 
+    def add_username(self, comment: str) -> str:
+        return f"[{self.get_username()}] :: {comment}"
+
     def _get_merge_request_id(self):
-        merge_id = self.merge_request_cb.currentData(Qt.ItemDataRole.UserRole)
-        return merge_id
+        merge_request_data = self.merge_request_cb.currentData(Qt.ItemDataRole.UserRole)
+        if merge_request_data and merge_request_data['iid']:
+            return merge_request_data['iid']
+
+    @staticmethod
+    def get_username():
+        user_name = UserSession()
+        if user_name:
+            return user_name.username
 
     def show_no_merge_request(self):
         return

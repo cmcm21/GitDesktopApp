@@ -2,6 +2,7 @@ from PySide6.QtCore import QObject, Signal, Slot
 from pathlib import Path
 from Utils.UserSession import UserSession
 from Utils.Environment import ROLE_ID
+from Utils.FileManager import FileManager
 import subprocess
 import requests
 import os
@@ -47,8 +48,8 @@ class GitController(QObject):
         return os.path.isdir(self.working_path) and os.path.isdir(git_directory)
 
     def _run_git_command(self, command) -> bool:
+        FileManager.move_to(self.raw_working_path)
         command_str = " ".join(command)
-        return_value = False
         try:
             process = subprocess.Popen(
                 command,
@@ -61,16 +62,17 @@ class GitController(QObject):
             stdout, stderr = process.communicate()
             if stdout or "push" in command or "pull" in command:
                 self.log_message.emit(stdout)
-                return_value = True
+                return True
             elif stderr:
-                self.error_message.emit(f"An error occurred executing command: {command_str}, error: {stderr}")
-                return_value = False
+                if "fatal" in stderr:
+                    self.error_message.emit(f"An error occurred executing command: {command_str}, {stderr}")
+                    return False
+                else:
+                    self.log_message.emit(f"{stderr}")
+                    return True
         except subprocess.CalledProcessError as e:
             self.error_message.emit(f"An error occurred executing command: {command_str}, error: {e.stderr}")
-            return_value = False
             raise subprocess.CalledProcessError(e.returncode, e.stderr)
-        finally:
-            return return_value
 
     @Slot()
     def setup(self):
@@ -96,7 +98,6 @@ class GitController(QObject):
             fetch_command = 'git fetch origin'
             self.log_message.emit(f"Running command: {fetch_command}")
             self._run_git_command(fetch_command)
-
             # Send setup signal
             self.log_message.emit(f" Setup Completed ")
             self.setup_completed.emit(self.repo_exist())
@@ -116,22 +117,33 @@ class GitController(QObject):
             else:
                 self.log_message.emit(f"merge request for branch : {branch_name} created successfully!!")
                 self.add_commits_to_merge_request(merge_request_id, branch_name)
-                self.load_merge_requests()
+        self.load_merge_requests()
+
+    def check_branch_exists(self, branch_name) -> bool:
+        try:
+            # Execute the git branch command and capture the output
+            result = subprocess.run(['git', 'branch', '--list', branch_name], stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE, text=True)
+            # If the branch exists, it will appear in the stdout
+            return branch_name in result.stdout
+        except subprocess.CalledProcessError as e:
+            self.error_message.emit(f"An error occurred: {e}")
+            return False
 
     def create_local_branch(self, branch_name, source_branch):
         # Fetch latest changes from remote
-        if not self._run_git_command('git fetch'):
-            return False
-
+        if not self._run_git_command(['git', 'fetch', 'origin']):
+            print("git fetch error")
         # Checkout to source branch and pull latest changes
-        if not self._run_git_command(f'git checkout {source_branch}'):
-            return False
-        if not self._run_git_command(f'git pull origin {source_branch}'):
-            return False
-
+        if not self._run_git_command(['git', 'checkout', source_branch]):
+            print("git checkout error")
+        if not self._run_git_command(['git', 'pull', 'origin', source_branch]):
+            print("git pull origin error")
         # Create and checkout to the new branch
-        if not self._run_git_command(f'git checkout -b {branch_name}'):
-            return False
+        if not self.check_branch_exists(branch_name):
+            self._run_git_command(['git', 'checkout', '-b', branch_name])
+        else:
+            self._run_git_command(['git', 'checkout', branch_name])
 
         return True
 
@@ -205,9 +217,6 @@ class GitController(QObject):
         return f"branch_{self.user_session.username}"
 
     def _commit_and_push_everything(self, comment: str, branch: str):
-        # Change to the repository directory
-        os.chdir(self.raw_working_path)
-
         # Add all changes to the staging area
         self._run_git_command(['git', 'add', '--all'])
 
@@ -255,6 +264,7 @@ class GitController(QObject):
             self.user_session = UserSession()
 
     def get_current_branch(self):
+        FileManager.move_to(self.raw_working_path)
         result = subprocess.run('git branch --show-current', shell=True, capture_output=True, text=True)
         if result.returncode == 0:
             return result.stdout.strip()
@@ -389,14 +399,19 @@ class GitController(QObject):
             self.log_message.emit("Merge request accepted and merged successfully")
             self.load_merge_requests()
         else:
-            self.error_message.emit(f"Failed to accept and merge merge request: {response.status_code}, url: {url}")
+            self.error_message.emit(f"Failed to accept and merge MR: {response.status_code}, url: {url}")
 
     @Slot()
-    def on_user_session_login(self):
+    def verify_user_branch(self):
         self.check_user_session()
-        current_branch = self.get_current_branch()
-        if current_branch != self.get_dev_branch_name():
-            self.create_local_branch(self.get_dev_branch_name(), self._get_main_branch_name())
+        if self.user_session.role_id == ROLE_ID.DEV.value:
+            current_branch = self.get_current_branch()
+            if current_branch != self.get_dev_branch_name():
+                self.create_local_branch(self.get_dev_branch_name(), self._get_main_branch_name())
+        else:
+            current_branch = self.get_current_branch()
+            if current_branch != self._get_main_branch_name():
+                self._run_git_command(['git', 'checkout', {self._get_main_branch_name()}])
 
     def _get_merge_request_url(self):
         return f"{self.git_api_url}/projects/{self.project_id}/merge_requests"

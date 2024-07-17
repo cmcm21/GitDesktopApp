@@ -151,9 +151,15 @@ class LauncherWindow(BaseWindow):
     def project_selected_changed(self):
         return
 
+    def add_username(self, message) -> str:
+        if self.user_session is None:
+            self.user_session = UserSession()
+
+        return f"[{self.user_session.username}]:: {message}"
+
     @Slot(str)
     def _on_commit_window_accept(self, message):
-        self.upload_repository_signal.emit(message)
+        self.upload_repository_signal.emit(self.add_username(message))
         self._close_commit_window()
 
     @Slot()

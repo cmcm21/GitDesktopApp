@@ -4,31 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="+ adding loading widget, and loading management&#10;+ adding login Window and signup Window">
-      <change afterPath="$PROJECT_DIR$/Controller/UserController.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Model/UserModel.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Model/UserRolesModel.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Utils/DataBaseConnection.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Utils/DataBaseManager.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Utils/Environment.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Utils/FileManager.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Utils/SingletonMeta.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Utils/__init__.py" afterDir="false" />
+    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="adding user session">
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Controller/GitController.py" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/GitController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/SystemController.py" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/SystemController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/BaseWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/BaseWindow.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Utils/FileManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/FileManager.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/View/LauncherWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/LauncherWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/UILoadingWidget.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UILoadingWidget.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/UILoginWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UILoginWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/UIManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/UISignupWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UISignupWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/appStyle.qss" beforeDir="false" afterPath="$PROJECT_DIR$/View/appStyle.qss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/View/UIGitTab.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIGitTab.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/View/UIMergeRequestTab.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIMergeRequestTab.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configFile.toml" beforeDir="false" afterPath="$PROJECT_DIR$/configFile.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/file.log" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -197,7 +183,15 @@
       <option name="project" value="LOCAL" />
       <updated>1720601496391</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="adding user session">
+      <option name="closed" value="true" />
+      <created>1721122075400</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1721122075400</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -221,6 +215,7 @@
     <MESSAGE value="GUI Redesign" />
     <MESSAGE value="adding merge request handling" />
     <MESSAGE value="+ adding loading widget, and loading management&#10;+ adding login Window and signup Window" />
-    <option name="LAST_COMMIT_MESSAGE" value="+ adding loading widget, and loading management&#10;+ adding login Window and signup Window" />
+    <MESSAGE value="adding user session" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding user session" />
   </component>
 </project>

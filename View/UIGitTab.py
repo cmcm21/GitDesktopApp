@@ -140,7 +140,7 @@ class UIGitTab(QWidget):
         self.git_sniffer = GitSnifferWidget()
         """ Other widgets """
         self.splitter = QSplitter(Qt.Horizontal)
-        #TODO: Remove this after
+        # TODO: Remove this after
         self.git_sniffer.fill_history()
         self.git_sniffer.fill_changed_list()
         self.build()

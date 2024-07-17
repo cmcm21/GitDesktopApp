@@ -22,3 +22,11 @@ class FileManager:
         print(file_path)
         return Path(file_path).exists()
 
+    @staticmethod
+    def in_path(path: str) -> bool:
+        return os.curdir == path
+
+    @staticmethod
+    def move_to(path: str):
+        if not FileManager.in_path(path):
+            os.chdir(path)

@@ -22,7 +22,7 @@ def get_config() -> dict:
 class Application(QApplication):
 
     git_setup = Signal()
-    user_login = Signal()
+    check_user_branch = Signal()
     system_controller_setup = Signal()
     db_setup = Signal()
 
@@ -52,6 +52,7 @@ class Application(QApplication):
         """ Git controller setup """
         self.git_controller.setup_completed.connect(self.ui_manager.on_setup_completed)
         self.git_setup.connect(self.git_controller.setup)
+        self.check_user_branch.connect(self.git_controller.verify_user_branch)
         """ Move git controller to its own thread"""
         self.git_controller.moveToThread(self.git_controller_thread)
         """ Git controller start thread """
@@ -96,11 +97,11 @@ class Application(QApplication):
         self.ui_manager.lw_accept_merge_request_and_merge.connect(self.git_controller.merge_request_accept_and_merge)
 
     def _connect_ui_manager_login(self):
-        self.user_login.connect(self.git_controller.on_user_session_login)
         self.ui_manager.lg_login_accepted.connect(self.login_accepted)
 
     def _connect_git_controller(self):
         self.git_controller.setup_started.connect(self.ui_manager.on_git_setup_started)
+        self.git_controller.setup_completed.connect(self.on_git_setup_completed)
         self.git_controller.push_completed.connect(self.ui_manager.on_upload_completed)
         self.git_controller.get_latest_completed.connect(self.ui_manager.on_get_latest_completed)
         self.git_controller.log_message.connect(self.ui_manager.on_log_signal_received)
@@ -132,7 +133,6 @@ class Application(QApplication):
     @Slot(str)
     def login_accepted(self, username: str):
         self.user_session.login(username)
-        self.user_login.emit()
         self.ui_manager.launcher_window.set_user_session(self.user_session)
         self.ui_manager.open_window(WindowID.LAUNCHER)
         self.system_controller_setup.emit()
@@ -154,6 +154,9 @@ class Application(QApplication):
         self.git_installed = success
         if self.git_installed:
             self.git_setup.emit()
+
+    def on_git_setup_completed(self, success: bool):
+        self.check_user_branch.emit()
 
     def _set_style_sheet(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
