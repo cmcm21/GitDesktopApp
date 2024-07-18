@@ -143,6 +143,7 @@ class LoginWindow(BaseWindow):
 
     def on_signup_clicked(self):
         self.sign_up_window = SignUpForm(self.user_controller)
+        self.sign_up_window.error_message.connect(self.log_error)
         self.sign_up_window.show()
 
     def open(self):

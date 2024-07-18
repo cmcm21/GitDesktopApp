@@ -8,6 +8,7 @@ from Utils.FileManager import FileManager
 
 class BaseWindow(QMainWindow):
     window_closed = Signal()
+    application_destroyed = Signal()
 
     def __init__(self, title: str, window_id: WindowID, width=500,  height=800):
         super().__init__()
@@ -33,7 +34,7 @@ class BaseWindow(QMainWindow):
 
         if reply == QMessageBox.Yes:
             event.accept()
-            self.window_closed.emit()
+            self.application_destroyed.emit()
         else:
             event.ignore()
 

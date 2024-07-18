@@ -7,8 +7,8 @@ import time
 class CircularProgressBar(QWidget):
     def __init__(self):
         super().__init__()
-        self.setMinimumSize(45, 45)
-        self.setMaximumSize(45, 45)
+        self.setMinimumSize(17, 17)
+        self.setMaximumSize(17, 17)
         self.sign = 1
         self.value = 0
 

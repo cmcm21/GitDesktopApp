@@ -64,7 +64,7 @@ class UserController(QObject):
     @staticmethod
     def validate_username(username):
         # Username must be alphanumeric and between 3 and 30 characters
-        return re.match(r'^[a-zA-Z0-9_\-\/]{3,30}$', username) is not None
+        return re.match(r'^[a-zA-Z0-9_\-\/]{3,10}$', username) is not None
 
     @staticmethod
     def validate_password(password):

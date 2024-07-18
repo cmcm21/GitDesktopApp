@@ -11,11 +11,23 @@ from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
 from Model.UserRolesModel import UserRolesModel
 from Controller.UserController import UserController
+from PySide6.QtCore import Signal
 import Utils.Environment as Env
+from enum import Enum
+
+
+class Error_Input_Code(Enum):
+    LONG_USERNAME = 1
+    INVALID_EMAIL = 2
+    INVALID_PASSWD = 3
+    EMPTY_FIELDS = 4
 
 
 class SignUpForm(BaseWindow):
-    def __init__(self, role_model: UserRolesModel):
+    error_message = Signal(str)
+    log_message = Signal(str)
+
+    def __init__(self, user_controller: UserController):
         super().__init__("Sign Up", WindowID.SIGNUP)
         # Create widgets
         self.username_label = QLabel('User Name:')
@@ -32,11 +44,10 @@ class SignUpForm(BaseWindow):
         self.reenter_password_input = QLineEdit()
         self.reenter_password_input.setEchoMode(QLineEdit.Password)
 
-        self.role_model = role_model
-
         self.signup_button = QPushButton('Sign Up')
         self._build()
         self.apply_styles()
+        self.user_controller = user_controller
         self.connect_signals()
 
     def _build(self):
@@ -72,25 +83,29 @@ class SignUpForm(BaseWindow):
         password = self.password_input.text()
         email = self.email_input.text()
         re_password = self.reenter_password_input.text()
-        user_controller = UserController()
 
+        role_model = UserRolesModel()
         if self.validate_form(username, password, email, re_password):
-            default_role_id = self.role_model.get_role_id(Env.DEFAULT_ROLE)
+            default_role_id = role_model.get_role_id(Env.DEFAULT_ROLE)
             if default_role_id:
-                if user_controller.add_user(username, password, email, default_role_id[0]):
+                if self.user_controller.add_user(username, password, email, default_role_id[0]):
                     self.close()
         return
 
     def validate_form(self, username, password, email, re_password) -> bool:
-
         if username == "" or password == "" or email == "" or re_password == "":
-            self.input_error()
+            self.input_error(Error_Input_Code.EMPTY_FIELDS)
             return False
 
         return password == re_password
 
-    def input_error(self):
-        return
+    def input_error(self, error_code):
+        if error_code == Error_Input_Code.EMPTY_FIELDS:
+            self.error_message.emit("There are empty fields forms inside the sign up form")
+        elif error_code == Error_Input_Code.INVALID_EMAIL:
+            self.error_message.emit("The email is invalid")
+        elif error_code == Error_Input_Code.LONG_USERNAME:
+            self.error_message.emit("Username limit is 10 characters")
 
     def apply_styles(self):
         CustomStyleSheetApplier.set_line_edit_style_and_colour(self.username_input)
