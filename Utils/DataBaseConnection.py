@@ -2,6 +2,7 @@ import sqlite3
 from Utils.Environment import *
 from contextlib import contextmanager
 from Utils.SingletonMeta import SingletonMeta
+from Utils.FileManager import FileManager
 
 
 class DataBaseConnection(metaclass=SingletonMeta):
@@ -12,6 +13,8 @@ class DataBaseConnection(metaclass=SingletonMeta):
 
     @contextmanager
     def get_connection(self) -> sqlite3.Connection:
+        # ensure that the current dir is the project dir and not the workspace dir
+        FileManager.move_to_local_dir()
         conn = sqlite3.connect(self.db_file)
         try:
             yield conn

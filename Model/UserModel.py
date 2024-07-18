@@ -50,7 +50,7 @@ class UserModel(QObject):
                 return user_passwd[0]
             return ""
         except sqlite3.Error as e:
-            self.error_message_signal.emit(f"An error occurred while adding a user: {e}")
+            self.error_message_signal.emit(f"An error occurred while getting password: {e}")
             print(f"An error occurred while checking user: {e}")
             return ""
 

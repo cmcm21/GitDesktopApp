@@ -9,13 +9,13 @@ from PySide6.QtWidgets import (
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
-from Controller.UserController import UserController
 from Model.UserRolesModel import UserRolesModel
+from Controller.UserController import UserController
 import Utils.Environment as Env
 
 
 class SignUpForm(BaseWindow):
-    def __init__(self, user_controller: UserController, role_model: UserRolesModel):
+    def __init__(self, role_model: UserRolesModel):
         super().__init__("Sign Up", WindowID.SIGNUP)
         # Create widgets
         self.username_label = QLabel('User Name:')
@@ -32,8 +32,6 @@ class SignUpForm(BaseWindow):
         self.reenter_password_input = QLineEdit()
         self.reenter_password_input.setEchoMode(QLineEdit.Password)
 
-        # Controllers and Models
-        self.user_controller = user_controller
         self.role_model = role_model
 
         self.signup_button = QPushButton('Sign Up')
@@ -74,11 +72,12 @@ class SignUpForm(BaseWindow):
         password = self.password_input.text()
         email = self.email_input.text()
         re_password = self.reenter_password_input.text()
+        user_controller = UserController()
 
         if self.validate_form(username, password, email, re_password):
             default_role_id = self.role_model.get_role_id(Env.DEFAULT_ROLE)
             if default_role_id:
-                if self.user_controller.add_user(username, password, email, default_role_id[0]):
+                if user_controller.add_user(username, password, email, default_role_id[0]):
                     self.close()
         return
 

@@ -18,6 +18,21 @@ from View.UIDiffsWidget import DiffsWidget
 from Utils.UserSession import UserSession
 from Utils.Environment import ROLE_ID
 
+Mr_Status = [
+    "Open",
+    "Closed",
+    "Merged",
+    "Locked",
+    "Draft",
+    "Work in Progress",
+    "Approved",
+    "Checking",
+    "Conflict",
+    "Ready"
+    "Pending",
+    "Cannot Merge"
+]
+
 
 class MergeRequestTab(QWidget):
     selected_mr_changed = Signal(int)
@@ -27,13 +42,19 @@ class MergeRequestTab(QWidget):
 
     def __init__(self):
         super().__init__()
-        """ Combo Box """
+        """Control variables"""
+        self.all_merge_requests = []
+        self.commit_window = None
+        """ MR Combo Box """
         self.header_layout = QVBoxLayout()
         self.merge_request_label = QLabel("Merge request")
         self.merge_request_label.adjustSize()
         self.merge_request_label.setStyleSheet("background: transparent;")
         self.merge_request_cb = QComboBox()
         self.merge_request_cb.setMinimumHeight(40)
+        """ MR Status Combo Box"""
+        self.merge_request_filter = QComboBox()
+        self.merge_request_filter.setMinimumHeight(25)
         """ Change List Tab """
         self.change_list = QListWidget()
         self.change_list.setSpacing(self.q_list_space)
@@ -81,7 +102,8 @@ class MergeRequestTab(QWidget):
 
     def _build(self):
         """Header"""
-        self.header_layout.addWidget(self.merge_request_label, 0, Qt.AlignmentFlag.AlignCenter)
+        self.build_mr_filter()
+        self.header_layout.addWidget(self.merge_request_filter, 0, Qt.AlignmentFlag.AlignLeft)
         self.header_layout.addWidget(self.merge_request_cb)
         """ Change list tab """
         change_list_layout = QVBoxLayout()
@@ -113,9 +135,29 @@ class MergeRequestTab(QWidget):
         self.main_layout.addLayout(self.buttons_layout)
         self.setLayout(self.main_layout)
 
+    def build_mr_filter(self):
+        for status in Mr_Status:
+            self.merge_request_filter.addItem(status, userData=status)
+
+        self.merge_request_filter.addItems(Mr_Status)
+        self.merge_request_filter.currentIndexChanged.connect(self.on_mr_filter_change)
+
+    def on_mr_filter_change(self, filter_index: int):
+        filter_data = self.merge_request_filter.itemData(filter_index, Qt.ItemDataRole.UserRole)
+        self.apply_filter(filter_data)
+
+    def apply_filter(self, filter_data: str):
+        after_filter = []
+        for mr in self.all_merge_requests:
+            if mr['state'].lower() == filter_data.lower():
+                after_filter.append(mr)
+
+        self._add_merge_requests(after_filter)
+
     def _apply_styles(self):
         """ Combo Box """
         CustomStyleSheetApplier.set_combo_box_style_and_colour(self.merge_request_cb, colour="White")
+        CustomStyleSheetApplier.set_combo_box_style_and_colour(self.merge_request_filter, colour="Brown")
         """ Buttons """
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.accept_btn, colour="Blue")
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.refresh_btn, colour="White")
@@ -139,11 +181,21 @@ class MergeRequestTab(QWidget):
 
     def _on_merge_request_changed(self, index):
         merge_request_data = self.merge_request_cb.itemData(index, Qt.ItemDataRole.UserRole)
+        error = False
         if merge_request_data is not None:
             merge_request_id = merge_request_data["iid"]
             if merge_request_id is not None:
                 self.selected_mr_changed.emit(merge_request_id)
                 self.check_merge_request_state(merge_request_data)
+            else:
+                error = True
+        else:
+            error = True
+
+        if error:
+            self.change_list.clear()
+            self.comments_list.clear()
+            self.commits_list.clear()
 
     def check_merge_request_state(self, merge_request_data: dict):
         user_session = UserSession()
@@ -160,14 +212,15 @@ class MergeRequestTab(QWidget):
 
     def _on_commit_window_accept(self, message: str):
         self.accept_and_merge.emit(self._get_merge_request_id(), message)
-        return
+        self.close_commit_window()
 
+    def _on_commit_window_cancel(self):
+        self.close_commit_window()
+
+    def close_commit_window(self):
         if self.commit_window is not None:
             self.commit_window.close()
             self.commit_window = None
-
-    def _on_commit_clicked(self, commit_item: QListWidgetItem):
-        return
 
     def _on_change_file_clicked(self, file: QListWidgetItem):
         data = file.data(Qt.ItemDataRole.UserRole)
@@ -176,17 +229,17 @@ class MergeRequestTab(QWidget):
             diff_widget.show()
             self.change_list_open_files.append(diff_widget)
 
-    def set_main_branch(self, main_branch: str):
-        return
-
-    def set_all_branches(self, branches: list):
-        return
-
     def add_merge_requests(self, merge_requests: list):
+        self.all_merge_requests = merge_requests
+        current_index = self.merge_request_filter.currentIndex()
+        self.on_mr_filter_change(current_index)
+
+    def _add_merge_requests(self, merge_requests):
         self.merge_request_cb.clear()
         for merge_request in merge_requests:
             self.merge_request_cb.addItem(
                 f"Merge request: {merge_request['title']} "
+                f" id: {merge_request['id']}"
                 f"\n[{merge_request['source_branch']} -> {merge_request['target_branch']}]"
                 f" status: {merge_request['state']}"
             )
@@ -259,6 +312,15 @@ class MergeRequestTab(QWidget):
             return user_name.username
 
     def show_no_merge_request(self):
+        return
+
+    def set_main_branch(self, main_branch: str):
+        return
+
+    def set_all_branches(self, branches: list):
+        return
+
+    def _on_commit_clicked(self, commit_item: QListWidgetItem):
         return
 
 

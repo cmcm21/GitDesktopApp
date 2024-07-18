@@ -127,8 +127,6 @@ class UIGitTab(QWidget):
         self.header = QHBoxLayout()
         self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png")
         self.download_btn: QPushButton = BaseWindow.create_button(self, "arrowDown.png")
-        CustomStyleSheetApplier.set_buttons_style_and_colour(self.upload_btn, "Blue")
-        CustomStyleSheetApplier.set_buttons_style_and_colour(self.download_btn, "Blue")
         """ Connect action triggers """
         self.upload_btn.clicked.connect(lambda: self.upload_signal.emit())
         self.download_btn.clicked.connect(lambda: self.get_latest_signal.emit())
@@ -144,6 +142,7 @@ class UIGitTab(QWidget):
         self.git_sniffer.fill_history()
         self.git_sniffer.fill_changed_list()
         self.build()
+        self.apply_styles()
         self.connect_signals()
         self.user_session = None
 
@@ -152,8 +151,8 @@ class UIGitTab(QWidget):
         self.upload_btn.setFixedSize(QSize(120, 35))
         self.download_btn.setFixedSize(QSize(120, 35))
         """ Header Layout """
-        self.header.addWidget(self.upload_btn, 0, Qt.AlignmentFlag.AlignLeft)
-        self.header.addWidget(self.download_btn, 10, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.upload_btn, 0, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.download_btn, 10, Qt.AlignmentFlag.AlignLeft)
         """ Body layout """
         self.splitter.addWidget(self.repository_viewer)
         self.splitter.addWidget(self.git_sniffer)
@@ -162,6 +161,10 @@ class UIGitTab(QWidget):
         self.main_layout.addLayout(self.header)
         self.main_layout.addLayout(self.body_layout)
         self.setLayout(self.main_layout)
+
+    def apply_styles(self):
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.upload_btn, "Blue")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.download_btn, "Blue")
 
     def connect_signals(self):
         self.git_sniffer.tabs.tabBarClicked.connect(self._on_git_sniffer_tab_clicked)

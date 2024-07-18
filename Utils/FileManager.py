@@ -5,14 +5,14 @@ from pathlib import Path
 class FileManager:
 
     @staticmethod
-    def get_local_path():
+    def get_local_path() -> str:
         this_file_path = os.path.dirname(os.path.abspath(__file__))
         return os.path.join(this_file_path, "../")
 
     @staticmethod
-    def get_img_path() -> str:
+    def get_img_path(img_path: str) -> str:
         local_path = FileManager.get_local_path()
-        icon_path = os.path.join(local_path, "Resources/Img/")
+        icon_path = os.path.join(local_path, "Resources/Img/", img_path)
         return icon_path
 
     @staticmethod
@@ -30,3 +30,8 @@ class FileManager:
     def move_to(path: str):
         if not FileManager.in_path(path):
             os.chdir(path)
+
+    @staticmethod
+    def move_to_local_dir():
+        if not FileManager.in_path(FileManager.get_local_path()):
+            FileManager.move_to(FileManager.get_local_path())

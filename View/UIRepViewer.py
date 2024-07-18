@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTreeView, QFileSystemModel, QLabel
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTreeView, QFileSystemModel, QHBoxLayout, QLabel
 from PySide6.QtCore import QModelIndex, Qt
 from PySide6 import QtGui
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
@@ -11,6 +11,7 @@ class RepositoryViewerWidget(QWidget):
 
         # Set up the layout
         self.layout = QVBoxLayout()
+        self.buttons_layout = QHBoxLayout()
 
         # Create a file system model
         self.model = QFileSystemModel()
@@ -33,6 +34,7 @@ class RepositoryViewerWidget(QWidget):
         self.tree.clicked.connect(self.on_tree_view_clicked)
 
         # Add the tree view and label to the layout
+        self.layout.addLayout(self.buttons_layout)
         self.layout.addWidget(self.tree)
 
         # Set the layout for the main widget

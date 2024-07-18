@@ -142,8 +142,13 @@ class LoginWindow(BaseWindow):
         self.error_label.setWordWrap(True)
 
     def on_signup_clicked(self):
-        self.sign_up_window = SignUpForm(self.user_controller, self.role_model)
+        self.sign_up_window = SignUpForm(self.user_controller)
         self.sign_up_window.show()
+
+    def open(self):
+        super().open()
+        self.username_input.setText("")
+        self.password_input.setText("")
 
     def apply_styles(self):
         CustomStyleSheetApplier.set_line_edit_style_and_colour(self.username_input, colour="White")

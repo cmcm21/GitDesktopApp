@@ -95,6 +95,7 @@ class Application(QApplication):
         self.ui_manager.lw_get_merge_request_changed.connect(self.git_controller.get_merge_requests_comments)
         self.ui_manager.lw_merge_request_add_comment.connect(self.git_controller.merge_request_add_comment)
         self.ui_manager.lw_accept_merge_request_and_merge.connect(self.git_controller.merge_request_accept_and_merge)
+        self.ui_manager.lw_login_out.connect(self.on_login_out)
 
     def _connect_ui_manager_login(self):
         self.ui_manager.lg_login_accepted.connect(self.login_accepted)
@@ -172,12 +173,23 @@ class Application(QApplication):
         if self.git_controller_thread is not None:
             self.git_controller_thread.exit()
         self.ui_manager.current_window.loading.stop_anim_screen()
-        self.__del__()
+
+    @Slot()
+    def on_login_out(self):
+        self.user_session.logout()
+        self.ui_manager.open_window(WindowID.LOGING)
 
     def run(self):
-        self.ui_manager.open_window(WindowID.LOGING)
+        if self.config['test']['debug']:
+            self.ui_manager.open_window(WindowID.LAUNCHER)
+            self.system_controller_setup.emit()
+            self.login_accepted(self.config['test']['debug_user'])
+        else:
+            self.ui_manager.open_window(WindowID.LOGING)
+
         self.db_setup.emit()
         self.exec()
 
     def __del__(self):
+        print("deleting app")
         return

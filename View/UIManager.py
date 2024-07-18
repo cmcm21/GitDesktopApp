@@ -10,6 +10,7 @@ class UIManager(QObject):
     lw_get_latest_clicked = Signal()
     lw_uploaded_clicked = Signal(str)
     lw_open_maya_clicked = Signal()
+    lw_login_out = Signal()
     lw_new_workspace_clicked = Signal()
     lw_window_closed = Signal()
     lw_get_merge_request_changed = Signal(int)
@@ -38,7 +39,7 @@ class UIManager(QObject):
             return
 
         if self.current_window is not None:
-            self.current_window.close()
+            self.current_window.hide()
 
         self.current_window = self.windows[window_id]
         self.current_window.open()
@@ -55,6 +56,7 @@ class UIManager(QObject):
         self.lw_get_merge_request_changed = self.launcher_window.git_tab.git_sniffer.merge_request.selected_mr_changed
         self.lw_merge_request_add_comment = self.launcher_window.git_tab.git_sniffer.merge_request.add_comment
         self.lw_accept_merge_request_and_merge = self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge
+        self.lw_login_out = self.launcher_window.login_out
 
     def _connect_login_window(self):
         self.lg_login_accepted = self.login_window.login_signal

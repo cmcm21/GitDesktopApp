@@ -3,8 +3,8 @@ from View.WindowID import WindowID
 from View.UILogger import LoggerWidget
 from View.UICommitWindow import CommitWindow
 from View.UIGitTab import UIGitTab
-from View.UILoadingWidget import LoadingWidget
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View.UISessionWidget import UserSessionWidget
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -23,6 +23,7 @@ class LauncherWindow(BaseWindow):
     download_repository_signal = Signal()
     project_changed = Signal(str)
     window_closed = Signal()
+    login_out = Signal()
 
     def __init__(self, config: dict, window_id: WindowID, width=900, height=500):
         super(LauncherWindow, self).__init__("Puppet Launcher", window_id, width, height)
@@ -30,7 +31,7 @@ class LauncherWindow(BaseWindow):
         self.commit_window = None
         self._create_all_element()
         self._build()
-        self._connect_buttons()
+        self._connect_signals()
         self.user_session: UserSession = None
 
     def _create_all_element(self):
@@ -78,13 +79,15 @@ class LauncherWindow(BaseWindow):
         self.git_tab.setObjectName("GitTab")
         self.pv4_tab.setObjectName("PV4Tab")
         self.logger_widget = LoggerWidget()
+        self.user_session_widget = UserSessionWidget()
 
     def _build(self):
         """ Connect Button """
         self.connect_button = self.create_button(self, "singleplayer.png", "Connect")
         self.connect_button.setObjectName("ConnectButton")
         """ Header """
-        self.header_layout.addWidget(self.project_combo_box, 0, Qt.AlignmentFlag.AlignLeft)
+        self.header_layout.addWidget(self.user_session_widget, 0, Qt.AlignmentFlag.AlignLeft)
+        self.header_layout.addWidget(self.project_combo_box, 5, Qt.AlignmentFlag.AlignLeft)
         self.header_layout.addWidget(self.loading, 0, Qt.AlignmentFlag.AlignRight)
         self.header_layout.setSpacing(0)
         """ Body left """
@@ -93,7 +96,7 @@ class LauncherWindow(BaseWindow):
         self.left_frame.layout().addWidget(self.maya_btn, 0, Qt.AlignmentFlag.AlignTop)
         self.left_frame.layout().addWidget(self.settings_btn, 5, Qt.AlignmentFlag.AlignTop)
         self.left_frame.layout().setAlignment(Qt.AlignmentFlag.AlignCenter)
-        """Tabs"""
+        """ Tabs """
         git_tab_layout = QVBoxLayout()
         self.git_tab_frame.setLayout(git_tab_layout)
         self.git_tab_frame.layout().addWidget(self.git_tab)
@@ -121,9 +124,10 @@ class LauncherWindow(BaseWindow):
         widget.setLayout(self.main_layout)
         self.setCentralWidget(widget)
 
-    def _connect_buttons(self):
+    def _connect_signals(self):
         self.git_tab.upload_btn.clicked.connect(self, self.create_commit_windows)
         self.git_tab.download_btn.clicked.connect(lambda: self.download_repository_signal.emit())
+        self.user_session_widget.logout_signal = self.login_out
 
     def create_commit_windows(self):
         self.commit_window = CommitWindow()
@@ -133,6 +137,7 @@ class LauncherWindow(BaseWindow):
 
     def set_user_session(self, user_session: UserSession):
         self.user_session = user_session
+        self.user_session_widget.set_user()
         self.set_user_buttons()
 
     def set_user_buttons(self):
@@ -147,9 +152,6 @@ class LauncherWindow(BaseWindow):
         if self.user_session.role_id == Env.ROLE_ID.ADMIN.value:
             self.git_tab.upload_btn.show()
             self.git_tab.git_sniffer.show()
-
-    def project_selected_changed(self):
-        return
 
     def add_username(self, message) -> str:
         if self.user_session is None:
@@ -172,6 +174,9 @@ class LauncherWindow(BaseWindow):
 
     @Slot(list)
     def _on_get_all_branch(self, branches):
+        return
+
+    def project_selected_changed(self):
         return
 
     def _close_commit_window(self):

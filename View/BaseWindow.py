@@ -4,7 +4,6 @@ from PySide6.QtCore import Signal
 from View.WindowID import WindowID
 from View.UILoadingWidget import LoadingWidget
 from Utils.FileManager import FileManager
-import os
 
 
 class BaseWindow(QMainWindow):
@@ -40,9 +39,7 @@ class BaseWindow(QMainWindow):
 
     @staticmethod
     def get_pixmap(img_name: str):
-        img_path = FileManager.get_img_path()
-        icon_path = os.path.join(img_path, img_name)
-        pix_map = QPixmap(icon_path)
+        pix_map = QPixmap(FileManager.get_img_path(img_name))
         return pix_map
 
     def _set_window_icon(self):
