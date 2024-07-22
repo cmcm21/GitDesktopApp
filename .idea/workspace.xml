@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="adding user session">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="Fixing the mr filter and refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/GitController.py" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/GitController.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Utils/FileManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/FileManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/LauncherWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/LauncherWindow.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/UIGitTab.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIGitTab.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/UIMergeRequestTab.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIMergeRequestTab.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/SystemController.py" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/SystemController.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/View/UIManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/View/UIRepViewer.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIRepViewer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configFile.toml" beforeDir="false" afterPath="$PROJECT_DIR$/configFile.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/file.log" beforeDir="false" />
     </list>
@@ -191,7 +188,47 @@
       <option name="project" value="LOCAL" />
       <updated>1721122075400</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="Adding user branching">
+      <option name="closed" value="true" />
+      <created>1721195785227</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1721195785227</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Logout and session  widget added">
+      <option name="closed" value="true" />
+      <created>1721291341275</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1721291341275</updated>
+    </task>
+    <task id="LOCAL-00013" summary="fixing the loading widget size">
+      <option name="closed" value="true" />
+      <created>1721296196004</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1721296196004</updated>
+    </task>
+    <task id="LOCAL-00014" summary="UI redesign and logout/login fixed">
+      <option name="closed" value="true" />
+      <created>1721617966028</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1721617966028</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Fixing the mr filter and refactoring">
+      <option name="closed" value="true" />
+      <created>1721637349183</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1721637349183</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -216,6 +253,11 @@
     <MESSAGE value="adding merge request handling" />
     <MESSAGE value="+ adding loading widget, and loading management&#10;+ adding login Window and signup Window" />
     <MESSAGE value="adding user session" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding user session" />
+    <MESSAGE value="Adding user branching" />
+    <MESSAGE value="Logout and session  widget added" />
+    <MESSAGE value="fixing the loading widget size" />
+    <MESSAGE value="UI redesign and logout/login fixed" />
+    <MESSAGE value="Fixing the mr filter and refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing the mr filter and refactoring" />
   </component>
 </project>

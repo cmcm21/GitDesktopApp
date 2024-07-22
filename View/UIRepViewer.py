@@ -1,11 +1,14 @@
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTreeView, QFileSystemModel, QHBoxLayout, QLabel
-from PySide6.QtCore import QModelIndex, Qt
+from PySide6.QtCore import QModelIndex, Qt, Signal
 from PySide6 import QtGui
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 import os
 
 
 class RepositoryViewerWidget(QWidget):
+
+    file_selected = Signal(str)
+
     def __init__(self, repository_path: str):
         super().__init__()
 
@@ -31,7 +34,7 @@ class RepositoryViewerWidget(QWidget):
         CustomStyleSheetApplier.set_q_text_edit_style_and_colour(self.tree)
 
         # Connect the tree view's clicked signal to a slot
-        self.tree.clicked.connect(self.on_tree_view_clicked)
+        self.tree.doubleClicked.connect(self.on_tree_view_clicked)
 
         # Add the tree view and label to the layout
         self.layout.addLayout(self.buttons_layout)
@@ -43,6 +46,7 @@ class RepositoryViewerWidget(QWidget):
     def on_tree_view_clicked(self, index: QModelIndex):
         # Get the file path from the model
         file_path = self.model.filePath(index)
+        self.file_selected.emit(file_path)
 
     def set_root_directory(self):
         self.model.setRootPath(self.repository_path)

@@ -100,6 +100,7 @@ class Application(QApplication):
         self.ui_manager.lg_destroy_application.connect(self.on_application_destroyed)
         self.ui_manager.lw_git_history_tab_clicked.connect(self.git_controller.get_repository_history)
         self.ui_manager.lw_git_changes_list_tab_clicked.connect(self.git_controller.get_repository_changes)
+        self.ui_manager.lw_file_tree_clicked.connect(self.system_controller.open_file)
 
     def _connect_ui_manager_login(self):
         self.ui_manager.lg_login_accepted.connect(self.login_accepted)

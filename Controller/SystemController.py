@@ -4,6 +4,7 @@ import shutil
 import winreg
 import os
 import subprocess
+import platform
 import urllib.request
 
 
@@ -135,3 +136,20 @@ class SystemController(QObject):
         self.log_message.emit(result.stdout)
         if result.stderr:
             self.error_message.emit(result.stderr)
+
+    @Slot(str)
+    def open_file(self, file_path: str):
+        if not os.path.isfile(file_path):
+            self.error_message.emit(f"File not found: {file_path}")
+            return
+
+        try:
+            if platform.system() == 'Windows':
+                os.startfile(file_path)
+            elif platform.system() == 'Darwin':  # macOS
+                subprocess.run(['open', file_path], check=True)
+            else:  # Linux
+                subprocess.run(['xdg-open', file_path], check=True)
+        except Exception as e:
+            self.error_message.emit(f"Failed to open file: {e}")
+

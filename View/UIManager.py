@@ -16,6 +16,7 @@ class UIManager(QObject):
     lw_get_merge_request_changed = Signal(int)
     lw_merge_request_add_comment = Signal(str, int)
     lw_accept_merge_request_and_merge = Signal(int, str)
+    lw_file_tree_clicked = Signal(str)
     lg_login_accepted = Signal()
     lw_destroy_application = Signal()
     lg_destroy_application = Signal()
@@ -63,6 +64,7 @@ class UIManager(QObject):
         self.lg_destroy_application = self.login_window.application_destroyed
         self.lw_destroy_application.connect(self._on_application_destroyed)
         self.lg_destroy_application.connect(self._on_application_destroyed)
+        self.lw_file_tree_clicked = self.launcher_window.git_tab.repository_viewer.file_selected
 
     def _on_application_destroyed(self):
         for window in self.windows.values():
