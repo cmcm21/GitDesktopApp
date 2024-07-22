@@ -16,6 +16,7 @@ from View.UIRepViewer import RepositoryViewerWidget
 from View.BaseWindow import BaseWindow
 from View.UIMergeRequestTab import MergeRequestTab
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View.UIDiffsWidget import DiffsWidget
 import os
 
 
@@ -37,6 +38,7 @@ class GitSnifferWidget(QWidget):
 
     def __init__(self):
         super().__init__()
+        self.changes_list_files_open = []
         """ History """
         self.history = QListWidget()
         self.history.setFont(QtGui.QFont("Courier New", 10))
@@ -57,6 +59,7 @@ class GitSnifferWidget(QWidget):
         self.tabs = QTabWidget()
         self.layout = QVBoxLayout()
         self.build()
+        self.connect_signals()
 
     def build(self):
         """ History layout """
@@ -89,27 +92,23 @@ class GitSnifferWidget(QWidget):
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 
-    def remove_merge_request_tab(self):
-        self.tabs.removeTab(2)
+    def connect_signals(self):
+        self.changes_list.itemClicked.connect(self.on_change_list_clicked)
+        self.history.itemClicked.connect(self.on_commit_clicked)
 
-    def add_merge_request_tab(self):
-        self.tabs.addTab(self.merge_request_tab, "Merge Request")
+    def on_change_list_clicked(self, item: QListWidgetItem):
+        if not item:
+            return
 
-    def fill_changed_list(self):
-        for entry in ["file 1", "file 2", "file 3", "file 4", "file 5"]:
-            self.add_change_item(entry)
+        change_file, diff = item.data(Qt.ItemDataRole.UserRole)
+        if change_file and diff:
+            diff_widget = DiffsWidget(diff, change_file)
+            diff_widget.show()
+            diff_widget.widget_closed.connect(lambda widget: self.changes_list_files_open.remove(widget))
+            self.changes_list_files_open.append(diff_widget)
 
-    def fill_history(self):
-        for entry in ["commit 1", "commit 2", "commit 3", "commit 4", "commit 5"]:
-            self.add_history_item(entry)
-
-    def add_change_item(self, item: str):
-        self.changes_list.addItem(_get_item_obj(item))
-        return
-
-    def add_history_item(self, item: str):
-        self.history.addItem(_get_item_obj(item))
-        return
+    def on_commit_clicked(self, commit):
+        print(commit)
 
 
 class UIGitTab(QWidget):
@@ -138,9 +137,6 @@ class UIGitTab(QWidget):
         self.git_sniffer = GitSnifferWidget()
         """ Other widgets """
         self.splitter = QSplitter(Qt.Horizontal)
-        # TODO: Remove this after
-        self.git_sniffer.fill_history()
-        self.git_sniffer.fill_changed_list()
         self.build()
         self.apply_styles()
         self.connect_signals()
@@ -169,6 +165,11 @@ class UIGitTab(QWidget):
     def connect_signals(self):
         self.git_sniffer.tabs.tabBarClicked.connect(self._on_git_sniffer_tab_clicked)
 
+    def send_starting_signals(self):
+        self.history_tab_clicked.emit()
+        self.changes_list_clicked.emit()
+        self.merge_request_clicked.emit()
+
     def _on_git_sniffer_tab_clicked(self, tab_index: int):
         if tab_index == TabIndex.HISTORY:
             self.history_tab_clicked.emit()
@@ -184,6 +185,28 @@ class UIGitTab(QWidget):
         action = QAction(QIcon(pixmap), "", self)
         action.setStatusTip(button_tip)
         return action
+
+    def on_get_repository_history(self, commits: list):
+        self.git_sniffer.history.clear()
+        for commit in commits:
+            commit_item = QListWidgetItem(commit)
+            commit_id = commit.split(" ")[0]
+            commit_item.setData(Qt.ItemDataRole.UserRole, commit_id)
+            self.git_sniffer.history.addItem(commit_item)
+
+        if self.git_sniffer.history.count() == 0:
+            self.git_sniffer.history.addItem("No Commits yet")
+
+    def on_get_current_changes(self, changes: list):
+        self.git_sniffer.changes_list.clear()
+        for change_file, diff in changes:
+            change_item = QListWidgetItem(change_file)
+            change_item.setData(Qt.ItemDataRole.UserRole, (change_file, diff))
+            change_item.setToolTip(diff)
+            self.git_sniffer.changes_list.addItem(change_item)
+
+        if self.git_sniffer.changes_list.count() == 0:
+            self.git_sniffer.changes_list.addItem("No changes yet")
 
     def on_repository_path_updated(self):
         self.repository_viewer.set_root_directory()

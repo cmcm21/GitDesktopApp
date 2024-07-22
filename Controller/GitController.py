@@ -22,6 +22,8 @@ class GitController(QObject):
     send_merge_request_commits = Signal(list)
     send_merge_requests_changes = Signal(list)
     send_merge_requests_comments = Signal(list)
+    send_repository_history = Signal(list)
+    send_current_changes = Signal(list)
 
     def __init__(self, config: dict):
         super(GitController, self).__init__()
@@ -70,9 +72,18 @@ class GitController(QObject):
                 else:
                     self.log_message.emit(f"{stderr}")
                     return True
+
         except subprocess.CalledProcessError as e:
             self.error_message.emit(f"An error occurred executing command: {command_str}, error: {e.stderr}")
             raise subprocess.CalledProcessError(e.returncode, e.stderr)
+
+    def _run_git_command_get_output(self, command) -> str:
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            return result.stdout
+        except subprocess.CalledProcessError as e:
+            self.error_message.emit(self, "Error", f"Git command failed: {e}")
+            return ""
 
     @Slot()
     def setup(self):
@@ -413,6 +424,28 @@ class GitController(QObject):
             if current_branch != self._get_main_branch_name():
                 self._run_git_command(['git', 'checkout', {self._get_main_branch_name()}])
 
+    @Slot()
+    def get_repository_history(self):
+        output = self._run_git_command_get_output(["git", "log", "--pretty=format:%h - %s (%ci)"])
+        if output:
+            commits = output.splitlines()
+            self.send_repository_history.emit(commits)
+
+    @Slot()
+    def get_repository_changes(self):
+        changes = []
+        changed_files_out = self._run_git_command_get_output(['git', 'status', '--porcelain'])
+        if changed_files_out:
+            changed_files = [line[3:] for line in changed_files_out.splitlines() if line]
+            for changed_file in changed_files:
+                diff = self._run_git_command_get_output(['git', 'diff', changed_file])
+                if diff:
+                    changes.append((changed_file, diff))
+
+        self.send_current_changes.emit(changes)
+
     def _get_merge_request_url(self):
         return f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
+
+
 

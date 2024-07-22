@@ -110,7 +110,7 @@ class UserModel(QObject):
 
     def get_all_users(self):
         try:
-            return self.conn.execute_query_fetchall('''
+            return self.conn.execute_query('''
             SELECT users.id, users.username, users.password, users.email, roles.user_role
             FROM users
             JOIN roles ON users.role_id = roles.id

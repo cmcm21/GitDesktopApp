@@ -66,7 +66,7 @@ class UserRolesModel(QObject):
 
     def get_all_roles(self) -> list:
         try:
-            return self.conn.execute_query_fetchall(''' SELECT * FROM roles ''')
+            return self.conn.execute_query(''' SELECT * FROM roles ''')
         except sqlite3.Error as e:
             self.error_message_signal.emit(f"An error occurred while retrieving all roles: {e}")
             print(f"An error occurred while retrieving all roles: {e}")
@@ -77,16 +77,6 @@ class UserRolesModel(QObject):
             return self.conn.execute_query_fetchone('''
             SELECT 1 FROM roles WHERE user_role = ?
             ''', (user_role,)) is not None
-        except sqlite3.Error as e:
-            self.error_message_signal.emit(f"An error occurred while checking if the role exists: {e}")
-            print(f"An error occurred while checking if the role exists: {e}")
-            return False
-
-    def role_exists(self, role_id: int) -> bool:
-        try:
-            return self.conn.execute_query_fetchone('''
-            SELECT 1 FROM roles WHERE id = ?
-            ''', (role_id,)) is not None
         except sqlite3.Error as e:
             self.error_message_signal.emit(f"An error occurred while checking if the role exists: {e}")
             print(f"An error occurred while checking if the role exists: {e}")

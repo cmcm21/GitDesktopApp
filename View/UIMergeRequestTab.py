@@ -19,7 +19,7 @@ from Utils.UserSession import UserSession
 from Utils.Environment import ROLE_ID
 
 Mr_Status = [
-    "Open",
+    "Opened",
     "Closed",
     "Merged",
     "Locked",
@@ -227,6 +227,7 @@ class MergeRequestTab(QWidget):
         if data is not None:
             diff_widget = DiffsWidget(data['diff'], data['new_path'])
             diff_widget.show()
+            diff_widget.widget_closed.connect(lambda widget: self.change_list_open_files.remove(widget))
             self.change_list_open_files.append(diff_widget)
 
     def add_merge_requests(self, merge_requests: list):

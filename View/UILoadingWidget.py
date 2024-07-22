@@ -108,4 +108,5 @@ class ProgressThread(QThread):
 
     def stop(self):
         self.running = False
+        self.wait()
         self.quit()

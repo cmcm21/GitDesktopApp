@@ -84,6 +84,7 @@ class UIManager(QObject):
             return
         self.launcher_window.on_setup_completed(success)
         self.launcher_window.loading.stop_anim_screen()
+        self.launcher_window.git_tab.send_starting_signals()
 
     @Slot(str)
     def on_log_signal_received(self, log_message: str):
@@ -150,3 +151,11 @@ class UIManager(QObject):
     @Slot()
     def on_db_setup_start(self):
         self.login_window.loading.show_anim_screen()
+
+    @Slot(list)
+    def on_get_repository_history(self, commits: list):
+        self.launcher_window.git_tab.on_get_repository_history(commits)
+
+    @Slot(list)
+    def on_get_changes_list(self, changes: list):
+        self.launcher_window.git_tab.on_get_current_changes(changes)

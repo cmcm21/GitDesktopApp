@@ -98,6 +98,8 @@ class Application(QApplication):
         self.ui_manager.lw_login_out.connect(self.on_login_out)
         self.ui_manager.lw_destroy_application.connect(self.on_application_destroyed)
         self.ui_manager.lg_destroy_application.connect(self.on_application_destroyed)
+        self.ui_manager.lw_git_history_tab_clicked.connect(self.git_controller.get_repository_history)
+        self.ui_manager.lw_git_changes_list_tab_clicked.connect(self.git_controller.get_repository_changes)
 
     def _connect_ui_manager_login(self):
         self.ui_manager.lg_login_accepted.connect(self.login_accepted)
@@ -115,6 +117,8 @@ class Application(QApplication):
         self.git_controller.send_merge_request_commits.connect(self.ui_manager.on_get_merge_request_commits)
         self.git_controller.send_merge_requests_changes.connect(self.ui_manager.on_get_merge_request_changes)
         self.git_controller.send_merge_requests_comments.connect(self.ui_manager.on_get_merge_requests_comments)
+        self.git_controller.send_repository_history.connect(self.ui_manager.on_get_repository_history)
+        self.git_controller.send_current_changes.connect(self.ui_manager.on_get_changes_list)
 
     def _connect_system_controller(self):
         self.system_controller.setup_started.connect(self.ui_manager.on_system_controller_setup_started)

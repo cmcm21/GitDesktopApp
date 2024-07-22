@@ -16,7 +16,7 @@ from PySide6.QtWidgets import (
     QFrame
 )
 from PySide6.QtCore import Qt, Signal, Slot, QSize
-from PySide6.QtGui import QAction
+from PySide6.QtGui import QAction, QFont
 from Utils.UserSession import UserSession
 import Utils.Environment as Env
 
@@ -49,6 +49,7 @@ class LauncherWindow(BaseWindow):
         self.footer_layout = QHBoxLayout()
         """Project Menu button"""
         self.combo_box = QComboBox(self)
+        self.user_menu = QMenu("User", self)
         self.set_project_combo_box()
         """ New Workspace Button """
         self.new_workspace_btn = self.create_button(self, "plus.png", "")
@@ -85,6 +86,7 @@ class LauncherWindow(BaseWindow):
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.new_workspace_btn, "Black")
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.settings_btn, "Black")
         CustomStyleSheetApplier.set_combo_box_style_and_colour(self.combo_box, "White")
+        self.user_menu.setFont(QFont("Courier New", 10))
 
     def _build(self):
         """ Connect Button """
@@ -129,7 +131,6 @@ class LauncherWindow(BaseWindow):
         self.main_layout.addLayout(self.header_layout, 3, 0)
         self.main_layout.setSpacing(2)
         """ Menubar """
-        self.user_menu = QMenu("User", self)
         self.menuBar().setObjectName("LauncherUserMenu")
         self.user_menu.addAction(self.user_session_widget.user_action)
         self.user_menu.addAction(self.user_session_widget.logout_action)

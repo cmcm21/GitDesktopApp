@@ -21,14 +21,7 @@ class DataBaseConnection(metaclass=SingletonMeta):
         finally:
             conn.close()
 
-    def execute_query(self, query, params=()):
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute(query, params)
-            conn.commit()
-            return cursor.fetchall()
-
-    def execute_query_fetchall(self, query: str, params=()) -> list:
+    def execute_query(self, query, params=()) -> list:
         with self.get_connection() as conn:
             cursor = conn.cursor()
             cursor.execute(query, params)
