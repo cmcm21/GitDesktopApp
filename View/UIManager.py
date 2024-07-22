@@ -17,6 +17,8 @@ class UIManager(QObject):
     lw_merge_request_add_comment = Signal(str, int)
     lw_accept_merge_request_and_merge = Signal(int, str)
     lg_login_accepted = Signal()
+    lw_destroy_application = Signal()
+    lg_destroy_application = Signal()
 
     def __init__(self, config: dict):
         super().__init__()
@@ -38,7 +40,7 @@ class UIManager(QObject):
         if window_id not in self.windows:
             return
 
-        if self.current_window is not None:
+        if self.current_window is not None and self.current_window != self.windows[window_id]:
             self.current_window.hide()
 
         self.current_window = self.windows[window_id]
@@ -57,6 +59,14 @@ class UIManager(QObject):
         self.lw_merge_request_add_comment = self.launcher_window.git_tab.git_sniffer.merge_request.add_comment
         self.lw_accept_merge_request_and_merge = self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge
         self.lw_login_out = self.launcher_window.login_out
+        self.lw_destroy_application = self.launcher_window.application_destroyed
+        self.lg_destroy_application = self.login_window.application_destroyed
+        self.lw_destroy_application.connect(self._on_application_destroyed)
+        self.lg_destroy_application.connect(self._on_application_destroyed)
+
+    def _on_application_destroyed(self):
+        for window in self.windows.values():
+            window.loading.stop_anim_screen()
 
     def _connect_login_window(self):
         self.lg_login_accepted = self.login_window.login_signal

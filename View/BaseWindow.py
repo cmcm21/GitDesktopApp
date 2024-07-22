@@ -15,6 +15,7 @@ class BaseWindow(QMainWindow):
         self.width = width
         self.height = height
         self.window_id = window_id
+
         self.loading: LoadingWidget = LoadingWidget(self)
         self.loading.hide()
 
@@ -65,6 +66,3 @@ class BaseWindow(QMainWindow):
 
     def open(self):
         self.show()
-
-    def close(self):
-        self.hide()

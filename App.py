@@ -96,6 +96,8 @@ class Application(QApplication):
         self.ui_manager.lw_merge_request_add_comment.connect(self.git_controller.merge_request_add_comment)
         self.ui_manager.lw_accept_merge_request_and_merge.connect(self.git_controller.merge_request_accept_and_merge)
         self.ui_manager.lw_login_out.connect(self.on_login_out)
+        self.ui_manager.lw_destroy_application.connect(self.on_application_destroyed)
+        self.ui_manager.lg_destroy_application.connect(self.on_application_destroyed)
 
     def _connect_ui_manager_login(self):
         self.ui_manager.lg_login_accepted.connect(self.login_accepted)
@@ -172,7 +174,23 @@ class Application(QApplication):
             self.system_controller_thread.exit()
         if self.git_controller_thread is not None:
             self.git_controller_thread.exit()
+
         self.ui_manager.current_window.loading.stop_anim_screen()
+
+    @Slot()
+    def on_application_destroyed(self):
+        if self.system_controller_thread is not None:
+            self.system_controller_thread.quit()
+            self.system_controller_thread.wait()
+        if self.git_controller_thread is not None:
+            self.git_controller_thread.quit()
+            self.git_controller_thread.wait()
+        if self.db_manager_thread is not None:
+            self.db_manager_thread.quit()
+            self.db_manager_thread.wait()
+
+        del self.user_session
+        self.__del__()
 
     @Slot()
     def on_login_out(self):
@@ -191,5 +209,5 @@ class Application(QApplication):
         self.exec()
 
     def __del__(self):
-        print("deleting app")
+        self.closeAllWindows()
         return

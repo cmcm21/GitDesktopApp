@@ -74,27 +74,38 @@ class LoadingWidget(QWidget):
         # Start the progress bar animation
         self.custom_parent.setDisabled(True)
         self.progress_thread.start()
+        self.progress_thread.set_run()
         self.show()
 
     def stop_anim_screen(self):
-        if self.progress_thread is not None:
-            self.progress_thread.exit()
+        if self.progress_thread is not None and self.progress_thread.isRunning():
+            self.progress_thread.stop()
+
         self.custom_parent.setDisabled(False)
-        self.hide()
+        self.close()
 
 
 class ProgressThread(QThread):
     progress_update = Signal(int)
     change_sign = Signal()
+    running = True
+
+    def set_run(self):
+        self.running = True
 
     def run(self):
         progress_value = 0
         direction = 1
+
         # Start the progress bar animation
-        while True:
+        while self.running:
             time.sleep(0.0075)
             progress_value += 1 * direction
             if progress_value > 100 or progress_value <= 0:
                 direction *= -1
                 self.change_sign.emit()
             self.progress_update.emit(progress_value)
+
+    def stop(self):
+        self.running = False
+        self.quit()

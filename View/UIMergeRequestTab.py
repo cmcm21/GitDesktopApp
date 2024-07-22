@@ -250,6 +250,11 @@ class MergeRequestTab(QWidget):
             )
 
         self._on_merge_request_changed(self.merge_request_cb.currentIndex())
+        if self.merge_request_cb.count() == 0:
+            self.merge_request_cb.addItem("NO MERGE REQUESTS")
+            self.commits_list.addItem("NO COMMITS IN THIS MERGE REQUESTS")
+            self.change_list.addItem("NO CHANGES IN THIS MERGE REQUESTS")
+            self.comments_list.addItem("NO DISCUSSION IN THIS MERGE REQUEST")
 
     def add_commits(self, commits: list):
         self.commits_list.clear()
@@ -257,6 +262,8 @@ class MergeRequestTab(QWidget):
             commit_item = QListWidgetItem(f"[{commit['short_id']}]: {commit['message']} @{commit['created_at']}")
             commit_item.setData(Qt.ItemDataRole.UserRole, commit)
             self.commits_list.addItem(commit_item)
+        if self.commits_list.count() == 0:
+            self.commits_list.addItem("NO COMMITS IN THIS MERGE REQUESTS")
 
     def add_changes(self, changes: list):
         self.change_list.clear()
@@ -268,6 +275,9 @@ class MergeRequestTab(QWidget):
             change_item.setData(Qt.ItemDataRole.UserRole, change)
             self.change_list.addItem(change_item)
 
+        if self.change_list.count() == 0:
+            self.change_list.addItem("NO CHANGES IN THIS MERGE REQUESTS")
+
     def add_comments(self, comments: list):
         self.comments_list.clear()
         for comment in comments:
@@ -276,6 +286,9 @@ class MergeRequestTab(QWidget):
                                  f"updated: {comment['updated_at']}")
             comment_item.setData(Qt.ItemDataRole.UserRole, comment)
             self.comments_list.addItem(comment_item)
+
+        if self.comments_list.count() == 0:
+            self.comments_list.addItem("NO DISCUSSION IN THIS MERGE REQUEST")
 
     def upload_comment(self):
         comment = self.add_comment_text.toPlainText()

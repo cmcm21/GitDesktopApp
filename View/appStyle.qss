@@ -224,6 +224,14 @@ QToolTip{
     background-color: whitesmoke;
     color: black;
 }
+QMenu{
+    border: 3px solid white;
+}
+
+
+QMenu::item:selected{
+    background-color: #999999;
+}
 
 #MainWindowLeftFrame{
     border: 2px solid black;
@@ -266,9 +274,13 @@ QToolTip{
 #MergeRequestInsideTabs{
     background: transparent;
 }
-#UserLabel{
+
+#UserLabel {
     font-size: 16px;
     font-style: bold;
     padding: 3px;
 }
 
+#LauncherUserMenu {
+    border: 2px solid black;
+}
