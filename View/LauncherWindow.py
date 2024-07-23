@@ -152,9 +152,6 @@ class LauncherWindow(BaseWindow):
         project_action.triggered.connect(lambda action: self.project_selected_changed(project_id))
         return project_action
 
-    def create_project_item(self, project_id):
-        return
-
     def _connect_signals(self):
         self.git_tab.upload_btn.clicked.connect(self, self.create_commit_windows)
         self.git_tab.download_btn.clicked.connect(lambda: self.download_repository_signal.emit())
@@ -218,3 +215,6 @@ class LauncherWindow(BaseWindow):
 
     def on_setup_completed(self, success: bool):
         self.git_tab.on_repository_path_updated()
+
+    def create_project_item(self, project_id):
+        return

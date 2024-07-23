@@ -17,6 +17,7 @@ from View.BaseWindow import BaseWindow
 from View.UIMergeRequestTab import MergeRequestTab
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UIDiffsWidget import DiffsWidget
+from View.UIChangesList import ChangesList
 import os
 
 
@@ -46,7 +47,7 @@ class GitSnifferWidget(QWidget):
         self.history_tab = QWidget()
         self.history_tab.setObjectName("HistoryTab")
         """ Changes List """
-        self.changes_list = QListWidget()
+        self.changes_list = ChangesList()
         self.changes_list.setFont(QtGui.QFont("Courier New", 10))
         self.changes_list.setSpacing(2)
         self.changes_list_tab = QWidget()
@@ -100,12 +101,15 @@ class GitSnifferWidget(QWidget):
         if not item:
             return
 
-        change_file, diff = item.data(Qt.ItemDataRole.UserRole)
-        if change_file and diff:
-            diff_widget = DiffsWidget(diff, change_file)
-            diff_widget.show()
-            diff_widget.widget_closed.connect(lambda widget: self.changes_list_files_open.remove(widget))
-            self.changes_list_files_open.append(diff_widget)
+        try:
+            change_file, diff = item.data(Qt.ItemDataRole.UserRole)
+            if change_file and diff:
+                diff_widget = DiffsWidget(diff, change_file)
+                diff_widget.show()
+                diff_widget.widget_closed.connect(lambda widget: self.changes_list_files_open.remove(widget))
+                self.changes_list_files_open.append(diff_widget)
+        except TypeError:
+            return
 
     def on_commit_clicked(self, commit):
         print(commit)

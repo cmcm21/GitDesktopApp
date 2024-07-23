@@ -17,7 +17,6 @@ from View.UICommitWindow import CommitWindow
 from View.UIDiffsWidget import DiffsWidget
 from Utils.UserSession import UserSession
 from Utils.Environment import ROLE_ID
-
 Mr_Status = [
     "Opened",
     "Closed",

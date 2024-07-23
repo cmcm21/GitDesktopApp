@@ -415,11 +415,15 @@ class GitController(QObject):
     @Slot()
     def verify_user_branch(self):
         self.check_user_session()
+        print(self.user_session.role_id)
+        print(self.user_session.username)
         if self.user_session.role_id == ROLE_ID.DEV.value:
+            print("setting dev user branch")
             current_branch = self.get_current_branch()
             if current_branch != self.get_dev_branch_name():
                 self.create_local_branch(self.get_dev_branch_name(), self._get_main_branch_name())
         else:
+            print(f"setting {self.user_session.role_id}  user branch")
             current_branch = self.get_current_branch()
             if current_branch != self._get_main_branch_name():
                 self._run_git_command(['git', 'checkout', {self._get_main_branch_name()}])
