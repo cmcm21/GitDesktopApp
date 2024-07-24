@@ -42,9 +42,6 @@ class GitController(QObject):
         from Controller.GitProtocol.GitProtocols import GitProtocolSSH
         self.git_protocol = GitProtocolSSH(self)
 
-    def restore_git_to_last_commit(self):
-        self._run_git_command('git reset --hard')
-
     def repo_exist(self) -> bool:
         git_directory = self.working_path.joinpath(".git/")
         return os.path.isdir(self.working_path) and os.path.isdir(git_directory)
@@ -91,6 +88,7 @@ class GitController(QObject):
         no_errors = True
         try:
             if not self.git_protocol.setup():
+                print("initial setup with ssh failed")
                 # Import here to avoid circular import error
                 from Controller.GitProtocol.GitProtocols import GitProtocolHTTPS
                 self.git_protocol = GitProtocolHTTPS(self)
@@ -104,11 +102,13 @@ class GitController(QObject):
             # Set or update the remote URL (if needed)
             set_remote_command = f'git remote set-url origin {self.git_protocol.repository_url}'
             self.log_message.emit(f"Running command: {set_remote_command}")
-            self._run_git_command(set_remote_command)
+            self._run_git_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
+            # Verify remote repository
+            self._run_git_command(['git', 'ls-remote', '--get-url', 'origin'])
             # Fetch updates from the remote repository
             fetch_command = 'git fetch origin'
             self.log_message.emit(f"Running command: {fetch_command}")
-            self._run_git_command(fetch_command)
+            self._run_git_command(['git', 'fetch', 'origin'])
             # Send setup signal
             self.log_message.emit(f" Setup Completed ")
             self.setup_completed.emit(self.repo_exist())
@@ -415,15 +415,11 @@ class GitController(QObject):
     @Slot()
     def verify_user_branch(self):
         self.check_user_session()
-        print(self.user_session.role_id)
-        print(self.user_session.username)
         if self.user_session.role_id == ROLE_ID.DEV.value:
-            print("setting dev user branch")
             current_branch = self.get_current_branch()
             if current_branch != self.get_dev_branch_name():
                 self.create_local_branch(self.get_dev_branch_name(), self._get_main_branch_name())
         else:
-            print(f"setting {self.user_session.role_id}  user branch")
             current_branch = self.get_current_branch()
             if current_branch != self._get_main_branch_name():
                 self._run_git_command(['git', 'checkout', {self._get_main_branch_name()}])

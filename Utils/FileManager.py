@@ -19,7 +19,6 @@ class FileManager:
     def file_exist(file: str) -> bool:
         local_path = FileManager.get_local_path()
         file_path = os.path.join(local_path, file)
-        print(file_path)
         return Path(file_path).exists()
 
     @staticmethod

@@ -51,6 +51,17 @@ class SystemController(QObject):
 
         self.maya_checked.emit(True)
 
+    def check_registry_key(self, hkey, path):
+        try:
+            reg_key = winreg.OpenKey(hkey, path)
+            winreg.CloseKey(reg_key)
+            self.git_checked.emit(True)
+            return True
+        except FileNotFoundError:
+            pass
+        self.git_checked.emit(True)
+        return False
+
     def _check_for_git(self) -> bool:
         # Check if 'git' is in the system PATH
         if shutil.which("git"):
@@ -63,19 +74,8 @@ class SystemController(QObject):
             r"SOFTWARE\WOW6432Node\GitForWindows"
         ]
 
-        def check_registry_key(hkey, path):
-            try:
-                reg_key = winreg.OpenKey(hkey, path)
-                winreg.CloseKey(reg_key)
-                self.git_checked.emit(True)
-                return True
-            except FileNotFoundError:
-                pass
-            self.git_checked.emit(True)
-            return False
-
         for path in registry_paths:
-            if check_registry_key(winreg.HKEY_LOCAL_MACHINE, path):
+            if self.check_registry_key(winreg.HKEY_LOCAL_MACHINE, path):
                 self.git_checked.emit(True)
                 return True
         self.git_checked.emit(False)

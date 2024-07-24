@@ -3,7 +3,9 @@ import subprocess
 import requests
 import json
 import os
+import paramiko
 from Controller.GitController import GitController
+from Utils.UserSession import UserSession
 from enum import Enum
 
 
@@ -15,6 +17,7 @@ class CreateRepDir(Enum):
 
 class GitProtocolAbstract(metaclass=abc.ABCMeta):
     repository_url = ""
+
     @classmethod
     def __subclasshook__(cls, subclass):
         """class method used to verify that and inherited class has the abstract class methods implemented"""
@@ -63,7 +66,7 @@ class GitProtocolSSH(GitProtocolAbstract):
 
         self.git_controller.log_message.emit(f"Running git clone command...")
         process = subprocess.Popen(
-            ['git', 'clone', self.git_controller.repository_url_ssh, self.git_controller.working_path],
+            ['git', 'clone', self.repository_url, self.git_controller.working_path],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -85,22 +88,23 @@ class GitProtocolSSH(GitProtocolAbstract):
         else:
             ssh_in_os = True
 
-        if ssh_in_os:
+        if not ssh_in_os:
+            self.git_controller.error_message.emit("SSH couldn't be installed in the system")
+            return False
+
+        if not self.check_with_existing_keys():
+            user_session = UserSession()
             ssh_dir = os.path.join(os.path.expanduser("~"), ".ssh")
-            private_key_path = os.path.join(ssh_dir, 'id_rsa')
-            public_key_path = os.path.join(ssh_dir, 'id_rsa.pub')
+            private_key_path = os.path.join(ssh_dir, f'id_rsa_puppet_launcher_{user_session.username}')
+            public_key_path = os.path.join(ssh_dir, f'id_rsa_puppet_launcher_{user_session.username}.pub')
 
             self.generate_ssh_keys(ssh_dir, private_key_path, public_key_path)
             ssh_public_key = self.get_ssh_public_key(public_key_path)
             self.add_ssh_key_to_gitlab(ssh_public_key)
             self.add_host_key(ssh_dir)
-            return True
+            return self.test_ssh_connection(private_key_path, self.repository_url)
         else:
-            self.git_controller.error_message.emit("")
-            return False
-
-    def ssh_keys_exists(self):
-        return
+            return True
 
     def check_ssh_installed(self) -> bool:
         try:
@@ -142,7 +146,7 @@ class GitProtocolSSH(GitProtocolAbstract):
             self.git_controller.log_message.emit("Generating SSH keys...")
             process = subprocess.Popen(
                 ['ssh-keygen', '-t', 'rsa', '-b', '4096', '-C',
-                 "RiggingLauncher ssh key", '-f', private_key_path, '-N', ''],
+                 "PuppetLauncher ssh key", '-f', private_key_path, '-N', ''],
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
@@ -154,6 +158,16 @@ class GitProtocolSSH(GitProtocolAbstract):
             self.git_controller.log_message.emit("SSH keys already exist.")
 
     @staticmethod
+    def check_ssh_keys():
+        ssh_dir = os.path.expanduser('~/.ssh')
+        existing_keys = []
+        if os.path.exists(ssh_dir):
+            for file in os.listdir(ssh_dir):
+                if file.endswith('.pub'):
+                    existing_keys.append(os.path.join(ssh_dir, file[:-4]))  # strip the .pub extension
+        return existing_keys
+
+    @staticmethod
     def get_ssh_public_key(public_key_path: str):
         public_key = ""
         with open(public_key_path, 'r') as f:
@@ -161,13 +175,28 @@ class GitProtocolSSH(GitProtocolAbstract):
 
         return public_key
 
+    def test_ssh_connection(self, key_path, git_url):
+        try:
+            key = paramiko.RSAKey(filename=key_path)
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            client.connect(hostname='gitlab.com', username='git', pkey=key)
+            # Close the client after successful connection
+            client.close()
+            self.git_controller.log_message.emit(f"Connection successful using new key: {key_path}")
+            return True
+        except Exception as e:
+            self.git_controller.error_message.emit(f"Failed to connect using key {key_path}: {e}")
+            return False
+
     def add_ssh_key_to_gitlab(self, ssh_key: str):
+        user_session = UserSession()
         headers = {
             'PRIVATE-TOKEN': self.git_controller.personal_access_token,
             'Content-Type': 'application/json'
         }
         data = {
-            'title': 'Auto-generated SSH Key',
+            'title': f'Puppet Launcher SSH Key {user_session.username}',
             'key': ssh_key
         }
         response = requests.post(f'{self.git_controller.git_api_url}/user/keys/',
@@ -182,7 +211,6 @@ class GitProtocolSSH(GitProtocolAbstract):
 
     def add_host_key(self, ssh_dir):
         host = 'gitlab.com'
-        print(ssh_dir)
         known_hosts_path = os.path.join(ssh_dir, 'known_hosts')
 
         # Use ssh-keyscan to fetch the host key
@@ -197,6 +225,17 @@ class GitProtocolSSH(GitProtocolAbstract):
             self.git_controller.log_message.emit(f"Host key for {host} added to known_hosts.")
         else:
             self.git_controller.log_message.emit(f"Failed to fetch host key for {host}: {result.stderr}")
+
+    def check_with_existing_keys(self) -> bool:
+        # Check for existing SSH keys
+        existing_keys = self.check_ssh_keys()
+        for key in existing_keys:
+            if self.test_ssh_connection(key, self.repository_url):
+                self.git_controller.log_message.emit(f"Connection successful using existing key: {key}")
+                return True
+            else:
+                print(f"Connection with git repository: {self.repository_url}")
+        return False
 
 
 class GitProtocolHTTPS(GitProtocolAbstract):
@@ -224,4 +263,3 @@ class GitProtocolHTTPS(GitProtocolAbstract):
             return self.git_controller.repo_exist()
 
         return True
-
