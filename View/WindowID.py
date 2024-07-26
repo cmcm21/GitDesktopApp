@@ -6,3 +6,4 @@ class WindowID(Enum):
     LAUNCHER = 1
     COMMIT = 2
     SIGNUP = 3
+    ADMIN = 4

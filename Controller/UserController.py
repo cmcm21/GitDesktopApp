@@ -81,3 +81,5 @@ class UserController(QObject):
         # Allow only safe HTML tags
         allowed_tags = ['b', 'i', 'u', 'em', 'strong']
         return bleach.clean(user_input, tags=allowed_tags, strip=True)
+
+

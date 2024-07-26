@@ -46,6 +46,8 @@ class UIManager(QObject):
 
         self.current_window = self.windows[window_id]
         self.current_window.open()
+        if window_id == WindowID.LAUNCHER:
+            self.current_window.showMaximized()
 
     def _connect_launcher_windows(self):
         """ Using UIManager signals to make a bridge between UI Signals and Controllers """

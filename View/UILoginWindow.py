@@ -27,7 +27,7 @@ class LoginWindow(BaseWindow):
         self.error_label = QLabel()
 
         # Username
-        self.user_icon.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        self.user_icon.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         self.username_label = QLabel('Username:')
         self.username_label.adjustSize()
         self.username_input = QLineEdit()
@@ -36,7 +36,8 @@ class LoginWindow(BaseWindow):
         self.password_label = QLabel('Password:')
         self.password_label.adjustSize()
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+
         # Buttons
         self.login_button = QPushButton('Login')
         self.signup_button = QPushButton('Sign Up')

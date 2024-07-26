@@ -53,4 +53,3 @@ class DataBaseManager(QObject):
         return self.database_conn.execute_query_fetchone('''
         SELECT name FROM sqlite_master WHERE type='table' AND name=?
         ''', (table_name,)) is not None
-

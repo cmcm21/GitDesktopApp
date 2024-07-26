@@ -119,3 +119,15 @@ class UserModel(QObject):
             self.error_message_signal.emit(f"An error occurred while retrieving all users: {e}")
             print(f"An error occurred while retrieving all users: {e}")
             return []
+
+    def get_all_users_table(self):
+        try:
+            return self.conn.execute_query('''
+            SELECT users.username, users.email, roles.user_role
+            FROM users
+            JOIN roles ON users.role_id = roles.id
+            ''')
+        except sqlite3.Error as e:
+            self.error_message_signal.emit(f"An error occurred while retrieving all users: {e}")
+            print(f"An error occurred while retrieving all users: {e}")
+            return []

@@ -1,10 +1,5 @@
-from View.BaseWindow import BaseWindow
-from View.WindowID import WindowID
-from View.UILogger import LoggerWidget
-from View.UICommitWindow import CommitWindow
-from View.UIGitTab import UIGitTab
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
-from View.UISessionWidget import UserSessionWidget
+from PySide6.QtCore import Qt, Signal, Slot, QSize
+from PySide6.QtGui import QAction, QFont
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -15,9 +10,16 @@ from PySide6.QtWidgets import (
     QMenu,
     QFrame
 )
-from PySide6.QtCore import Qt, Signal, Slot, QSize
-from PySide6.QtGui import QAction, QFont
+from View.BaseWindow import BaseWindow
+from View.WindowID import WindowID
+from View.UILogger import LoggerWidget
+from View.UICommitWindow import CommitWindow
+from View.UIGitTab import UIGitTab
+from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View.UISessionWidget import UserSessionWidget
+from View.UIAdminWidget import AdminWindow
 from Utils.UserSession import UserSession
+from Utils.Environment import ROLE_ID
 import Utils.Environment as Env
 
 
@@ -27,12 +29,14 @@ class LauncherWindow(BaseWindow):
     project_changed = Signal(str)
     window_closed = Signal()
     login_out = Signal()
+    admin_window_clicked = Signal()
 
     def __init__(self, config: dict, window_id: WindowID, width=900, height=500):
         super(LauncherWindow, self).__init__("Puppet Launcher", window_id, width, height)
         self.user_session: UserSession = None
         self.project_combo_box_actions = {}
         self.config = config
+        self.admin_window = None
         self.commit_window = None
         self._create_all_element()
         self._apply_styles()
@@ -132,8 +136,6 @@ class LauncherWindow(BaseWindow):
         self.main_layout.setSpacing(2)
         """ Menubar """
         self.menuBar().setObjectName("LauncherUserMenu")
-        self.user_menu.addAction(self.user_session_widget.user_action)
-        self.user_menu.addAction(self.user_session_widget.logout_action)
         self.menuBar().addMenu(self.user_menu)
         self.menuBar().addSeparator()
         """ Set Main Layout """
@@ -171,22 +173,49 @@ class LauncherWindow(BaseWindow):
 
     def set_user_buttons(self):
         if self.user_session.role_id == Env.ROLE_ID.ANIMATOR.value:
-            self.git_tab.upload_btn.hide()
-            self.git_tab.git_sniffer.hide()
+            self.set_animator()
 
         if self.user_session.role_id == Env.ROLE_ID.DEV.value:
-            self.git_tab.git_sniffer.merge_request.accept_btn.hide()
-            self.git_tab.git_sniffer.show()
+            self.set_dev_user()
 
         if self.user_session.role_id == Env.ROLE_ID.ADMIN.value:
-            self.git_tab.upload_btn.show()
-            self.git_tab.git_sniffer.show()
+            self.set_admin_user()
+
+    def set_animator(self):
+        self.git_tab.upload_btn.hide()
+        self.git_tab.git_sniffer.hide()
+        self.build_session_menu()
+
+    def set_dev_user(self):
+        self.git_tab.git_sniffer.merge_request.accept_btn.hide()
+        self.git_tab.git_sniffer.show()
+        self.build_session_menu()
+
+    def set_admin_user(self):
+        self.git_tab.upload_btn.show()
+        self.git_tab.git_sniffer.show()
+        self.build_session_menu()
 
     def add_username(self, message) -> str:
         if self.user_session is None:
             self.user_session = UserSession()
 
         return f"[{self.user_session.username}]:: {message}"
+
+    def build_session_menu(self):
+        self.user_menu.clear()
+        self.user_menu.addAction(self.user_session_widget.user_action)
+        self.user_menu.addAction(self.user_session_widget.logout_action)
+
+        if self.user_session.role_id == ROLE_ID.ADMIN.value:
+            self.user_session_widget.admin_signal.connect(self.create_admin_window)
+            self.user_menu.addAction(self.user_session_widget.get_admin_action())
+
+    def create_admin_window(self):
+        if self.admin_window is None:
+            self.admin_window = AdminWindow()
+
+        self.admin_window.show()
 
     @Slot(str)
     def _on_commit_window_accept(self, message):

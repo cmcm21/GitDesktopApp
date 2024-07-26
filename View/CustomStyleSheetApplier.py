@@ -427,3 +427,32 @@ class CustomStyleSheetApplier:
             border: 1px solid #2C3E50;
         }}
         """)
+
+    @classmethod
+    def set_qtableview_style_and_colour(cls, tableView, colour='White'):
+        style_data = cls.COLOR_STYLES.get(colour, cls.COLOR_STYLES['White'])
+
+        tableView.setStyleSheet(f"""
+            QTableView {{
+                color: {style_data['label_color']};
+                background: {style_data['background_color']};
+                gridline-color: {style_data['border_color']};
+                font-size: 12px;
+                selection-background-color: {style_data['pressed_bg']};
+                selection-color: {style_data['label_color']};
+                border: 1px solid {style_data['border_color']};
+            }}
+
+            QTableView::item:hover {{
+                background-color: {style_data['hover_color']};
+                color: {style_data['label_color']};
+            }}
+
+            QHeaderView::section {{
+                background-color: {style_data['gradient_start']};
+                color: {style_data['label_color']};
+                padding: 4px;
+                border: 1px solid {style_data['border_color']};
+            }}
+        """)
+        tableView.setFont(QtGui.QFont("Courier New", 10))  # Optional: Set a custom font

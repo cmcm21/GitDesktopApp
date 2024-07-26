@@ -75,11 +75,12 @@ class GitController(QObject):
             raise subprocess.CalledProcessError(e.returncode, e.stderr)
 
     def _run_git_command_get_output(self, command) -> str:
+        FileManager.move_to(self.raw_working_path)
         try:
             result = subprocess.run(command, capture_output=True, text=True, check=True)
             return result.stdout
         except subprocess.CalledProcessError as e:
-            self.error_message.emit(self, "Error", f"Git command failed: {e}")
+            self.error_message.emit(f"Git command failed: {e}")
             return ""
 
     @Slot()
@@ -131,6 +132,7 @@ class GitController(QObject):
         self.load_merge_requests()
 
     def check_branch_exists(self, branch_name) -> bool:
+        FileManager.move_to(self.raw_working_path)
         try:
             # Execute the git branch command and capture the output
             result = subprocess.run(['git', 'branch', '--list', branch_name], stdout=subprocess.PIPE,
@@ -159,6 +161,22 @@ class GitController(QObject):
         return True
 
     def _get_main_branch_name(self) -> str:
+        headers = {"PRIVATE-TOKEN": self.personal_access_token}
+        # send the GET requests to fetch project details
+        url = f"{self.git_api_url}/projects/{self.project_id}/repository/branches"
+        response = requests.get(url, headers=headers)
+        if response.status_code == 200:
+            branches = response.json()
+            # find the main branch
+            for branch in branches:
+                if branch.get("default"):
+                    main_branch = branch['name']
+                    return main_branch
+
+            return "main"
+
+    def _get_main_branch_name_local(self) -> str:
+        FileManager.move_to(self.raw_working_path)
         command = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
         result = subprocess.run(
             command,
@@ -170,7 +188,6 @@ class GitController(QObject):
         if result.returncode != 0:
             self.error_message.emit(result.stderr)
             return "main"
-
         return result.stdout.strip()
 
     def branch_exists(self, branch_name):
@@ -415,14 +432,13 @@ class GitController(QObject):
     @Slot()
     def verify_user_branch(self):
         self.check_user_session()
+        current_branch = self.get_current_branch()
         if self.user_session.role_id == ROLE_ID.DEV.value:
-            current_branch = self.get_current_branch()
             if current_branch != self.get_dev_branch_name():
                 self.create_local_branch(self.get_dev_branch_name(), self._get_main_branch_name())
         else:
-            current_branch = self.get_current_branch()
             if current_branch != self._get_main_branch_name():
-                self._run_git_command(['git', 'checkout', {self._get_main_branch_name()}])
+                self._run_git_command(['git', 'checkout', self._get_main_branch_name()])
 
     @Slot()
     def get_repository_history(self):

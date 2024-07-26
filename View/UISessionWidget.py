@@ -10,12 +10,12 @@ from PySide6.QtGui import QAction, QIcon, QPixmap
 from PySide6.QtCore import Signal
 from Utils.UserSession import UserSession
 from Utils.FileManager import FileManager
-from View.BaseWindow import BaseWindow
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 
 
 class UserSessionWidget(QWidget):
     logout_signal = Signal()
+    admin_signal = Signal()
 
     def __init__(self):
         super(UserSessionWidget, self).__init__()
@@ -29,6 +29,8 @@ class UserSessionWidget(QWidget):
         self.logout_action = QAction(QIcon(QPixmap(FileManager.get_img_path('exit.png'))), "Logout", self)
         self.logout_action.setStatusTip("Logout")
         self.logout_action.setChecked(True)
+
+        self.admin_action = None
         self.main_layout = QVBoxLayout(self)
 
         self.connect_user_button()
@@ -53,6 +55,11 @@ class UserSessionWidget(QWidget):
         user_session = UserSession()
         if user_session is not None:
             self.user_label.setText(user_session.username)
+
+    def get_admin_action(self) -> QAction:
+        self.admin_action = QAction(QIcon(QPixmap(FileManager.get_img_path("admin.png"))), "Admin", self)
+        self.admin_action.triggered.connect(lambda : self.admin_signal.emit())
+        return self.admin_action
 
     def set_styles(self):
         CustomStyleSheetApplier.set_line_edit_style_and_colour(self.user_label)
