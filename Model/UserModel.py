@@ -90,10 +90,18 @@ class UserModel(QObject):
             self.error_message_signal.emit(f"An error occurred while updating the user: {e}")
             print(f"An error occurred while updating the user: {e}")
 
-    def delete_user(self, user_id: int):
+    def delete_user_by_id(self, user_id: int):
         try:
             self.conn.execute_query(''' DELETE FROM users WHERE id = ? ''', (user_id,))
             self.message_signal.emit(f"user: {user_id} was deleted from data base successfully!!")
+        except sqlite3.Error as e:
+            self.error_message_signal.emit(f"An error occurred while deleting the user: {e}")
+            print(f"An error occurred while deleting the user: {e}")
+
+    def delete_user(self, username: str):
+        try:
+            self.conn.execute_query(''' DELETE FROM users WHERE username = ? ''', (username,))
+            self.message_signal.emit(f"user: {username} was deleted from data base successfully!!")
         except sqlite3.Error as e:
             self.error_message_signal.emit(f"An error occurred while deleting the user: {e}")
             print(f"An error occurred while deleting the user: {e}")

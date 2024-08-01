@@ -35,16 +35,6 @@ class UserRolesModel(QObject):
             self.error_message_signal.emit(f"An error occurred while adding a role: {e}")
             print(f"An error occurred while adding a role: {e}")
 
-    def get_role_by_id(self, role_id: int) -> tuple:
-        try:
-            return self.conn.execute_query_fetchone('''
-            SELECT * FROM roles WHERE id = ?
-            ''', (role_id,))
-        except sqlite3.Error as e:
-            self.error_message_signal.emit(f"An error occurred while retrieving the role id({role_id}): {e}")
-            print(f"An error occurred while retrieving the role id({role_id}): {e}")
-            return None
-
     def get_role_id(self, user_role: int):
         try:
             return self.conn.execute_query_fetchone('''
@@ -72,11 +62,12 @@ class UserRolesModel(QObject):
             print(f"An error occurred while retrieving all roles: {e}")
             return []
 
-    def role_exists(self, user_role: int) -> bool:
+    def role_exists(self, role_id: int) -> bool:
         try:
-            return self.conn.execute_query_fetchone('''
-            SELECT 1 FROM roles WHERE user_role = ?
-            ''', (user_role,)) is not None
+            role = self.conn.execute_query_fetchone('''
+            SELECT 1 FROM roles WHERE id = ?
+            ''', (role_id,))
+            return role is not None
         except sqlite3.Error as e:
             self.error_message_signal.emit(f"An error occurred while checking if the role exists: {e}")
             print(f"An error occurred while checking if the role exists: {e}")

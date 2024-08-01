@@ -11,6 +11,7 @@ from PySide6.QtWidgets import (
     QMainWindow
 )
 from Model.UserModel import UserModel
+from Model.UserRolesModel import UserRolesModel
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
@@ -19,19 +20,21 @@ from enum import Enum
 
 
 class INDEX_NAME(Enum):
-    USERNAME = 0
-    EMAIL = 1
-    ROLE = 2
+    USERNAME = 'User'
+    EMAIL = 'Email'
+    ROLE = 'Role'
 
 
 class UserTableView(QTableView):
     message_log = Signal(str)
     error_log = Signal(str)
+    refresh = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
+        self.user_model = UserModel()
 
     def show_context_menu(self, position):
         indexes = self.selectedIndexes()
@@ -56,8 +59,18 @@ class UserTableView(QTableView):
     def delete_row(self, row):
         row_data = self.get_row_data(row)
 
-        if row_data[2] == ROLE_ID.ADMIN.value:
-            self.show_info_message()
+        if INDEX_NAME.ROLE.value not in row_data:
+            self.error_log.emit(f" Error trying to get row data row:{row} ")
+
+        roles_model = UserRolesModel()
+
+        role = roles_model.get_role_by_name(row_data[INDEX_NAME.ROLE.value])
+        if role is None:
+            self.message_log(f" Error trying to get row data!!, role: {row_data[INDEX_NAME.value]}")
+
+        role_id = role[0]
+        if role_id == ROLE_ID.ADMIN.value:
+            self.show_info_message("You can not delete an admin account")
         else:
             reply = QMessageBox.question(
                 self,
@@ -70,8 +83,8 @@ class UserTableView(QTableView):
                 self.delete_user(row_data)
 
     def delete_user(self, row_data):
-        user_model = UserModel()
-        user_model.delete_user(row_data[0])
+        self.user_model.delete_user(row_data[INDEX_NAME.USERNAME.value])
+        self.refresh.emit()
 
     def get_row_data(self, row):
         model = self.model()
@@ -81,12 +94,12 @@ class UserTableView(QTableView):
             data[model.headerData(column, Qt.Orientation.Horizontal)] = model.data(index)
         return data
 
-    def show_info_message(self):
+    def show_info_message(self, message: str):
         # Create a QMessageBox instance
         msg_box = QMessageBox(self)
         msg_box.setIcon(QMessageBox.Information)
         msg_box.setWindowTitle("Information")
-        msg_box.setText("You can not delete an admin account")
+        msg_box.setText(message)
         msg_box.setStandardButtons(QMessageBox.Ok)
         msg_box.exec()
 
@@ -101,7 +114,7 @@ class TableModel(QAbstractTableModel):
         return len(self._data)
 
     def columnCount(self, index=None):
-        return len(self._data[0])
+        return len(self._data[0]) if len(self._data) > 0 else 0
 
     def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if role == Qt.ItemDataRole.DisplayRole:
@@ -111,6 +124,11 @@ class TableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
             return self._headers[section]
         return super().headerData(section, orientation, role)
+
+    def clear(self):
+        self.beginResetModel()
+        self._data = []
+        self.endResetModel()
 
 
 class AdminWindow(BaseWindow):
@@ -124,6 +142,7 @@ class AdminWindow(BaseWindow):
         self.user_model = UserModel()
         self.build()
         self.apply_styles()
+        self.connect_signals()
 
     def build(self):
         all_users = self.user_model.get_all_users_table()
@@ -141,6 +160,19 @@ class AdminWindow(BaseWindow):
         widget = QWidget()
         widget.setLayout(self.table_frame.layout())
         self.setCentralWidget(widget)
+
+    def connect_signals(self):
+        self.users_table.refresh.connect(self.refresh)
+        return
+
+    def refresh(self):
+        if self.table_model:
+            self.table_model.clear()
+
+        all_users = self.user_model.get_all_users_table()
+        headers = ["User", "Email", "Role"]
+        self.table_model = TableModel(all_users, headers)
+        self.users_table.setModel(self.table_model)
 
     def apply_styles(self):
         CustomStyleSheetApplier.set_q_text_edit_style_and_colour(self.users_table, colour="White", textColour="Black")

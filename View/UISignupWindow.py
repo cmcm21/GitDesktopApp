@@ -4,7 +4,8 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QPushButton,
     QVBoxLayout,
-    QFormLayout
+    QFormLayout,
+    QMainWindow
 )
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.BaseWindow import BaseWindow
@@ -23,12 +24,13 @@ class Error_Input_Code(Enum):
     EMPTY_FIELDS = 4
 
 
-class SignUpForm(BaseWindow):
+class SignUpForm(QMainWindow):
     error_message = Signal(str)
     log_message = Signal(str)
 
     def __init__(self, user_controller: UserController):
-        super().__init__("Sign Up", WindowID.SIGNUP)
+        super().__init__()
+        self.setWindowTitle("Sing up window")
         # Create widgets
         self.username_label = QLabel('User Name:')
         self.username_input = QLineEdit()
@@ -76,7 +78,8 @@ class SignUpForm(BaseWindow):
 
     def connect_signals(self):
         self.signup_button.clicked.connect(self.signup)
-        return
+        self.user_controller.error_message.connect(lambda message: self.error_message.emit(message))
+        self.user_controller.log_message.connect(lambda message: self.log_message.emit(message))
 
     def signup(self):
         username = self.username_input.text()
@@ -90,6 +93,8 @@ class SignUpForm(BaseWindow):
             if default_role_id:
                 if self.user_controller.add_user(username, password, email, default_role_id[0]):
                     self.close()
+                else:
+                    self.error_message.emit(f"Error trying to add user: {username}")
         return
 
     def validate_form(self, username, password, email, re_password) -> bool:
