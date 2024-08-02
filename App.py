@@ -110,6 +110,7 @@ class Application(QApplication):
         self.git_controller.setup_completed.connect(self.on_git_setup_completed)
         self.git_controller.push_completed.connect(self.ui_manager.on_upload_completed)
         self.git_controller.get_latest_completed.connect(self.ui_manager.on_get_latest_completed)
+        self.git_controller.get_latest_completed.connect(self.system_controller.git_get_latest_completed)
         self.git_controller.log_message.connect(self.ui_manager.on_log_signal_received)
         self.git_controller.error_message.connect(self.ui_manager.on_err_signal_received)
         self.git_controller.send_main_branch.connect(self.ui_manager.on_get_main_branch)

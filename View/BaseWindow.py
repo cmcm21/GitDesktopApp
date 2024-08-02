@@ -39,6 +39,13 @@ class BaseWindow(QMainWindow):
         else:
             event.ignore()
 
+    def open(self):
+        self.show()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.layout().update()
+
     @staticmethod
     def get_pixmap(img_name: str):
         pix_map = QPixmap(FileManager.get_img_path(img_name))
@@ -63,6 +70,3 @@ class BaseWindow(QMainWindow):
             text=button_text,
             parent=parent
         )
-
-    def open(self):
-        self.show()

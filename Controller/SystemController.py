@@ -1,5 +1,9 @@
 from PySide6.QtCore import QObject, Signal, Slot
+from Utils.FileManager import FileManager
+from Utils.UserSession import UserSession
+from Utils.Environment import ROLE_ID
 from pathlib import Path
+import compileall
 import shutil
 import winreg
 import os
@@ -33,6 +37,7 @@ class SystemController(QObject):
         self.git_token = config["git"]["personal_access_token"]
         self.git_api_url = config["git"]["gitlab_api_url"]
         self.git_user = config["git"]["username"]
+        self.working_path = config["general"]["working_path"]
         self.maya_installed = False
 
     def setup(self):
@@ -152,4 +157,21 @@ class SystemController(QObject):
                 subprocess.run(['xdg-open', file_path], check=True)
         except Exception as e:
             self.error_message.emit(f"Failed to open file: {e}")
+
+    @Slot()
+    def git_get_latest_completed(self):
+        user_session = UserSession()
+        if user_session.role_id != ROLE_ID.ANIMATOR.value:
+            return
+
+        # WARNING: if you don't move to the working path before continue all the project files will be deleted
+        FileManager.move_to(self.working_path)
+        compileall.compile_dir(self.working_path)
+        self.delete_py_files()
+
+    def delete_py_files(self):
+        for root, dirs, files in os.walk(self.working_path):
+            for file in files:
+                if file.endswith('.py'):
+                    os.remove(os.path.join(root, file))
 

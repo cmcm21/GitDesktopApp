@@ -48,6 +48,7 @@ class GitController(QObject):
 
     def _run_git_command(self, command) -> bool:
         FileManager.move_to(self.raw_working_path)
+
         command_str = " ".join(command)
         try:
             process = subprocess.Popen(
@@ -82,39 +83,6 @@ class GitController(QObject):
         except subprocess.CalledProcessError as e:
             self.error_message.emit(f"Git command failed: {e}")
             return ""
-
-    @Slot()
-    def setup(self):
-        self.setup_started.emit()
-        no_errors = True
-        try:
-            if not self.git_protocol.setup():
-                print("initial setup with ssh failed")
-                # Import here to avoid circular import error
-                from Controller.GitProtocol.GitProtocols import GitProtocolHTTPS
-                self.git_protocol = GitProtocolHTTPS(self)
-                if not self.git_protocol.setup():
-                    self.error_message.emit(f"Communication with remote repository failed, canceling setup...")
-                return False
-
-            """ TODO: Check the first state set up, if it not finished with success code then change protocol"""
-            # Change directory to the cloned repository
-            os.chdir(self.working_path)
-            # Set or update the remote URL (if needed)
-            set_remote_command = f'git remote set-url origin {self.git_protocol.repository_url}'
-            self.log_message.emit(f"Running command: {set_remote_command}")
-            self._run_git_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
-            # Verify remote repository
-            self._run_git_command(['git', 'ls-remote', '--get-url', 'origin'])
-            # Fetch updates from the remote repository
-            fetch_command = 'git fetch origin'
-            self.log_message.emit(f"Running command: {fetch_command}")
-            self._run_git_command(['git', 'fetch', 'origin'])
-            # Send setup signal
-            self.log_message.emit(f" Setup Completed ")
-            self.setup_completed.emit(self.repo_exist())
-        except subprocess.CalledProcessError as e:
-            self.log_message.emit(f"An error occurred : {e.stderr}")
 
     def arrange_dev_push(self, comment: str):
         branch_name = self.get_dev_branch_name()
@@ -271,22 +239,6 @@ class GitController(QObject):
             return True
         return False
 
-    @Slot()
-    def get_latest(self):
-        self.log_message.emit("getting latest...")
-        # Change to the repository directory
-        os.chdir(self.raw_working_path)
-
-        # Fetch changes from the remote repository
-        self._run_git_command(['git', 'fetch', 'origin'])
-
-        # Pull the changes directly
-        self._run_git_command(['git', 'pull', 'origin', self._get_main_branch_name()])
-
-        # Check the status of the repository
-        self._run_git_command(['git', 'status'])
-        self.get_latest_completed.emit()
-
     def check_user_session(self):
         if self.user_session is None:
             self.user_session = UserSession()
@@ -299,6 +251,49 @@ class GitController(QObject):
         else:
             self.error_message.emit(f"Error getting current branch: {result.stderr}")
             return None
+
+    def restore_git_repository(self):
+        # Reset the working directory to the last commit
+        self._run_git_command(['git', 'reset', '--hard', 'HEAD'])
+
+        # Remove all untracked files and directories
+        self._run_git_command(['git', 'clean', '-fd'])
+
+    def _get_merge_request_url(self):
+        return f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
+
+    @Slot()
+    def setup(self):
+        self.setup_started.emit()
+        no_errors = True
+        try:
+            if not self.git_protocol.setup():
+                print("initial setup with ssh failed")
+                # Import here to avoid circular import error
+                from Controller.GitProtocol.GitProtocols import GitProtocolHTTPS
+                self.git_protocol = GitProtocolHTTPS(self)
+                if not self.git_protocol.setup():
+                    self.error_message.emit(f"Communication with remote repository failed, canceling setup...")
+                return False
+
+            """ TODO: Check the first state set up, if it not finished with success code then change protocol"""
+            # Change directory to the cloned repository
+            os.chdir(self.working_path)
+            # Set or update the remote URL (if needed)
+            set_remote_command = f'git remote set-url origin {self.git_protocol.repository_url}'
+            self.log_message.emit(f"Running command: {set_remote_command}")
+            self._run_git_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
+            # Verify remote repository
+            self._run_git_command(['git', 'ls-remote', '--get-url', 'origin'])
+            # Fetch updates from the remote repository
+            fetch_command = 'git fetch origin'
+            self.log_message.emit(f"Running command: {fetch_command}")
+            self._run_git_command(['git', 'fetch', 'origin'])
+            # Send setup signal
+            self.log_message.emit(f" Setup Completed ")
+            self.setup_completed.emit(self.repo_exist())
+        except subprocess.CalledProcessError as e:
+            self.log_message.emit(f"An error occurred : {e.stderr}")
 
     @Slot(str)
     def push_changes(self, message: str):
@@ -460,8 +455,22 @@ class GitController(QObject):
 
         self.send_current_changes.emit(changes)
 
-    def _get_merge_request_url(self):
-        return f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
+    @Slot()
+    def get_latest(self):
+        # restore all the modified files before get latest
+        self.restore_git_repository()
 
+        self.log_message.emit("getting latest...")
+        # Change to the repository directory
+        os.chdir(self.raw_working_path)
 
+        # Fetch changes from the remote repository
+        self._run_git_command(['git', 'fetch', 'origin'])
+
+        # Pull the changes directly
+        self._run_git_command(['git', 'pull', 'origin', self._get_main_branch_name()])
+
+        # Check the status of the repository
+        self._run_git_command(['git', 'status'])
+        self.get_latest_completed.emit()
 

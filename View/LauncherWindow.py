@@ -8,7 +8,8 @@ from PySide6.QtWidgets import (
     QComboBox,
     QTabWidget,
     QMenu,
-    QFrame
+    QFrame,
+    QMessageBox
 )
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
@@ -30,6 +31,7 @@ class LauncherWindow(BaseWindow):
     window_closed = Signal()
     login_out = Signal()
     admin_window_clicked = Signal()
+    check_changes_list = Signal()
 
     def __init__(self, config: dict, window_id: WindowID, width=900, height=500):
         super(LauncherWindow, self).__init__("Puppet Launcher", window_id, width, height)
@@ -156,8 +158,24 @@ class LauncherWindow(BaseWindow):
 
     def _connect_signals(self):
         self.git_tab.upload_btn.clicked.connect(self, self.create_commit_windows)
-        self.git_tab.download_btn.clicked.connect(lambda: self.download_repository_signal.emit())
+        self.git_tab.download_btn.clicked.connect(self.on_get_latest_clicked())
         self.user_session_widget.logout_signal = self.login_out
+
+    def on_get_latest_clicked(self):
+        if len(self.git_tab.git_sniffer.changes) == 0:
+            self.download_repository_signal.emit()
+            return
+
+        reply = QMessageBox.question(
+            self,
+            'Confirm',
+            "Your changes will be lost, are you sure to get latest?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            self.download_repository_signal.emit()
+        return
 
     def create_commit_windows(self):
         self.commit_window = CommitWindow()
@@ -217,6 +235,20 @@ class LauncherWindow(BaseWindow):
 
         self.admin_window.show()
 
+    def project_selected_changed(self, project_id):
+        return
+
+    def _close_commit_window(self):
+        if self.commit_window is not None:
+            self.commit_window.close()
+            self.commit_window = None
+
+    def on_setup_completed(self, success: bool):
+        self.git_tab.on_repository_path_updated()
+
+    def create_project_item(self, project_id):
+        return
+
     @Slot(str)
     def _on_commit_window_accept(self, message):
         self.upload_repository_signal.emit(self.add_username(message))
@@ -232,18 +264,4 @@ class LauncherWindow(BaseWindow):
 
     @Slot(list)
     def _on_get_all_branch(self, branches):
-        return
-
-    def project_selected_changed(self, project_id):
-        return
-
-    def _close_commit_window(self):
-        if self.commit_window is not None:
-            self.commit_window.close()
-            self.commit_window = None
-
-    def on_setup_completed(self, success: bool):
-        self.git_tab.on_repository_path_updated()
-
-    def create_project_item(self, project_id):
         return

@@ -40,6 +40,7 @@ class GitSnifferWidget(QWidget):
     def __init__(self):
         super().__init__()
         self.changes_list_files_open = []
+        self.changes = []
         """ History """
         self.history = QListWidget()
         self.history.setFont(QtGui.QFont("Courier New", 10))
@@ -202,6 +203,9 @@ class UIGitTab(QWidget):
             self.git_sniffer.history.addItem("No Commits yet")
 
     def on_get_current_changes(self, changes: list):
+        self.git_sniffer.changes.clear()
+        self.git_sniffer.changes = changes
+
         self.git_sniffer.changes_list.clear()
         for change_file, diff in changes:
             change_item = QListWidgetItem(change_file)
