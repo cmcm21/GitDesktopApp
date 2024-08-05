@@ -202,16 +202,23 @@ class UIGitTab(QWidget):
         if self.git_sniffer.history.count() == 0:
             self.git_sniffer.history.addItem("No Commits yet")
 
-    def on_get_current_changes(self, changes: list):
+    def on_get_current_changes(self, modified: list, changes: list):
         self.git_sniffer.changes.clear()
-        self.git_sniffer.changes = changes
-
         self.git_sniffer.changes_list.clear()
-        for change_file, diff in changes:
+
+        for change_file, diff in modified:
             change_item = QListWidgetItem(change_file)
             change_item.setData(Qt.ItemDataRole.UserRole, (change_file, diff))
             change_item.setToolTip(diff)
             self.git_sniffer.changes_list.addItem(change_item)
+            self.git_sniffer.changes.append(change_file)
+
+        for change_file, change in changes:
+            change_item = QListWidgetItem()
+            change_item.setText(f"{change_file}: -> ({change})")
+            change_item.setData(Qt.ItemDataRole.UserRole, (change_file, change))
+            self.git_sniffer.changes_list.addItem(change_item)
+            self.git_sniffer.changes.append(change_file)
 
         if self.git_sniffer.changes_list.count() == 0:
             self.git_sniffer.changes_list.addItem("No changes yet")

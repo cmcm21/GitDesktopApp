@@ -108,6 +108,7 @@ class Application(QApplication):
     def _connect_git_controller(self):
         self.git_controller.setup_started.connect(self.ui_manager.on_git_setup_started)
         self.git_controller.setup_completed.connect(self.on_git_setup_completed)
+        self.git_controller.setup_completed.connect(self.system_controller.git_setup_completed)
         self.git_controller.push_completed.connect(self.ui_manager.on_upload_completed)
         self.git_controller.get_latest_completed.connect(self.ui_manager.on_get_latest_completed)
         self.git_controller.get_latest_completed.connect(self.system_controller.git_get_latest_completed)

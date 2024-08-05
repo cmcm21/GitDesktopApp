@@ -268,10 +268,14 @@ class MergeRequestTab(QWidget):
     def add_changes(self, changes: list):
         self.change_list.clear()
         for change in changes:
+            change_item = QListWidgetItem()
             if change['renamed_file']:
-                change_item = QListWidgetItem(f"{change['old_path']} --> {change['new_path']}")
+                change_item.setText(f"{change['old_path']} --> {change['new_path']}")
+            elif change['deleted']:
+                change_item.setText(f"{change['new_path']} --> (Deleted)")
             else:
-                change_item = QListWidgetItem(f"{change['new_path']}")
+                change_item.setText(f"{change['new_path']}")
+
             change_item.setData(Qt.ItemDataRole.UserRole, change)
             self.change_list.addItem(change_item)
 

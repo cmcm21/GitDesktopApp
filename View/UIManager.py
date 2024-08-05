@@ -54,7 +54,7 @@ class UIManager(QObject):
         self.lw_git_history_tab_clicked = self.launcher_window.git_tab.history_tab_clicked
         self.lw_git_changes_list_tab_clicked = self.launcher_window.git_tab.changes_list_clicked
         self.lw_git_merge_request_tab_clicked = self.launcher_window.git_tab.merge_request_clicked
-        self.lw_get_latest_clicked = self.launcher_window.git_tab.download_btn.clicked
+        self.lw_get_latest_clicked = self.launcher_window.get_latest
         self.lw_uploaded_clicked = self.launcher_window.upload_repository_signal
         self.lw_open_maya_clicked = self.launcher_window.maya_btn.clicked
         self.lw_window_closed = self.launcher_window.window_closed
@@ -161,5 +161,5 @@ class UIManager(QObject):
         self.launcher_window.git_tab.on_get_repository_history(commits)
 
     @Slot(list)
-    def on_get_changes_list(self, changes: list):
-        self.launcher_window.git_tab.on_get_current_changes(changes)
+    def on_get_changes_list(self, changes_modified: list, changes: list):
+        self.launcher_window.git_tab.on_get_current_changes(changes_modified, changes)

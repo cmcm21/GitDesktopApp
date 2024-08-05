@@ -3,6 +3,7 @@ from pathlib import Path
 from Utils.UserSession import UserSession
 from Utils.Environment import ROLE_ID
 from Utils.FileManager import FileManager
+from Utils.Environment import FILE_CHANGE_DIC
 import subprocess
 import requests
 import os
@@ -23,7 +24,7 @@ class GitController(QObject):
     send_merge_requests_changes = Signal(list)
     send_merge_requests_comments = Signal(list)
     send_repository_history = Signal(list)
-    send_current_changes = Signal(list)
+    send_current_changes = Signal(list, list)
 
     def __init__(self, config: dict):
         super(GitController, self).__init__()
@@ -38,6 +39,7 @@ class GitController(QObject):
         self.git_hosts = config["git"]["git_hosts"]
         self.project_id = config["git"]["project_id"]
         self.user_session = None
+
         # avoid circular import
         from Controller.GitProtocol.GitProtocols import GitProtocolSSH
         self.git_protocol = GitProtocolSSH(self)
@@ -444,16 +446,20 @@ class GitController(QObject):
 
     @Slot()
     def get_repository_changes(self):
-        changes = []
+        changes_modified = []
+        other_changes = []
         changed_files_out = self._run_git_command_get_output(['git', 'status', '--porcelain'])
         if changed_files_out:
-            changed_files = [line[3:] for line in changed_files_out.splitlines() if line]
-            for changed_file in changed_files:
-                diff = self._run_git_command_get_output(['git', 'diff', changed_file])
-                if diff:
-                    changes.append((changed_file, diff))
+            changed_files = [(line[:3].replace(" ", ""), line[3:]) for line in changed_files_out.splitlines() if line]
+            for change, changed_file in changed_files:
+                if change == "M":
+                    diff = self._run_git_command_get_output(['git', 'diff', changed_file])
+                    if diff:
+                        changes_modified.append((changed_file, diff))
+                elif change in FILE_CHANGE_DIC:
+                    other_changes.append((changed_file, FILE_CHANGE_DIC[change]))
 
-        self.send_current_changes.emit(changes)
+        self.send_current_changes.emit(changes_modified, other_changes)
 
     @Slot()
     def get_latest(self):

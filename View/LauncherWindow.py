@@ -26,7 +26,7 @@ import Utils.Environment as Env
 
 class LauncherWindow(BaseWindow):
     upload_repository_signal = Signal(str)
-    download_repository_signal = Signal()
+    get_latest = Signal()
     project_changed = Signal(str)
     window_closed = Signal()
     login_out = Signal()
@@ -145,6 +145,10 @@ class LauncherWindow(BaseWindow):
         widget.setLayout(self.main_layout)
         self.setCentralWidget(widget)
 
+    def show(self):
+        super().show()
+        self.layout().update()
+
     def set_project_combo_box(self):
         for project in self.config["projects"]["projects"]:
             action = self.create_project_action(project)
@@ -158,24 +162,25 @@ class LauncherWindow(BaseWindow):
 
     def _connect_signals(self):
         self.git_tab.upload_btn.clicked.connect(self, self.create_commit_windows)
-        self.git_tab.download_btn.clicked.connect(self.on_get_latest_clicked())
+        self.git_tab.download_btn.clicked.connect(self.on_get_latest_clicked)
         self.user_session_widget.logout_signal = self.login_out
 
     def on_get_latest_clicked(self):
         if len(self.git_tab.git_sniffer.changes) == 0:
-            self.download_repository_signal.emit()
+            self.get_latest.emit()
             return
 
-        reply = QMessageBox.question(
-            self,
-            'Confirm',
-            "Your changes will be lost, are you sure to get latest?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
-        )
-        if reply == QMessageBox.Yes:
-            self.download_repository_signal.emit()
-        return
+        message_box = QMessageBox()
+        message_box.setWindowTitle("Confirm")
+        message_box.setIcon(QMessageBox.Information)
+        message_box.setText("You are going to lose your changes. are you sure to get latest?")
+        message_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        message_box.setDefaultButton(QMessageBox.Ok)
+
+        reply = message_box.exec()
+
+        if reply == QMessageBox.Ok:
+            self.get_latest.emit()
 
     def create_commit_windows(self):
         self.commit_window = CommitWindow()
@@ -235,9 +240,6 @@ class LauncherWindow(BaseWindow):
 
         self.admin_window.show()
 
-    def project_selected_changed(self, project_id):
-        return
-
     def _close_commit_window(self):
         if self.commit_window is not None:
             self.commit_window.close()
@@ -245,6 +247,9 @@ class LauncherWindow(BaseWindow):
 
     def on_setup_completed(self, success: bool):
         self.git_tab.on_repository_path_updated()
+
+    def project_selected_changed(self, project_id):
+        return
 
     def create_project_item(self, project_id):
         return

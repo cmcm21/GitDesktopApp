@@ -10,6 +10,7 @@ import os
 import subprocess
 import platform
 import urllib.request
+import time
 
 
 class SystemController(QObject):
@@ -64,6 +65,7 @@ class SystemController(QObject):
             return True
         except FileNotFoundError:
             pass
+
         self.git_checked.emit(True)
         return False
 
@@ -83,6 +85,7 @@ class SystemController(QObject):
             if self.check_registry_key(winreg.HKEY_LOCAL_MACHINE, path):
                 self.git_checked.emit(True)
                 return True
+
         self.git_checked.emit(False)
         return False
 
@@ -131,6 +134,24 @@ class SystemController(QObject):
         except OSError as e:
             self.error_message.emit(f"Error removing installer: {e}")
 
+    def compile_python_files(self):
+        user_session = UserSession()
+        if user_session.role_id != ROLE_ID.ANIMATOR.value:
+            return
+
+        # WARNING: if you don't move to the working path before continue all the project files will be deleted
+        FileManager.move_to(self.working_path)
+        compileall.compile_dir(self.working_path)
+        # WARNING: We wait in order to prevent that different process access to the same file ending in a lock error
+        time.sleep(1)
+        self.delete_py_files()
+
+    def delete_py_files(self):
+        for root, dirs, files in os.walk(self.working_path):
+            for file in files:
+                if file.endswith('.py'):
+                    os.remove(os.path.join(root, file))
+
     @Slot()
     def open_maya(self):
         if not self.maya_installed:
@@ -159,19 +180,9 @@ class SystemController(QObject):
             self.error_message.emit(f"Failed to open file: {e}")
 
     @Slot()
+    def git_setup_completed(self):
+        self.compile_python_files()
+
+    @Slot()
     def git_get_latest_completed(self):
-        user_session = UserSession()
-        if user_session.role_id != ROLE_ID.ANIMATOR.value:
-            return
-
-        # WARNING: if you don't move to the working path before continue all the project files will be deleted
-        FileManager.move_to(self.working_path)
-        compileall.compile_dir(self.working_path)
-        self.delete_py_files()
-
-    def delete_py_files(self):
-        for root, dirs, files in os.walk(self.working_path):
-            for file in files:
-                if file.endswith('.py'):
-                    os.remove(os.path.join(root, file))
-
+        self.compile_python_files()
