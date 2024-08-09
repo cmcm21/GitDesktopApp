@@ -163,3 +163,11 @@ class UIManager(QObject):
     @Slot(list)
     def on_get_changes_list(self, changes_modified: list, changes: list):
         self.launcher_window.git_tab.on_get_current_changes(changes_modified, changes)
+
+    @Slot()
+    def on_anim_rep_creating(self):
+        self.launcher_window.loading.show_anim_screen()
+
+    @Slot()
+    def on_anim_rep_creation_completed(self):
+        self.launcher_window.loading.stop_anim_screen()

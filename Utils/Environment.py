@@ -1,7 +1,7 @@
 from enum import Enum
-
 DB_NAME = "Data/puppet_database.db"
 DEFAULT_ROLE = "animator"
+
 FILE_CHANGE_DIC = {
     "D": "Deleted",
     "": "Unmodified",
@@ -19,4 +19,9 @@ class ROLE_ID(Enum):
     DEV = 2
     ANIMATOR = 3
 
+
+class CREATE_DIR(Enum):
+    ALREADY_EXIST = 1
+    DIR_CREATED = 2
+    JUST_DIR = 3
 

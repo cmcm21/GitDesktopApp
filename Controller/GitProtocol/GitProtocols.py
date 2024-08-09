@@ -6,13 +6,8 @@ import os
 import paramiko
 from Controller.GitController import GitController
 from Utils.UserSession import UserSession
+from Utils.Environment import CREATE_DIR
 from enum import Enum
-
-
-class CreateRepDir(Enum):
-    ALREADY_EXIST = 1
-    DIR_CREATED = 2
-    JUST_DIR = 3
 
 
 class GitProtocolAbstract(metaclass=abc.ABCMeta):
@@ -30,20 +25,6 @@ class GitProtocolAbstract(metaclass=abc.ABCMeta):
     def __init__(self, git_controller: GitController):
         self.git_controller = git_controller
 
-    def create_repository_dir(self) -> CreateRepDir:
-        # Check if the repository directory exists check for the directory and the .git file
-        if self.git_controller.repo_exist():
-            self.git_controller.log_message.emit(f"The directory '{self.git_controller.working_path}' already exists.")
-            return CreateRepDir.ALREADY_EXIST
-        else:
-            self.git_controller.log_message.emit(f"Creating directory : {self.git_controller.working_path} "
-                                                 f"using protocol: {self.__str__()}")
-            if not self.git_controller.working_path.exists():
-                self.git_controller.working_path.mkdir(parents=True)
-                return CreateRepDir.DIR_CREATED
-            else:
-                return CreateRepDir.JUST_DIR
-
     @abc.abstractmethod
     def setup(self) -> bool:
         """ Set up the communication between local pc and remote repository """
@@ -52,15 +33,15 @@ class GitProtocolAbstract(metaclass=abc.ABCMeta):
 
 class GitProtocolSSH(GitProtocolAbstract):
 
-    def __init__(self, git_controller: GitController):
+    def __init__(self, git_controller: GitController, ssh_url):
         super().__init__(git_controller)
-        self.repository_url = git_controller.repository_url_ssh
+        self.repository_url = ssh_url
 
     def setup(self) -> bool:
         if not self.setup_ssh():
             return False
 
-        return_code = self.create_repository_dir()
+        return_code = self.git_controller.create_repository_dir()
         if return_code == return_code.ALREADY_EXIST:
             return True
 
@@ -239,13 +220,13 @@ class GitProtocolSSH(GitProtocolAbstract):
 
 
 class GitProtocolHTTPS(GitProtocolAbstract):
-    def __init__(self, git_controller: GitController):
+    def __init__(self, git_controller: GitController, url_https: str):
         super().__init__(git_controller)
-        self.repository_url = self.git_controller.repository_url_https
+        self.repository_url = url_https
 
     def setup(self) -> bool:
-        result = self.create_repository_dir()
-        if result == CreateRepDir.ALREADY_EXIST:
+        result = self.git_controller.create_repository_dir()
+        if result == CREATE_DIR.ALREADY_EXIST:
             return True
 
         process = subprocess.Popen(

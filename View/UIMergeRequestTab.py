@@ -271,7 +271,7 @@ class MergeRequestTab(QWidget):
             change_item = QListWidgetItem()
             if change['renamed_file']:
                 change_item.setText(f"{change['old_path']} --> {change['new_path']}")
-            elif change['deleted']:
+            elif change['deleted_file']:
                 change_item.setText(f"{change['new_path']} --> (Deleted)")
             else:
                 change_item.setText(f"{change['new_path']}")

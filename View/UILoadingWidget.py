@@ -51,6 +51,7 @@ class LoadingWidget(QWidget):
 
     def __init__(self, parent: QWidget):
         super().__init__()
+        self.showing = False
 
         layout = QVBoxLayout(self)
         label = QLabel("Loading...")
@@ -71,16 +72,20 @@ class LoadingWidget(QWidget):
         self.progress_thread.change_sign.connect(self.progress_bar.change_sign)
 
     def show_anim_screen(self):
+        if self.showing:
+            return
         # Start the progress bar animation
         self.custom_parent.setDisabled(True)
         self.progress_thread.start()
         self.progress_thread.set_run()
+        self.showing = True
         self.show()
 
     def stop_anim_screen(self):
         if self.progress_thread is not None and self.progress_thread.isRunning():
             self.progress_thread.stop()
 
+        self.showing = False
         self.custom_parent.setDisabled(False)
         self.close()
 

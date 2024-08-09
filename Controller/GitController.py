@@ -1,9 +1,8 @@
 from PySide6.QtCore import QObject, Signal, Slot
 from pathlib import Path
 from Utils.UserSession import UserSession
-from Utils.Environment import ROLE_ID
+from Utils.Environment import ROLE_ID, FILE_CHANGE_DIC, CREATE_DIR
 from Utils.FileManager import FileManager
-from Utils.Environment import FILE_CHANGE_DIC
 import subprocess
 import requests
 import os
@@ -42,16 +41,30 @@ class GitController(QObject):
 
         # avoid circular import
         from Controller.GitProtocol.GitProtocols import GitProtocolSSH
-        self.git_protocol = GitProtocolSSH(self)
+        self.git_protocol = GitProtocolSSH(self, self.repository_url_ssh)
 
     def repo_exist(self) -> bool:
         git_directory = self.working_path.joinpath(".git/")
         return os.path.isdir(self.working_path) and os.path.isdir(git_directory)
 
-    def _run_git_command(self, command) -> bool:
-        FileManager.move_to(self.raw_working_path)
+    def create_repository_dir(self) -> CREATE_DIR:
+        # Check if the repository directory exists check for the directory and the .git file
+        if self.repo_exist():
+            self.log_message.emit(f"The directory '{self.working_path}' already exists.")
+            return CREATE_DIR.ALREADY_EXIST
+        else:
+            self.log_message.emit(f"Creating directory : {self.working_path} "
+                                                 f"using protocol: {self.__str__()}")
+            if not self.working_path.exists():
+                self.working_path.mkdir(parents=True)
+                return CREATE_DIR.DIR_CREATED
+            else:
+                return CREATE_DIR.JUST_DIR
 
+    def _run_git_command(self, command: list) -> bool:
+        FileManager.move_to(self.raw_working_path)
         command_str = " ".join(command)
+
         try:
             process = subprocess.Popen(
                 command,
@@ -273,7 +286,7 @@ class GitController(QObject):
                 print("initial setup with ssh failed")
                 # Import here to avoid circular import error
                 from Controller.GitProtocol.GitProtocols import GitProtocolHTTPS
-                self.git_protocol = GitProtocolHTTPS(self)
+                self.git_protocol = GitProtocolHTTPS(self, self.repository_url_https)
                 if not self.git_protocol.setup():
                     self.error_message.emit(f"Communication with remote repository failed, canceling setup...")
                 return False

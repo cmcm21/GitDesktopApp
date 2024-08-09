@@ -1,9 +1,6 @@
 from PySide6.QtCore import QObject, Signal, Slot
 from Utils.FileManager import FileManager
-from Utils.UserSession import UserSession
-from Utils.Environment import ROLE_ID
 from pathlib import Path
-import compileall
 import shutil
 import winreg
 import os
@@ -11,6 +8,7 @@ import subprocess
 import platform
 import urllib.request
 import time
+import compileall
 
 
 class SystemController(QObject):
@@ -41,13 +39,6 @@ class SystemController(QObject):
         self.working_path = config["general"]["working_path"]
         self.maya_installed = False
 
-    def setup(self):
-        self.setup_started.emit()
-        self._check_for_maya()
-        if not self._check_for_git():
-            self.install_git()
-        self.setup_finished.emit()
-
     def _check_for_maya(self):
         for path in self.maya_paths:
             if Path(path).exists():
@@ -55,7 +46,7 @@ class SystemController(QObject):
                 self.maya_installed = True
                 self.maya_checked.emit(True)
 
-        self.maya_checked.emit(True)
+        self.maya_checked.emit(False)
 
     def check_registry_key(self, hkey, path):
         try:
@@ -134,23 +125,19 @@ class SystemController(QObject):
         except OSError as e:
             self.error_message.emit(f"Error removing installer: {e}")
 
-    def compile_python_files(self):
-        user_session = UserSession()
-        if user_session.role_id != ROLE_ID.ANIMATOR.value:
-            return
-
-        # WARNING: if you don't move to the working path before continue all the project files will be deleted
-        FileManager.move_to(self.working_path)
-        compileall.compile_dir(self.working_path)
-        # WARNING: We wait in order to prevent that different process access to the same file ending in a lock error
-        time.sleep(1)
-        self.delete_py_files()
-
     def delete_py_files(self):
         for root, dirs, files in os.walk(self.working_path):
             for file in files:
                 if file.endswith('.py'):
                     os.remove(os.path.join(root, file))
+
+    @Slot()
+    def setup(self):
+        self.setup_started.emit()
+        self._check_for_maya()
+        if not self._check_for_git():
+            self.install_git()
+        self.setup_finished.emit()
 
     @Slot()
     def open_maya(self):
@@ -179,10 +166,8 @@ class SystemController(QObject):
         except Exception as e:
             self.error_message.emit(f"Failed to open file: {e}")
 
-    @Slot()
-    def git_setup_completed(self):
-        self.compile_python_files()
-
-    @Slot()
-    def git_get_latest_completed(self):
-        self.compile_python_files()
+    @staticmethod
+    def compile_python_files(source_path: str):
+        # WARNING: if you don't move to the working path before continue all the project files will be deleted
+        FileManager.move_to(source_path)
+        compileall.compile_dir(source_path)
