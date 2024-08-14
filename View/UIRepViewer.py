@@ -1,17 +1,20 @@
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTreeView, QLabel, QFileSystemModel
-from PySide6.QtCore import QModelIndex, Qt
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTreeView, QFileSystemModel, QHBoxLayout, QLabel
+from PySide6.QtCore import QModelIndex, Qt, Signal
+from PySide6 import QtGui
+from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 import os
 
 
-class WorkspaceWidget(QWidget):
+class RepositoryViewerWidget(QWidget):
+
+    file_selected = Signal(str)
+
     def __init__(self, repository_path: str):
         super().__init__()
 
         # Set up the layout
         self.layout = QVBoxLayout()
-
-        # Create a label to display selected file path
-        self.file_label = QLabel("No file selected")
+        self.buttons_layout = QHBoxLayout()
 
         # Create a file system model
         self.model = QFileSystemModel()
@@ -22,14 +25,20 @@ class WorkspaceWidget(QWidget):
         self.tree = QTreeView()
         self.tree.setModel(self.model)
         self.tree.setRootIndex(self.model.index(self.repository_path))
-        self.tree.setColumnWidth(0, 250)
+        self.tree.setAutoScroll(True)
+        self.tree.setFont(QtGui.QFont("Courier New", 10))
+        self.tree.setColumnWidth(0, 200)
+        self.tree.setColumnWidth(1, 100)
+        self.tree.setColumnWidth(2, 150)
+        self.tree.setColumnWidth(3, 150)
+        CustomStyleSheetApplier.set_q_text_edit_style_and_colour(self.tree)
 
         # Connect the tree view's clicked signal to a slot
-        self.tree.clicked.connect(self.on_tree_view_clicked)
+        self.tree.doubleClicked.connect(self.on_tree_view_clicked)
 
         # Add the tree view and label to the layout
+        self.layout.addLayout(self.buttons_layout)
         self.layout.addWidget(self.tree)
-        self.layout.addWidget(self.file_label)
 
         # Set the layout for the main widget
         self.setLayout(self.layout)
@@ -37,9 +46,7 @@ class WorkspaceWidget(QWidget):
     def on_tree_view_clicked(self, index: QModelIndex):
         # Get the file path from the model
         file_path = self.model.filePath(index)
-
-        # Update the label with the selected file path
-        self.file_label.setText(file_path)
+        self.file_selected.emit(file_path)
 
     def set_root_directory(self):
         self.model.setRootPath(self.repository_path)

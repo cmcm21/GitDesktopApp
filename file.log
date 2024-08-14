@@ -695,3 +695,30 @@ Changes not staged for commit:
 no changes added to commit (use "git add" and/or "git commit -a")
 
 2024-06-18 15:37:15,198 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:40:02,281 - UILogger - DEBUG - The directory 'D:\RiggingLauncher\workingSpaces\default' already exists.
+2024-06-18 15:40:32,827 - UILogger - DEBUG - 
+2024-06-18 15:40:32,828 - UILogger - DEBUG - warning: in the working copy of 'file.log', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/Controller/GitController.py', CRLF will be replaced by LF the next time Git touches it
+
+2024-06-18 15:40:32,902 - UILogger - DEBUG - [master 86008f5] Changing HelloSumanth.py
+ 3 files changed, 29 insertions(+), 7 deletions(-)
+
+2024-06-18 15:40:35,519 - UILogger - DEBUG - 
+2024-06-18 15:40:35,519 - UILogger - DEBUG - warning: redirecting to https://gitlab.com/m-correa/rigginglauncher.git/
+remote: 
+remote: To create a merge request for master, visit:        
+remote:   https://gitlab.com/m-correa/rigginglauncher/-/merge_requests/new?merge_request%5Bsource_branch%5D=master        
+remote: 
+To https://gitlab.com/m-correa/rigginglauncher
+   e928a55..86008f5  master -> master
+
+2024-06-18 15:40:35,562 - UILogger - DEBUG - On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   file.log
+
+no changes added to commit (use "git add" and/or "git commit -a")
+

@@ -1,6 +1,8 @@
 import logging
 from PySide6.QtCore import Qt, QMetaObject, Q_ARG
 from PySide6.QtWidgets import QWidget, QTextEdit, QLabel, QVBoxLayout, QPushButton
+from PySide6.QtGui import QFont
+from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 
 
 # Create a custom logger
@@ -50,23 +52,11 @@ class LoggerWidget(QWidget):
         """Text edit"""
         self.text_edit = QTextEdit(self)
         self.text_edit.setReadOnly(True)
-        self.text_edit.setMaximumHeight(110)
-
-        """Label"""
-        self.label = QLabel("Log")
-        self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.label.setObjectName("LoggerLabel")
-
-        """Clear Button"""
-        self.clear_button = QPushButton("Clear")
-        self.clear_button.clicked.connect(self._clear_log)
-        self.clear_button.setObjectName("UILoggerClearButton")
+        CustomStyleSheetApplier.set_q_text_edit_style_and_colour(self.text_edit, "Black", textColour="White")
 
         """Layout"""
         layout = QVBoxLayout(self)
-        layout.addWidget(self.label)
         layout.addWidget(self.text_edit)
-        layout.addWidget(self.clear_button)
 
     def _clear_log(self):
         self.text_edit.clear()

@@ -4,9 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="Setup Configuration file&#10;Setup Git&#10;Add GitController">
-      <change beforePath="$PROJECT_DIR$/file.log" beforeDir="false" afterPath="$PROJECT_DIR$/file.log" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Controller/GitController.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Controller/GitController.py" afterDir="false" />
+    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="Fixing the mr filter and refactoring">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controller/SystemController.py" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/SystemController.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/View/UIManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIManager.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/View/UIRepViewer.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIRepViewer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configFile.toml" beforeDir="false" afterPath="$PROJECT_DIR$/configFile.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/file.log" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,16 +53,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.main.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/Users/m-correa/PycharmProjects/pythonProject/src/main.py",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/m-correa/PycharmProjects/pythonProject/src/main.py&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\m-correa\PycharmProjects\pythonProject" />
       <recent name="C:\Users\m-correa\PycharmProjects\pythonProject\src" />
     </key>
   </component>
@@ -76,7 +82,7 @@
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
+      <option name="SCRIPT_NAME" value="C:\Users\m-correa\PycharmProjects\pythonProject\main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -126,7 +132,103 @@
       <option name="project" value="LOCAL" />
       <updated>1718676183666</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="AutoInstall git&#10;Adding System Controller">
+      <option name="closed" value="true" />
+      <created>1718846646564</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1718846646564</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Deploy config added&#10;Project file structure fixed">
+      <option name="closed" value="true" />
+      <created>1718871377860</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1718871377860</updated>
+    </task>
+    <task id="LOCAL-00006" summary="adding ssh protocol comunication">
+      <option name="closed" value="true" />
+      <created>1719285371067</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1719285371067</updated>
+    </task>
+    <task id="LOCAL-00007" summary="GUI Redesign">
+      <option name="closed" value="true" />
+      <created>1719815222635</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1719815222635</updated>
+    </task>
+    <task id="LOCAL-00008" summary="adding merge request handling">
+      <option name="closed" value="true" />
+      <created>1720170162191</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1720170162191</updated>
+    </task>
+    <task id="LOCAL-00009" summary="+ adding loading widget, and loading management&#10;+ adding login Window and signup Window">
+      <option name="closed" value="true" />
+      <created>1720601496391</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1720601496391</updated>
+    </task>
+    <task id="LOCAL-00010" summary="adding user session">
+      <option name="closed" value="true" />
+      <created>1721122075400</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1721122075400</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Adding user branching">
+      <option name="closed" value="true" />
+      <created>1721195785227</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1721195785227</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Logout and session  widget added">
+      <option name="closed" value="true" />
+      <created>1721291341275</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1721291341275</updated>
+    </task>
+    <task id="LOCAL-00013" summary="fixing the loading widget size">
+      <option name="closed" value="true" />
+      <created>1721296196004</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1721296196004</updated>
+    </task>
+    <task id="LOCAL-00014" summary="UI redesign and logout/login fixed">
+      <option name="closed" value="true" />
+      <created>1721617966028</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1721617966028</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Fixing the mr filter and refactoring">
+      <option name="closed" value="true" />
+      <created>1721637349183</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1721637349183</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -144,6 +246,18 @@
     <MESSAGE value="First Commit" />
     <MESSAGE value="Adding icons to buttons" />
     <MESSAGE value="Setup Configuration file&#10;Setup Git&#10;Add GitController" />
-    <option name="LAST_COMMIT_MESSAGE" value="Setup Configuration file&#10;Setup Git&#10;Add GitController" />
+    <MESSAGE value="AutoInstall git&#10;Adding System Controller" />
+    <MESSAGE value="Deploy config added&#10;Project file structure fixed" />
+    <MESSAGE value="adding ssh protocol comunication" />
+    <MESSAGE value="GUI Redesign" />
+    <MESSAGE value="adding merge request handling" />
+    <MESSAGE value="+ adding loading widget, and loading management&#10;+ adding login Window and signup Window" />
+    <MESSAGE value="adding user session" />
+    <MESSAGE value="Adding user branching" />
+    <MESSAGE value="Logout and session  widget added" />
+    <MESSAGE value="fixing the loading widget size" />
+    <MESSAGE value="UI redesign and logout/login fixed" />
+    <MESSAGE value="Fixing the mr filter and refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing the mr filter and refactoring" />
   </component>
 </project>

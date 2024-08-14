@@ -1,0 +1,286 @@
+QMainWindow {
+    background-color: #2e2e2e;
+    color: #FFFFFF;
+}
+
+QWidget {
+    background-color: #2e2e2e;
+    color: #FFFFFF;
+}
+
+QMenuBar {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+}
+
+QMenuBar::item {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+}
+
+QMenuBar::item:selected {
+    background-color: #555555;
+}
+
+QMenu {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+}
+
+QMenu::item {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+}
+
+QMenu::item:selected {
+    background-color: #555555;
+}
+
+QPushButton {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+    border: 1px solid #555555;
+    padding: 5px;
+    font-size: 12px;
+}
+
+QPushButton:hover {
+    background-color: #555555;
+}
+
+QLineEdit {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+    border: 1px solid #555555;
+}
+
+QComboBox {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+}
+
+QStatusBar {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+}
+
+QToolBar {
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+}
+
+QTreeView{
+    color: black;
+    border-radius: 5px;
+    border: 2px solid black;
+    padding: 5px;
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #CCCCCC, stop: 1 #999999);
+}
+
+QHeaderView::section{
+    background-color: #2e2e2e;
+    color: #FFFFFF;
+    border: 0px solid black;
+}
+
+QScrollBar::horizontal{
+    border-radius: 5px;
+    border: 2px solid black;
+}
+
+QFileSystemModel{
+    background-color: #3c3c3c;
+    color: #FFFFFF;
+}
+
+QTabWidget::pane {
+    border: 0px solid black;
+    background: transparent;
+}
+
+QTabWidget::tab-bar:top {
+    top: 1px;
+}
+
+QTabWidget::tab-bar:bottom {
+    bottom: 1px;
+}
+
+QTabWidget::tab-bar:left {
+    right: 1px;
+}
+
+QTabWidget::tab-bar:right {
+    left: 1px;
+}
+
+QTabBar::tab {
+    border: 1px solid black;
+}
+
+QTabBar::tab:selected {
+    background: "#CCCCCC";
+    color: black;
+}
+
+QTabBar::tab:!selected {
+    background: "#1E90FF";
+}
+
+QTabBar::tab:!selected:hover {
+    background: #999;
+}
+
+QTabBar::tab:top:!selected {
+    margin-top: 3px;
+}
+
+QTabBar::tab:bottom:!selected {
+    margin-bottom: 3px;
+}
+
+QTabBar::tab:top, QTabBar::tab:bottom {
+    min-width: 8ex;
+    margin-right: -1px;
+    padding: 5px 10px 5px 10px;
+    border-radius: 3px;
+}
+
+QTabBar::tab:top:selected {
+    border-bottom-color: #ffffff;
+}
+
+QTabBar::tab:bottom:selected {
+    border-top-color: #ffffff;
+}
+
+QTabBar::tab:top:last, QTabBar::tab:bottom:last,
+QTabBar::tab:top:only-one, QTabBar::tab:bottom:only-one {
+    margin-right: 0;
+}
+
+QTabBar::tab:left:!selected {
+    margin-right: 3px;
+}
+
+QTabBar::tab:right:!selected {
+    margin-left: 3px;
+}
+
+QTabBar::tab:left, QTabBar::tab:right {
+    min-height: 8ex;
+    margin-bottom: -1px;
+    padding: 10px 5px 10px 5px;
+}
+
+QTabBar::tab:left:selected {
+    border-radius: 3px;
+    border: 1px solid black;
+}
+
+QTabBar::tab:right:selected {
+    border-radius: 3px;
+    border: 1px solid black;
+}
+
+QListWidget{
+    border: 0px solid black;
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, stop: 1 #333333);
+}
+
+QListWidget::item{
+    border-radius: 5px;
+    border: 1px solid white;
+    padding: 2px;
+}
+
+QListWidget::item::selected{
+    background-color: "#666666";
+    font-weight: bold;
+}
+
+QListWidget::item::hover{
+    background-color: "#1E90FF";
+}
+
+QTextEdit{
+    border-radius: 20px;
+    border: 2px solid black;
+    padding: 5px;
+    color: white;
+}
+
+QScrollArea{
+    border-radius: 10px;
+    border: 5px solid black;
+}
+
+QToolTip{
+    background-color: whitesmoke;
+    color: black;
+}
+QMenu{
+    border: 3px solid white;
+}
+
+
+QMenu::item:selected{
+    background-color: #999999;
+}
+
+#MainWindowLeftFrame{
+    border: 2px solid black;
+    border-radius: 5px;
+}
+#MainWindowTabs, #GitTabFrame, #Pv4TabFrame{
+    border: 2px solid black;
+    border-radius: 5px;
+}
+#GitTab, #PV4Tab{
+    border: 1px solid black;
+    border-radius: 3px;
+}
+
+#CommentTextEdit{
+    max-height: 30px;
+}
+
+#ChangesListTab, #HistoryTab, #MergeRequestTab{
+    border-radius: 10px;
+    border: 2px solid black;
+    background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, stop: 1 #333333);
+}
+
+#MayaButton, #NewWorkspaceButton, #SettingsButton{
+    icon-size: 32px 32px;
+}
+
+#UpdateButton, #GetLatestButton{
+}
+
+#LoggerLabel{
+    text-align: center;
+}
+
+#DiscussionTab, #CommitsTab, #ChangeListTab{
+    background: transparent;
+}
+
+#MergeRequestInsideTabs{
+    background: transparent;
+}
+
+#UserLabel {
+    font-size: 16px;
+    font-style: bold;
+    padding: 3px;
+}
+
+#LauncherUserMenu {
+    border: 2px solid black;
+}

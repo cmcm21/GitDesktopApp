@@ -1,8 +1,68 @@
 [git]
 username = "m-correa"
-repository_name="testpository"
-personal_access_token= "glpat-RpDVxM2RPLz7zQvQZ9Cx"
-repository_url = "https://m-correa:glpat-RpDVxM2RPLz7zQvQZ9Cx@gitlab.com/m-correa/testrespository.git"
+repository_name = "testrepository"
+project_id = "58753861"
+personal_access_token = "glpat-7jNzAfWqokoiPuTjuKEh"
+repository_url = "https://m-correa:glpat-7jNzAfWqokoiPuTjuKEh@gitlab.com/m-correa/testrespository.git"
+repository_url_ssh = "git@gitlab.com:m-correa/testrespository.git"
+gitlab_api_url = "https://gitlab.com/api/v4"
+git_hosts = [
+    "gitlab.com",
+]
+
+[git_anim]
+username = "m-correa"
+repository_name = "testrepository_anim"
+project_id = "60647725"
+personal_access_token = "glpat-7jNzAfWqokoiPuTjuKEh"
+repository_url = "https://gitlab.com/m-correa/testrepository_anim.git"
+repository_url_ssh = "git@gitlab.com:m-correa/testrepository_anim.git"
+gitlab_api_url = "https://gitlab.com/api/v4"
+git_hosts = [
+    "gitlab.com",
+]
 
 [general]
-working_path = 'D://RiggingLauncher/workingSpaces/default/'
+working_path = "D://RiggingLauncher/workingSpaces/default/"
+animator_path = "D://RiggingLauncher/workingSpaces/animator/"
+maya25_path = "C://Program Files/Autodesk/Maya2025/bin/maya.exe"
+maya24_path = "C://Program Files/Autodesk/Maya2024/bin/maya.exe"
+maya22_path = "C://Program Files/Autodesk/Maya2022/bin/maya.exe"
+git_path = "C://Program Files/Git/git-cmd.exe"
+git_installer_url = "https://github.com/git-for-windows/git/releases/download/v2.41.0.windows.1/Git-2.41.0-64-bit.exe"
+
+[db.roles]
+names = [
+    "admin",
+    "dev",
+    "animator",
+]
+default_role = "animator"
+
+[db.users]
+user_names = [
+    "m-correa",
+    "s-shenoy",
+    "vladen",
+]
+default_password = "1234"
+emails = [
+    "m-correa@soleilgamestudios.com",
+    "s-shenoy@soleilgamestudios.com",
+    "v.afanasjevs@soleilgamestudios.com",
+]
+roles = [
+    "admin",
+    "admin",
+    "dev",
+]
+
+[test]
+debug = false
+debug_user = "m-correa"
+
+[projects]
+projects = [
+    "EDO",
+    "N1",
+]

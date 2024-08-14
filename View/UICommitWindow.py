@@ -1,25 +1,31 @@
-from .BaseWindow import BaseWindow
+from View.BaseWindow import BaseWindow
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QWidget
 from PySide6.QtCore import Signal, Qt
-from .WindowID import WindowID
+from PySide6.QtGui import QFont
+from View.WindowID import WindowID
+from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 
 
 class CommitWindow(BaseWindow):
     accept_clicked_signal = Signal(str)
     cancel_clicked_signal = Signal()
 
-    def __init__(self):
+    def __init__(self, label="Insert a commit message"):
         super().__init__("Commit Windows", WindowID.COMMIT, 300, 150)
         """Layouts"""
         self.main_layout = QVBoxLayout()
         self.buttons_layout = QHBoxLayout()
         """Buttons"""
-        self.accept_button = self._create_button("checkmark.png", "Accept")
-        self.cancel_button = self._create_button("cross.png", "Cancel")
+        self.accept_button = self.create_button(self, "checkmark.png", "Accept")
+        self.cancel_button = self.create_button(self, "cross.png", "Cancel")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.cancel_button, "Blue")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.accept_button, "Blue")
         "Others"
         self.input_message = QLineEdit()
+        self.input_message.setFont(QFont("Courier New", 10))
         self.input_message.setPlaceholderText("")
-        self.input_label = QLabel("Insert a commit message")
+        self.input_label = QLabel(label)
+        self.input_label.setFont(QFont("Courier New", 10))
         self._build()
         self._connect_buttons()
 
@@ -39,19 +45,13 @@ class CommitWindow(BaseWindow):
     def _connect_buttons(self):
         self.accept_button.clicked.connect(self, self._on_accept_clicked_signal)
         self.cancel_button.clicked.connect(self, self._on_cancel_clicked_signal)
-        return
 
     def _on_accept_clicked_signal(self):
         if self.input_message.text() == "":
             self.input_message.setPlaceholderText("Enter a commit message!!!")
         else:
             message: str = self.input_message.text()
-            print(message)
             self.accept_clicked_signal[str].emit(message)
-        return
 
     def _on_cancel_clicked_signal(self):
         self.cancel_clicked_signal.emit()
-        return
-
-
