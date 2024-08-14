@@ -1,8 +1,8 @@
 import logging
 from PySide6.QtCore import Qt, QMetaObject, Q_ARG
 from PySide6.QtWidgets import QWidget, QTextEdit, QLabel, QVBoxLayout, QPushButton
-from PySide6.QtGui import QFont
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from PySide6.QtGui import QFont
 
 
 # Create a custom logger
@@ -58,7 +58,7 @@ class LoggerWidget(QWidget):
         layout = QVBoxLayout(self)
         layout.addWidget(self.text_edit)
 
-    def _clear_log(self):
+    def clear_log(self):
         self.text_edit.clear()
 
     def append_log_message(self, message):
