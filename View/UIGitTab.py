@@ -7,7 +7,8 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QLabel,
     QPushButton,
-    QSplitter
+    QSplitter,
+    QSizePolicy
 )
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap, QIcon, QAction, QFont
@@ -112,14 +113,13 @@ class GitSnifferWidget(QWidget):
         except TypeError:
             return
 
-    def on_commit_clicked(self, commit):
+    @staticmethod
+    def on_commit_clicked(commit):
         print(commit)
 
 
 class UIGitTab(QWidget):
     """ This widget is show when the Git tab is pressed in the LauncherWindow """
-    upload_signal = Signal()
-    get_latest_signal = Signal()
     history_tab_clicked = Signal()
     changes_list_clicked = Signal()
     merge_request_clicked = Signal()
@@ -131,15 +131,15 @@ class UIGitTab(QWidget):
         self.header = QHBoxLayout()
         self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png")
         self.download_btn: QPushButton = BaseWindow.create_button(self, "arrowDown.png")
-        """ Connect action triggers """
-        self.upload_btn.clicked.connect(lambda: self.upload_signal.emit())
-        self.download_btn.clicked.connect(lambda: self.get_latest_signal.emit())
+        self.publish_btn: QPushButton = BaseWindow.create_button(self, "publish.png", "Publish")
         """ Layouts """
         self.main_layout = QVBoxLayout()
         self.body_layout = QHBoxLayout()
         """ Custom Widgets """
         self.repository_viewer = RepositoryViewerWidget(working_path)
+        self.repository_viewer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.git_sniffer = GitSnifferWidget()
+        self.git_sniffer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         """ Other widgets """
         self.splitter = QSplitter(Qt.Horizontal)
         self.build()
@@ -151,9 +151,11 @@ class UIGitTab(QWidget):
         """Buttons"""
         self.upload_btn.setFixedSize(QSize(120, 35))
         self.download_btn.setFixedSize(QSize(120, 35))
+        self.publish_btn.setFixedSize(QSize(120, 35))
         """ Header Layout """
         self.repository_viewer.buttons_layout.addWidget(self.upload_btn, 0, Qt.AlignmentFlag.AlignLeft)
-        self.repository_viewer.buttons_layout.addWidget(self.download_btn, 10, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.download_btn, 3, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.publish_btn, 10, Qt.AlignmentFlag.AlignLeft)
         """ Body layout """
         self.splitter.addWidget(self.repository_viewer)
         self.splitter.addWidget(self.git_sniffer)
@@ -166,6 +168,11 @@ class UIGitTab(QWidget):
     def apply_styles(self):
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.upload_btn, "Blue")
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.download_btn, "Blue")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.publish_btn, "Brown")
+
+        publish_font = self.publish_btn.font()
+        publish_font.setBold(True)
+        self.publish_btn.setFont(publish_font)
 
     def connect_signals(self):
         self.git_sniffer.tabs.tabBarClicked.connect(self._on_git_sniffer_tab_clicked)
@@ -222,6 +229,14 @@ class UIGitTab(QWidget):
 
         if self.git_sniffer.changes_list.count() == 0:
             self.git_sniffer.changes_list.addItem("No changes yet")
+
+    def show_anim_tab(self):
+        self.splitter.setSizes([1, 0])
+        self.git_sniffer.setDisabled(True)
+
+    def hide_anim_tab(self):
+        self.splitter.setSizes([1, 1])
+        self.git_sniffer.setDisabled(False)
 
     def on_repository_path_updated(self):
         self.repository_viewer.set_root_directory()

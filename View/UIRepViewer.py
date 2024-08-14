@@ -1,4 +1,13 @@
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QTreeView, QFileSystemModel, QHBoxLayout, QLabel
+from PySide6.QtWidgets import (
+    QWidget,
+    QVBoxLayout,
+    QTreeView,
+    QFileSystemModel,
+    QHBoxLayout,
+    QSizePolicy,
+    QLabel,
+    QApplication
+)
 from PySide6.QtCore import QModelIndex, Qt, Signal
 from PySide6 import QtGui
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
@@ -20,9 +29,9 @@ class RepositoryViewerWidget(QWidget):
         self.model = QFileSystemModel()
         self.repository_path = os.path.join(repository_path, "../")
         self.model.setRootPath(self.repository_path)
-
         # Create a tree view and set the model
         self.tree = QTreeView()
+        self.tree.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.tree.setModel(self.model)
         self.tree.setRootIndex(self.model.index(self.repository_path))
         self.tree.setAutoScroll(True)

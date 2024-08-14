@@ -3,6 +3,7 @@ from pathlib import Path
 import tomli_w
 import tomli
 import shutil
+import compileall
 
 
 class FileManager:
@@ -81,3 +82,9 @@ class FileManager:
     @staticmethod
     def get_dir_files_count(path: str):
         return len(os.listdir(path))
+
+    @staticmethod
+    def compile_python_files(source_path: str):
+        # WARNING: if you don't move to the working path before continue all the project files will be deleted
+        FileManager.move_to(source_path)
+        compileall.compile_dir(source_path)

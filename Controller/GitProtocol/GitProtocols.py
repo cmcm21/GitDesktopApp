@@ -215,7 +215,7 @@ class GitProtocolSSH(GitProtocolAbstract):
                 self.git_controller.log_message.emit(f"Connection successful using existing key: {key}")
                 return True
             else:
-                print(f"Connection with git repository: {self.repository_url}")
+                print(f"Connection with git repository: {self.repository_url} failed using key: {key}")
         return False
 
 
