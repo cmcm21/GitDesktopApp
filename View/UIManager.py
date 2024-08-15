@@ -43,17 +43,16 @@ class UIManager(QObject):
             return
 
         if self.current_window is not None and self.current_window != self.windows[window_id]:
-            self.current_window.hide()
+            self.current_window.automatic_close = True
+            self.current_window.close()
 
         self.current_window = self.windows[window_id]
+        self.current_window.open()
         if window_id == WindowID.LAUNCHER:
+            self.current_window.automatic_close = False
             QTimer.singleShot(500, self.open_launcher_window)
-        else:
-            self.current_window.open()
 
     def open_launcher_window(self):
-        self.current_window.open()
-        self.current_window.showMaximized()
         self.current_window.repaint()
         self.current_window.update()
 
@@ -101,6 +100,7 @@ class UIManager(QObject):
             return
         self.launcher_window.on_setup_completed(success)
         self.launcher_window.loading.stop_anim_screen()
+        self.current_window.showMaximized()
         self.launcher_window.git_tab.send_starting_signals()
 
     @Slot(str)
@@ -184,3 +184,4 @@ class UIManager(QObject):
     @Slot()
     def on_login(self):
         self.launcher_window.logger_widget.clear_log()
+
