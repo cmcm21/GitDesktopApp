@@ -321,7 +321,7 @@ class Application(QApplication):
         self._stop_thread("_db_manager_thread")
         self._stop_thread("_anim_git_controller_thread")
 
-        if self.user_session:
+        if self.user_session is not None:
             del self.user_session
         self.__del__()
 

@@ -3,6 +3,8 @@ from View.UILoginWindow import LoginWindow
 from PySide6.QtWidgets import QPushButton
 from PySide6.QtCore import Slot, Signal, QObject, QTimer
 from View.WindowID import WindowID
+from Utils.Environment import ROLE_ID
+from Utils.UserSession import UserSession
 
 
 class UIManager(QObject):
@@ -71,10 +73,12 @@ class UIManager(QObject):
         self.lw_login_out = self.launcher_window.login_out
         self.lw_destroy_application = self.launcher_window.application_destroyed
         self.lg_destroy_application = self.login_window.application_destroyed
-        self.lw_destroy_application.connect(self._on_application_destroyed)
-        self.lg_destroy_application.connect(self._on_application_destroyed)
         self.lw_file_tree_clicked = self.launcher_window.git_tab.repository_viewer.file_selected
         self.lw_publish_to_anim = self.launcher_window.publish_to_anim_rep
+
+        self.lw_destroy_application.connect(self._on_application_destroyed)
+        self.lg_destroy_application.connect(self._on_application_destroyed)
+        self.launcher_window.switch_account.connect(self.on_switch_accounts)
 
     def _on_application_destroyed(self):
         for window in self.windows.values():
@@ -89,6 +93,19 @@ class UIManager(QObject):
         self.lw_accept_merge_request_and_merge.connect(lambda: self.launcher_window.loading.show_anim_screen())
         self.lw_uploaded_clicked.connect(lambda: self.launcher_window.loading.show_anim_screen())
         self.lw_get_latest_clicked.connect(lambda: self.launcher_window.loading.show_anim_screen())
+
+    def on_switch_accounts(self, role: ROLE_ID):
+        user_session = UserSession()
+        user_session.role_id = role.value
+
+        if self.current_window.window_id == WindowID.LAUNCHER:
+            self.current_window.automatic_close = True
+            self.current_window.close()
+            self.current_window.set_user_session(user_session)
+
+            self.current_window = self.windows[WindowID.LAUNCHER]
+            self.current_window.open()
+            self.current_window.automatic_close = False
 
     @Slot()
     def on_git_setup_started(self):

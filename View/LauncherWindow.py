@@ -23,6 +23,7 @@ from View.UIAdminWidget import AdminWindow
 from Utils.UserSession import UserSession
 from Utils.Environment import ROLE_ID
 import Utils.Environment as Env
+from Utils.SignalManager import SignalManager
 
 
 class LauncherWindow(BaseWindow):
@@ -34,6 +35,7 @@ class LauncherWindow(BaseWindow):
     login_out = Signal()
     admin_window_clicked = Signal()
     check_changes_list = Signal()
+    switch_account = Signal(ROLE_ID)
 
     def __init__(self, config: dict, window_id: WindowID, width=900, height=500):
         super().__init__("Puppet Launcher", window_id, width, height)
@@ -237,7 +239,8 @@ class LauncherWindow(BaseWindow):
         self.user_menu.setTitle(self.user_session.username)
 
     def set_user_buttons(self):
-        if self.user_session.role_id == Env.ROLE_ID.ANIMATOR.value:
+        if (self.user_session.role_id == Env.ROLE_ID.ANIMATOR.value or
+                self.user_session.role_id == Env.ROLE_ID.ADMIN_ANIM.value):
             self.set_animator()
 
         if self.user_session.role_id == Env.ROLE_ID.DEV.value:
@@ -277,15 +280,37 @@ class LauncherWindow(BaseWindow):
         self.user_menu.addAction(self.user_session_widget.user_action)
         self.user_menu.addAction(self.user_session_widget.logout_action)
 
-        if self.user_session.role_id == ROLE_ID.ADMIN.value:
-            self.user_session_widget.admin_signal.connect(self.create_admin_window)
-            self.user_menu.addAction(self.user_session_widget.get_admin_action())
+        if self.user_session.role_id == ROLE_ID.ADMIN.value or self.user_session.role_id == ROLE_ID.ADMIN_ANIM.value:
+            self.user_session_widget.admin_signal.connect(self.on_create_admin_window)
 
-    def create_admin_window(self):
+            SignalManager.connect_signal(self.user_session_widget,
+                                         self.user_session_widget.switch_account_signal,
+                                         self.on_switch_account)
+
+            self.user_menu.addAction(self.user_session_widget.get_admin_action())
+            self.user_menu.addAction(self.user_session_widget.get_switch_account_action())
+
+    def on_create_admin_window(self):
         if self.admin_window is None:
             self.admin_window = AdminWindow()
 
         self.admin_window.show()
+
+    def on_switch_account(self, role: ROLE_ID):
+        SignalManager.disconnect_signal(self.user_session_widget,
+                                        self.user_session_widget.switch_account_signal,
+                                        self.on_switch_account)
+        message_box = QMessageBox()
+        message_box.setWindowTitle("Switch Roles")
+        message_box.setIcon(QMessageBox.Information)
+        message_box.setText("Are you sure to switch roles?")
+        message_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+        message_box.setDefaultButton(QMessageBox.Ok)
+
+        reply = message_box.exec()
+
+        if reply == QMessageBox.Ok:
+            self.switch_account.emit(role)
 
     def _close_commit_window(self):
         if self.commit_window is not None:
