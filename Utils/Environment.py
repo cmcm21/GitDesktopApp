@@ -15,6 +15,7 @@ FILE_CHANGE_DIC = {
 
 
 class ROLE_ID(Enum):
+    NONE = 0
     ADMIN = 1
     DEV = 2
     ANIMATOR = 3

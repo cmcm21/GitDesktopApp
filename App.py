@@ -75,6 +75,7 @@ class Application(QApplication):
             (self.ui_manager.lw_destroy_application, self.on_application_destroyed),
             (self.ui_manager.lg_destroy_application, self.on_application_destroyed),
             (self.ui_manager.lw_file_tree_clicked, self.system_controller.open_file),
+            (self.ui_manager.lw_switch_account, self.on_switch_account)
         ])
 
     def _connect_ui_manager_git_controller(self):
@@ -267,15 +268,21 @@ class Application(QApplication):
         self.closeAllWindows()
         return
 
+    @staticmethod
+    def is_animator(role: ROLE_ID):
+        return role == ROLE_ID.ANIMATOR.value or role == ROLE_ID.ADMIN_ANIM.value
+
     @Slot(str)
-    def login_accepted(self, username: str):
+    def login_accepted(self, username: str, role: ROLE_ID = ROLE_ID.NONE):
         self.user_session.login(username)
+        if role != ROLE_ID.NONE:
+            self.user_session.role_id = role.value
         self.ui_manager.launcher_window.set_user_session(self.user_session)
         self.ui_manager.open_window(WindowID.LAUNCHER)
         self._connect_git_animator_controller_generic()
 
         # We need to disconnect and connect the signals soo we don't duplicate calls
-        if self.user_session.role_id == ROLE_ID.ANIMATOR.value:
+        if self.is_animator(self.user_session.role_id):
             self._disconnect_git_controller()
             self._disconnect_ui_manager_git_controller()
 
@@ -292,12 +299,13 @@ class Application(QApplication):
     @Slot()
     def on_system_controller_setup_finished(self):
         if self.git_installed:
-            if self.user_session.role_id == ROLE_ID.ANIMATOR.value:
+            if self.is_animator(self.user_session.role_id):
                 print("User is an animator")
                 self.git_animator_setup.emit()
             else:
                 print("User is not animator")
                 self.git_setup.emit()
+
 
     @Slot(bool)
     def on_git_checked(self, success: bool):
@@ -335,3 +343,9 @@ class Application(QApplication):
     def on_login_out(self):
         self.user_session.logout()
         self.ui_manager.open_window(WindowID.LOGING)
+
+    @Slot()
+    def on_switch_account(self, role: ROLE_ID):
+        self.ui_manager.launcher_window.logger_widget.clear_log()
+        self.login_accepted(self.user_session.username, role)
+

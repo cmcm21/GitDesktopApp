@@ -20,7 +20,7 @@ class LoginWindow(BaseWindow):
         self.setFixedSize(width, height)
         # Create widgets
         self.user_icon = QLabel()
-        self.user_icon.setPixmap(self.get_pixmap("singleplayer.png"))
+        self.user_icon.setPixmap(self.get_pixmap("default_icon.png"))
         self.icon_frame = self.create_default_frame("IconFrame")
         self.icon_frame.setFixedSize(160, 150)
         self.user_icon.setFixedSize(90, 80)
