@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QVBoxLayout, QHBoxLayout, QSizePolicy
 from PySide6.QtGui import QIcon, QPixmap, QFont
-from PySide6.QtCore import Qt, Signal, Slot
+from PySide6.QtCore import Qt, Signal, Slot, QSize
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
@@ -20,7 +20,9 @@ class LoginWindow(BaseWindow):
         self.setFixedSize(width, height)
         # Create widgets
         self.user_icon = QLabel()
-        self.user_icon.setPixmap(self.get_pixmap("singleplayer.png"))
+        self.pixmap = self.get_pixmap("default_icon.ico")
+        self.pixmap.scaled(QSize(128, 128))
+        self.user_icon.setPixmap(self.pixmap)
         self.icon_frame = self.create_default_frame("IconFrame")
         self.icon_frame.setFixedSize(160, 150)
         self.user_icon.setFixedSize(90, 80)

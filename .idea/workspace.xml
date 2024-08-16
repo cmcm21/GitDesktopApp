@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="Fixing the mr filter and refactoring">
+    <list default="true" id="aa653f89-483e-4649-bc21-a7d058191672" name="Changes" comment="Fix signal management">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/App.py" beforeDir="false" afterPath="$PROJECT_DIR$/App.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controller/SystemController.py" beforeDir="false" afterPath="$PROJECT_DIR$/Controller/SystemController.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Utils/Environment.py" beforeDir="false" afterPath="$PROJECT_DIR$/Utils/Environment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/View/BaseWindow.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/BaseWindow.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/View/UIManager.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIManager.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/View/UIRepViewer.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIRepViewer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/View/UIMergeRequestTab.py" beforeDir="false" afterPath="$PROJECT_DIR$/View/UIMergeRequestTab.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/configFile.toml" beforeDir="false" afterPath="$PROJECT_DIR$/configFile.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/file.log" beforeDir="false" />
     </list>
@@ -44,6 +44,9 @@
     &quot;second&quot;: &quot;20c856ab-8d5c-43c6-9040-1877bad8f087&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/App.py" root0="FORCE_HIGHLIGHTING" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -55,6 +58,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Python.UIManager.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/m-correa/PycharmProjects/pythonProject/src/main.py&quot;,
@@ -67,7 +71,29 @@
       <recent name="C:\Users\m-correa\PycharmProjects\pythonProject\src" />
     </key>
   </component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.main">
+    <configuration name="UIManager" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProject" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/View" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/View/UIManager.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="pythonProject" />
       <option name="ENV_FILES" value="" />
@@ -91,6 +117,11 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.UIManager" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -228,7 +259,71 @@
       <option name="project" value="LOCAL" />
       <updated>1721637349183</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Adding open file from tree view feature">
+      <option name="closed" value="true" />
+      <created>1721638677461</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1721638677461</updated>
+    </task>
+    <task id="LOCAL-00017" summary="refactoring">
+      <option name="closed" value="true" />
+      <created>1721714102567</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1721714102567</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Multiple ssh keys management feature added">
+      <option name="closed" value="true" />
+      <created>1721800969398</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1721800969398</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Add Admin Window">
+      <option name="closed" value="true" />
+      <created>1721984336063</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1721984336063</updated>
+    </task>
+    <task id="LOCAL-00020" summary="fixing add new users and delete user as admin">
+      <option name="closed" value="true" />
+      <created>1722502913870</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1722502913870</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Get latest for animator&#10;Compile py -&gt; pyc then remove all the .py">
+      <option name="closed" value="true" />
+      <created>1722568665715</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1722568665715</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Get latest Warning Message box">
+      <option name="closed" value="true" />
+      <created>1722825425084</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1722825425084</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Fix signal management">
+      <option name="closed" value="true" />
+      <created>1723194100504</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1723194100504</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -258,6 +353,37 @@
     <MESSAGE value="fixing the loading widget size" />
     <MESSAGE value="UI redesign and logout/login fixed" />
     <MESSAGE value="Fixing the mr filter and refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing the mr filter and refactoring" />
+    <MESSAGE value="Adding open file from tree view feature" />
+    <MESSAGE value="refactoring" />
+    <MESSAGE value="Multiple ssh keys management feature added" />
+    <MESSAGE value="Add Admin Window" />
+    <MESSAGE value="fixing add new users and delete user as admin" />
+    <MESSAGE value="Get latest for animator&#10;Compile py -&gt; pyc then remove all the .py" />
+    <MESSAGE value="Get latest Warning Message box" />
+    <MESSAGE value="Fix signal management" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix signal management" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Utils/FileManager.py</url>
+          <line>88</line>
+          <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Utils/FileManager.py</url>
+          <line>89</line>
+          <option name="timeStamp" value="97" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

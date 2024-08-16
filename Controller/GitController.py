@@ -238,7 +238,7 @@ class GitController(QObject):
         self._run_git_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
 
         # Push changes to the remote repository
-        self._run_git_command(['git', 'push', '--force', 'origin', branch])
+        self._run_git_command(['git', 'push', 'origin', branch, '--force'])
 
         # Check the status of the repository
         self._run_git_command(['git', 'status'])
@@ -319,6 +319,7 @@ class GitController(QObject):
         else:
             self._commit_and_push_everything(message, self._get_main_branch_name())
         self.push_completed.emit()
+
 
     @Slot()
     def load_merge_requests(self):
@@ -492,4 +493,3 @@ class GitController(QObject):
         # Check the status of the repository
         self._run_git_command(['git', 'status'])
         self.get_latest_completed.emit()
-

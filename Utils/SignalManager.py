@@ -34,5 +34,5 @@ class SignalManager(QObject):
 
     @staticmethod
     def _unregister_connection(signal: SignalInstance, method: Slot):
-        if signal in SignalManager._connected_signals:
+        if signal in SignalManager._connected_signals and method in SignalManager._connected_signals[signal]:
             SignalManager._connected_signals[signal].remove(method)

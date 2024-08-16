@@ -1,14 +1,17 @@
 from View.LauncherWindow import LauncherWindow
 from View.UILoginWindow import LoginWindow
 from PySide6.QtWidgets import QPushButton
-from PySide6.QtCore import Slot, Signal, QObject
+from PySide6.QtCore import Slot, Signal, QObject, QTimer
 from View.WindowID import WindowID
+from Utils.Environment import ROLE_ID
+from Utils.UserSession import UserSession
 
 
 class UIManager(QObject):
     """Launcher window buttons signals"""
     lw_get_latest_clicked = Signal()
     lw_uploaded_clicked = Signal(str)
+    lw_publish_to_anim = Signal(str)
     lw_open_maya_clicked = Signal()
     lw_login_out = Signal()
     lw_new_workspace_clicked = Signal()
@@ -19,6 +22,7 @@ class UIManager(QObject):
     lw_file_tree_clicked = Signal(str)
     lg_login_accepted = Signal()
     lw_destroy_application = Signal()
+    lw_switch_account = Signal()
     lg_destroy_application = Signal()
 
     def __init__(self, config: dict):
@@ -42,12 +46,18 @@ class UIManager(QObject):
             return
 
         if self.current_window is not None and self.current_window != self.windows[window_id]:
-            self.current_window.hide()
+            self.current_window.automatic_close = True
+            self.current_window.close()
 
         self.current_window = self.windows[window_id]
         self.current_window.open()
         if window_id == WindowID.LAUNCHER:
-            self.current_window.showMaximized()
+            self.current_window.automatic_close = False
+            QTimer.singleShot(500, self.open_launcher_window)
+
+    def open_launcher_window(self):
+        self.current_window.repaint()
+        self.current_window.update()
 
     def _connect_launcher_windows(self):
         """ Using UIManager signals to make a bridge between UI Signals and Controllers """
@@ -55,7 +65,7 @@ class UIManager(QObject):
         self.lw_git_changes_list_tab_clicked = self.launcher_window.git_tab.changes_list_clicked
         self.lw_git_merge_request_tab_clicked = self.launcher_window.git_tab.merge_request_clicked
         self.lw_get_latest_clicked = self.launcher_window.get_latest
-        self.lw_uploaded_clicked = self.launcher_window.upload_repository_signal
+        self.lw_uploaded_clicked = self.launcher_window.upload_repository
         self.lw_open_maya_clicked = self.launcher_window.maya_btn.clicked
         self.lw_window_closed = self.launcher_window.window_closed
         self.lw_get_merge_request_changed = self.launcher_window.git_tab.git_sniffer.merge_request.selected_mr_changed
@@ -64,9 +74,12 @@ class UIManager(QObject):
         self.lw_login_out = self.launcher_window.login_out
         self.lw_destroy_application = self.launcher_window.application_destroyed
         self.lg_destroy_application = self.login_window.application_destroyed
+        self.lw_file_tree_clicked = self.launcher_window.git_tab.repository_viewer.file_selected
+        self.lw_publish_to_anim = self.launcher_window.publish_to_anim_rep
+        self.lw_switch_account = self.launcher_window.switch_account
+
         self.lw_destroy_application.connect(self._on_application_destroyed)
         self.lg_destroy_application.connect(self._on_application_destroyed)
-        self.lw_file_tree_clicked = self.launcher_window.git_tab.repository_viewer.file_selected
 
     def _on_application_destroyed(self):
         for window in self.windows.values():
@@ -82,12 +95,17 @@ class UIManager(QObject):
         self.lw_uploaded_clicked.connect(lambda: self.launcher_window.loading.show_anim_screen())
         self.lw_get_latest_clicked.connect(lambda: self.launcher_window.loading.show_anim_screen())
 
+    @Slot()
+    def on_git_setup_started(self):
+        self.launcher_window.loading.show_anim_screen()
+
     @Slot(bool)
     def on_setup_completed(self, success: bool):
         if self.launcher_window.window_id != WindowID.LAUNCHER:
             return
         self.launcher_window.on_setup_completed(success)
         self.launcher_window.loading.stop_anim_screen()
+        self.current_window.showMaximized()
         self.launcher_window.git_tab.send_starting_signals()
 
     @Slot(str)
@@ -141,10 +159,6 @@ class UIManager(QObject):
         self.launcher_window.loading.stop_anim_screen()
 
     @Slot()
-    def on_git_setup_started(self):
-        self.launcher_window.loading.show_anim_screen()
-
-    @Slot()
     def on_system_controller_setup_started(self):
         self.launcher_window.loading.show_anim_screen()
 
@@ -171,3 +185,8 @@ class UIManager(QObject):
     @Slot()
     def on_anim_rep_creation_completed(self):
         self.launcher_window.loading.stop_anim_screen()
+
+    @Slot()
+    def on_login(self):
+        self.launcher_window.logger_widget.clear_log()
+

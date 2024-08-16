@@ -23,21 +23,25 @@ class BaseWindow(QMainWindow):
         self.setMinimumWidth(width)
         self.setMinimumHeight(height)
         self._set_window_icon()
+        self.automatic_close = False
 
     def closeEvent(self, event):
-        reply = QMessageBox.question(
-            self,
-            'Quit',
-            'Are you sure you want to quit?',
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
-        )
-
-        if reply == QMessageBox.Yes:
+        if self.automatic_close:
             event.accept()
-            self.application_destroyed.emit()
         else:
-            event.ignore()
+            reply = QMessageBox.question(
+                self,
+                'Quit',
+                'Are you sure you want to quit?',
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.No
+            )
+
+            if reply == QMessageBox.Yes:
+                event.accept()
+                self.application_destroyed.emit()
+            else:
+                event.ignore()
 
     def open(self):
         self.show()

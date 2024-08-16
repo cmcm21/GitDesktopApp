@@ -41,94 +41,158 @@ class MergeRequestTab(QWidget):
 
     def __init__(self):
         super().__init__()
-        """Control variables"""
         self.all_merge_requests = []
+        self._initialize_control_variables()
+        self._create_widgets()
+        self._set_layouts()
+        self.build_mr_filter()
+        self._build_interface()
+        self._apply_styles()
+        self._connect_ui_signals()
+
+    def _initialize_control_variables(self):
+        """Initialize control variables."""
         self.commit_window = None
-        """ MR Combo Box """
+        self.change_list_open_files = []
+
+    def _create_widgets(self):
+        """Create and configure all widgets."""
+        self._create_header_widgets()
+        self._create_change_list_tab()
+        self._create_commits_tab()
+        self._create_discussion_tab()
+        self._create_buttons()
+        self._create_tabs()
+
+    def _create_header_widgets(self):
+        """Create header-related widgets."""
         self.header_layout = QVBoxLayout()
-        self.merge_request_label = QLabel("Merge request")
-        self.merge_request_label.adjustSize()
-        self.merge_request_label.setStyleSheet("background: transparent;")
-        self.merge_request_cb = QComboBox()
-        self.merge_request_cb.setMinimumHeight(40)
-        """ MR Status Combo Box"""
-        self.merge_request_filter = QComboBox()
-        self.merge_request_filter.setMinimumHeight(25)
-        """ Change List Tab """
-        self.change_list = QListWidget()
-        self.change_list.setSpacing(self.q_list_space)
-        self.change_list_tab = QWidget()
-        self.change_list_tab.setObjectName("ChangeListTab")
-        self.change_list_tab.setStyleSheet("background: transparent;"
-                                           "border: 1px solid white;"
-                                           "border-radius: 10px;")
-        """ Commits Tab """
-        self.commits_list = QListWidget()
-        self.commits_list.setSpacing(self.q_list_space)
-        self.commits_tab = QWidget()
-        self.commits_tab.setObjectName("CommitsTab")
-        self.commits_tab.setStyleSheet("background: transparent;"
-                                       "border: 1px solid white;"
-                                       "border-radius: 10px;")
-        """ Discussion Tab """
-        self.discussion_tab = QWidget()
-        self.discussion_tab.setObjectName("DiscussionTab")
-        self.discussion_tab.setStyleSheet("background: transparent;"
-                                          "border: 1px solid white;"
-                                          "border-radius: 10px;")
+        self.merge_request_label = self._create_label("Merge request", "background: transparent;")
+        self.merge_request_cb = self._create_combobox(40)
+        self.merge_request_filter = self._create_combobox(25)
+
+    def _create_change_list_tab(self):
+        """Create Change List tab."""
+        self.change_list = self._create_list_widget()
+        self.change_list_tab = self._create_tab_widget("ChangeListTab")
+        self._set_tab_style(self.change_list_tab)
+
+    def _create_commits_tab(self):
+        """Create Commits tab."""
+        self.commits_list = self._create_list_widget()
+        self.commits_tab = self._create_tab_widget("CommitsTab")
+        self._set_tab_style(self.commits_tab)
+
+    def _create_discussion_tab(self):
+        """Create Discussion tab."""
+        self.discussion_tab = self._create_tab_widget("DiscussionTab")
+        self._set_tab_style(self.discussion_tab)
         self.discussion_layout = QVBoxLayout()
-        self.comments_list = QListWidget()
-        self.comments_list.setSpacing(self.q_list_space)
+        self.comments_list = self._create_list_widget()
         self.add_comment_layout = QHBoxLayout()
         self.add_comment_text = QTextEdit()
         self.add_comment_text.setObjectName("CommentTextEdit")
         self.add_comment_btn = QPushButton("Comment")
-        """Buttons"""
-        self.accept_btn = QPushButton("Accept and Merge")
-        self.refresh_btn = QPushButton("Refresh")
+
+    def _create_buttons(self):
+        """Create action buttons."""
+        self.accept_btn = self._create_button("Accept and Merge", QSize(150, 30))
+        self.refresh_btn = self._create_button("Refresh", QSize(100, 30))
         self.buttons_layout = QHBoxLayout()
-        """ Other Widgets """
+
+    def _create_tabs(self):
+        """Create tabs."""
         self.tabs = QTabWidget()
         self.tabs.setObjectName("MergeRequestInsideTabs")
         self.tabs.setStyleSheet("background: transparent;")
         self.main_layout = QVBoxLayout()
-        """ Control variables """
-        self.change_list_open_files = []
-        """ End Constructor """
-        self._build()
-        self._apply_styles()
-        self._connect_ui_signals()
 
-    def _build(self):
-        """Header"""
-        self.build_mr_filter()
+    @staticmethod
+    def _create_combobox(min_height: int) -> QComboBox:
+        """Create a combobox with a minimum height."""
+        combo_box = QComboBox()
+        combo_box.setMinimumHeight(min_height)
+        return combo_box
+
+    def _create_list_widget(self) -> QListWidget:
+        """Create a QListWidget with spacing."""
+        list_widget = QListWidget()
+        list_widget.setSpacing(self.q_list_space)
+        return list_widget
+
+    @staticmethod
+    def _create_tab_widget(object_name: str) -> QWidget:
+        """Create a QWidget for a tab with a given object name."""
+        tab_widget = QWidget()
+        tab_widget.setObjectName(object_name)
+        return tab_widget
+
+    @staticmethod
+    def _set_tab_style(tab_widget: QWidget):
+        """Set style for a tab."""
+        tab_widget.setStyleSheet("background: transparent;"
+                                 "border: 1px solid white;"
+                                 "border-radius: 10px;")
+
+    @staticmethod
+    def _create_label(text: str, style: str) -> QLabel:
+        """Create a QLabel with text and style."""
+        label = QLabel(text)
+        label.adjustSize()
+        label.setStyleSheet(style)
+        return label
+
+    @staticmethod
+    def _create_button(text: str, size: QSize) -> QPushButton:
+        """Create a QPushButton with text and a fixed size."""
+        button = QPushButton(text)
+        button.setFixedSize(size)
+        return button
+
+    def _set_layouts(self):
+        """Set layouts for different parts of the UI."""
+        self._set_header_layout()
+        self._set_change_list_tab_layout()
+        self._set_commits_tab_layout()
+        self._set_discussion_tab_layout()
+        self._set_buttons_layout()
+
+    def _set_header_layout(self):
+        """Set layout for the header."""
         self.header_layout.addWidget(self.merge_request_filter, 0, Qt.AlignmentFlag.AlignLeft)
         self.header_layout.addWidget(self.merge_request_cb)
-        """ Change list tab """
+
+    def _set_change_list_tab_layout(self):
+        """Set layout for Change List tab."""
         change_list_layout = QVBoxLayout()
         change_list_layout.addWidget(self.change_list)
         self.change_list_tab.setLayout(change_list_layout)
-        """ Commits Tab """
+
+    def _set_commits_tab_layout(self):
+        """Set layout for Commits tab."""
         commits_list_layout = QVBoxLayout()
         commits_list_layout.addWidget(self.commits_list)
         self.commits_tab.setLayout(commits_list_layout)
-        """ Discussion Tab """
+
+    def _set_discussion_tab_layout(self):
+        """Set layout for Discussion tab."""
         self.add_comment_layout.addWidget(self.add_comment_text)
         self.add_comment_layout.addWidget(self.add_comment_btn)
         self.discussion_layout.addWidget(self.comments_list)
         self.discussion_layout.addLayout(self.add_comment_layout)
         self.discussion_tab.setLayout(self.discussion_layout)
-        """ Buttons """
-        self.accept_btn.setFixedSize(QSize(150, 30))
-        self.refresh_btn.setFixedSize(QSize(100, 30))
+
+    def _set_buttons_layout(self):
+        """Set layout for action buttons."""
         self.buttons_layout.addWidget(self.accept_btn, 0, Qt.AlignmentFlag.AlignCenter)
         self.buttons_layout.addWidget(self.refresh_btn, 0, Qt.AlignmentFlag.AlignCenter)
         self.buttons_layout.setSpacing(0)
-        """ Tabs """
+
+    def _build_interface(self):
+        """Build the main interface layout."""
         self.tabs.addTab(self.discussion_tab, "Discussion")
         self.tabs.addTab(self.change_list_tab, "Change List")
         self.tabs.addTab(self.commits_tab, "Commits")
-        """ Main Layout """
         self.main_layout.addLayout(self.header_layout)
         self.main_layout.addWidget(self.tabs)
         self.main_layout.addLayout(self.buttons_layout)

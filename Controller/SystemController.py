@@ -8,7 +8,6 @@ import subprocess
 import platform
 import urllib.request
 import time
-import compileall
 
 
 class SystemController(QObject):
@@ -166,8 +165,3 @@ class SystemController(QObject):
         except Exception as e:
             self.error_message.emit(f"Failed to open file: {e}")
 
-    @staticmethod
-    def compile_python_files(source_path: str):
-        # WARNING: if you don't move to the working path before continue all the project files will be deleted
-        FileManager.move_to(source_path)
-        compileall.compile_dir(source_path)
