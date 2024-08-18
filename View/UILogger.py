@@ -62,5 +62,6 @@ class LoggerWidget(QWidget):
         self.text_edit.clear()
 
     def append_log_message(self, message):
+        print(message)
         self.text_edit.append(message)
 

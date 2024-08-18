@@ -4,6 +4,8 @@ import requests
 import json
 import os
 import paramiko
+from past.builtins import raw_input
+
 from Controller.GitController import GitController
 from Utils.UserSession import UserSession
 from Utils.Environment import CREATE_DIR
@@ -47,7 +49,7 @@ class GitProtocolSSH(GitProtocolAbstract):
 
         self.git_controller.log_message.emit(f"Running git clone command...")
         process = subprocess.Popen(
-            ['git', 'clone', self.repository_url, self.git_controller.working_path],
+            ['git', 'clone', self.repository_url, self.git_controller.raw_working_path],
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
@@ -83,6 +85,7 @@ class GitProtocolSSH(GitProtocolAbstract):
             ssh_public_key = self.get_ssh_public_key(public_key_path)
             self.add_ssh_key_to_gitlab(ssh_public_key)
             self.add_host_key(ssh_dir)
+            self.set_env_ssh_key_var(ssh_public_key)
             return self.test_ssh_connection(private_key_path, self.repository_url)
         else:
             return True
@@ -211,12 +214,19 @@ class GitProtocolSSH(GitProtocolAbstract):
         # Check for existing SSH keys
         existing_keys = self.check_ssh_keys()
         for key in existing_keys:
+            print(key)
             if self.test_ssh_connection(key, self.repository_url):
                 self.git_controller.log_message.emit(f"Connection successful using existing key: {key}")
+                self.set_env_ssh_key_var(key)
                 return True
             else:
                 print(f"Connection with git repository: {self.repository_url} failed using key: {key}")
         return False
+
+    @staticmethod
+    def set_env_ssh_key_var(key_path):
+        raw_key_path = fr"{key_path}"
+        os.environ['GIT_SSH_COMMAND'] = f'ssh -i "{raw_key_path}"'
 
 
 class GitProtocolHTTPS(GitProtocolAbstract):

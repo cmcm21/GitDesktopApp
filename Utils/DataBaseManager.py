@@ -32,6 +32,11 @@ class DataBaseManager(QObject):
 
         role_model = UserRolesModel()
         user_model = UserModel()
+        db_dir = FileManager.join_with_local_path(Env.DB_NAME)
+
+        if not FileManager.dir_exist(db_dir):
+            FileManager.create_dir(db_dir)
+
         if not self.table_exists('roles'):
             role_model.create_table()
 

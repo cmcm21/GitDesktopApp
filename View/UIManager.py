@@ -31,7 +31,6 @@ class UIManager(QObject):
         self.login_window = LoginWindow(WindowID.LOGING)
         self.current_window = None
         self.logger = self.launcher_window.logger_widget.logger
-        self.connect_button: QPushButton = self.launcher_window.connect_button
         self.windows = {
             WindowID.LAUNCHER: self.launcher_window,
             WindowID.LOGING: self.login_window

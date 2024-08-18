@@ -66,7 +66,7 @@ class LauncherWindow(BaseWindow):
 
     def _create_layouts(self):
         self.main_layout = QGridLayout()
-        self.header_layout = QHBoxLayout()
+        self.loading_layout = QHBoxLayout()
         self.body_layout = QHBoxLayout()
         self.body_left = QVBoxLayout()
         self.body_right = QVBoxLayout()
@@ -139,16 +139,15 @@ class LauncherWindow(BaseWindow):
         self._build_body_left()
         self._build_body_right()
         self._nest_layouts()
-        self._build_menubar()
+        self._build_menu_bar()
 
         widget = QWidget()
         widget.setLayout(self.main_layout)
         self.setCentralWidget(widget)
 
     def _build_header(self):
-        self.connect_button = self._create_button("singleplayer.png", "ConnectButton", "Connect")
-        self.header_layout.addWidget(self.loading, 0, Qt.AlignmentFlag.AlignRight)
-        self.header_layout.setSpacing(0)
+        self.loading_layout.addWidget(self.loading, 0, Qt.AlignmentFlag.AlignRight)
+        self.loading_layout.setSpacing(0)
 
     def _build_body_left(self):
         separator = QFrame()
@@ -174,10 +173,10 @@ class LauncherWindow(BaseWindow):
         self.body_layout.setSpacing(10)
         self.main_layout.addLayout(self.body_layout, 1, 0)
         self.main_layout.addLayout(self.footer_layout, 2, 0)
-        self.main_layout.addLayout(self.header_layout, 3, 0)
+        self.main_layout.addLayout(self.loading_layout, 3, 0)
         self.main_layout.setSpacing(2)
 
-    def _build_menubar(self):
+    def _build_menu_bar(self):
         self.menuBar().setObjectName("LauncherUserMenu")
         self.menuBar().addMenu(self.user_menu)
         self.menuBar().addSeparator()
@@ -196,6 +195,9 @@ class LauncherWindow(BaseWindow):
         project_action = QAction(project_id)
         project_action.triggered.connect(lambda action: self.project_selected_changed(project_id))
         return project_action
+
+    def project_selected_changed(self, project_id):
+        return
 
     def _connect_signals(self):
         self.git_tab.upload_btn.clicked.connect(self.create_commit_windows)
@@ -296,10 +298,9 @@ class LauncherWindow(BaseWindow):
 
         self.admin_window.show()
 
+    @Slot(ROLE_ID)
     def on_switch_account(self, role: ROLE_ID):
-        SignalManager.disconnect_signal(self.user_session_widget,
-                                        self.user_session_widget.switch_account_signal,
-                                        self.on_switch_account)
+
         message_box = QMessageBox()
         message_box.setWindowTitle("Switch Roles")
         message_box.setIcon(QMessageBox.Information)
@@ -310,6 +311,8 @@ class LauncherWindow(BaseWindow):
         reply = message_box.exec()
 
         if reply == QMessageBox.Ok:
+            SignalManager.disconnect_signal(self.user_session_widget,
+                                            self.user_session_widget.switch_account_signal, self.on_switch_account)
             self.switch_account.emit(role)
 
     def _close_commit_window(self):
@@ -349,9 +352,6 @@ class LauncherWindow(BaseWindow):
 
     @Slot(list)
     def _on_get_all_branch(self, branches):
-        return
-
-    def project_selected_changed(self, project_id):
         return
 
     def create_project_item(self, project_id):

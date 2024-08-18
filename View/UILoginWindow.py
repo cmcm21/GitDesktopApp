@@ -20,12 +20,12 @@ class LoginWindow(BaseWindow):
         self.setFixedSize(width, height)
         # Create widgets
         self.user_icon = QLabel()
-        self.pixmap = self.get_pixmap("default_icon.ico")
-        self.pixmap.scaled(QSize(128, 128))
+        self.pixmap = self.get_pixmap("onigiri.png")
+        self.pixmap.scaled(QSize(90, 90), Qt.AspectRatioMode.KeepAspectRatio)
         self.user_icon.setPixmap(self.pixmap)
         self.icon_frame = self.create_default_frame("IconFrame")
         self.icon_frame.setFixedSize(160, 150)
-        self.user_icon.setFixedSize(90, 80)
+        self.user_icon.setFixedSize(115, 128)
         self.error_label = QLabel()
 
         # Username

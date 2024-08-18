@@ -5,7 +5,7 @@ from Utils.Environment import ROLE_ID
 from Controller.GitController import GitController
 from Controller.GitProtocol.GitProtocols import GitProtocolSSH
 from Controller.GitProtocol.GitProtocols import GitProtocolHTTPS
-from Controller.SystemController import SystemController
+from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
 import requests
 from pathlib import Path
 import os
@@ -26,8 +26,8 @@ class AnimatorGitController(GitController):
         self.source_path = config["general"]["working_path"]
         self.repository_name = config["git_anim"]["repository_name"]
         self.username = config["git_anim"]["username"]
-        self.raw_working_path = config["general"]["animator_path"]
-        self.working_path = Path(config["general"]["animator_path"])
+        self.raw_working_path = FileManager.join_with_os_root_dir(config["general"]["animator_path"])
+        self.working_path = Path(FileManager.join_with_os_root_dir(config["general"]["animator_path"]))
         self.personal_access_token = config["git"]["personal_access_token"]
         self.repository_url_https = config["git_anim"]["repository_url"]
         self.repository_url_ssh = config["git_anim"]["repository_url_ssh"]
@@ -63,19 +63,18 @@ class AnimatorGitController(GitController):
                 self.git_protocol.setup()
                 if not self.git_protocol.check_with_existing_keys():
                     self.git_protocol = GitProtocolHTTPS(self, self.repository_url_https)
+                    if not self.git_protocol.setup():
+                        raise GitProtocolException("None SSH Nether HTTP Protocols could setup correctly",
+                                                   GitProtocolErrorCode.SETUP_FAILED)
 
             if FileManager.path_exists(self.raw_working_path):
                 self.log_message.emit(f"Local repository '{self.repository_name}' already exists.")
-
-                if FileManager.get_dir_files_count(self.raw_working_path) <= 1:
-                    self.compile_origin_files()
             else:
                 self.create_local_repository()
 
-            print(self.git_protocol.repository_url)
             self._run_git_command(["git", "remote", "set-url", "origin", self.git_protocol.repository_url])
-
             return True
+
         except Exception as e:
             self.error_message.emit(f"Error trying to create animation repository, error: {e}")
             return False
@@ -113,7 +112,6 @@ class AnimatorGitController(GitController):
         self.create_repository_dir()
         self._run_git_command(["git", "init", "."])
 
-        self.compile_origin_files()
 
     def push_local_repository(self):
 
@@ -137,6 +135,10 @@ class AnimatorGitController(GitController):
         return os.path.join(self.raw_working_path, "__pycache__")
 
     def compile_origin_files(self):
+        user_session = UserSession()
+        if user_session.role_id == ROLE_ID.ANIMATOR.value or user_session.role == ROLE_ID.ADMIN_ANIM.value:
+            return
+
         # compile the files of the origin repository
         self.log_message.emit(f"Compiling python files... in {self.source_path}")
         FileManager.compile_python_files(self.source_path)
@@ -169,10 +171,11 @@ class AnimatorGitController(GitController):
 
         return commit_count
 
+
     @Slot()
     def setup(self):
         print(f"class: {self.__class__.__name__} working in path: {self.raw_working_path}")
-        self.check_anim_repository()
+        self.check_anim_repository(from_setup=True)
         super().setup()
 
     @Slot()

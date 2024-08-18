@@ -3,6 +3,7 @@ from pathlib import Path
 from Utils.UserSession import UserSession
 from Utils.Environment import ROLE_ID, FILE_CHANGE_DIC, CREATE_DIR
 from Utils.FileManager import FileManager
+from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
 import subprocess
 import requests
 import os
@@ -29,8 +30,8 @@ class GitController(QObject):
         super(GitController, self).__init__()
         self.repository_name = config["git"]["repository_name"]
         self.username = config["git"]["username"]
-        self.raw_working_path = config["general"]["working_path"]
-        self.working_path = Path(config["general"]["working_path"])
+        self.raw_working_path = FileManager.join_with_os_root_dir(config["general"]["working_path"])
+        self.working_path = Path(FileManager.join_with_os_root_dir(config["general"]["working_path"]))
         self.personal_access_token = config["git"]["personal_access_token"]
         self.repository_url_https = config["git"]["repository_url"]
         self.repository_url_ssh = config["git"]["repository_url_ssh"]
@@ -269,13 +270,26 @@ class GitController(QObject):
 
     def restore_git_repository(self):
         # Reset the working directory to the last commit
-        self._run_git_command(['git', 'reset', '--hard', 'HEAD'])
+        self._run_git_command(['git', 'reset', '--hard'])
 
         # Remove all untracked files and directories
         self._run_git_command(['git', 'clean', '-fd'])
 
     def _get_merge_request_url(self):
         return f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
+
+    def clone_repository(self):
+        clone_command = f'git clone {self.git_protocol.repository_url} {self.working_path}'
+        self.log_message.emit(clone_command)
+        self._run_git_command(['git', 'clone', self.git_protocol.repository_url, self.raw_working_path])
+
+    def check_and_add_origin(self, url):
+        result = self._run_git_command_get_output(['git', 'remote'])
+        remotes = result.splitlines()
+        if "origin" in remotes:
+            self.log_message.emit(f"Remote 'origin' is already added")
+        else:
+            self._run_git_command(['git', 'remote', 'add', 'origin', url])
 
     @Slot()
     def setup(self):
@@ -288,12 +302,13 @@ class GitController(QObject):
                 from Controller.GitProtocol.GitProtocols import GitProtocolHTTPS
                 self.git_protocol = GitProtocolHTTPS(self, self.repository_url_https)
                 if not self.git_protocol.setup():
-                    self.error_message.emit(f"Communication with remote repository failed, canceling setup...")
-                return False
+                    raise GitProtocolException("None SSH Nether HTTP Protocols could setup correctly",
+                                               GitProtocolErrorCode.SETUP_FAILED)
 
             """ TODO: Check the first state set up, if it not finished with success code then change protocol"""
             # Change directory to the cloned repository
             os.chdir(self.working_path)
+            self.check_and_add_origin(self.git_protocol.repository_url)
             # Set or update the remote URL (if needed)
             set_remote_command = f'git remote set-url origin {self.git_protocol.repository_url}'
             self.log_message.emit(f"Running command: {set_remote_command}")
@@ -307,6 +322,7 @@ class GitController(QObject):
             # Send setup signal
             self.log_message.emit(f" Setup Completed ")
             self.setup_completed.emit(self.repo_exist())
+
         except subprocess.CalledProcessError as e:
             self.log_message.emit(f"An error occurred : {e.stderr}")
 

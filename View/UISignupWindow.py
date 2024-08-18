@@ -5,19 +5,20 @@ from PySide6.QtWidgets import (
     QPushButton,
     QVBoxLayout,
     QFormLayout,
+    QComboBox,
     QMainWindow
 )
+
+from Utils.Environment import ROLE_ID
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
-from View.BaseWindow import BaseWindow
-from View.WindowID import WindowID
 from Model.UserRolesModel import UserRolesModel
 from Controller.UserController import UserController
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
 import Utils.Environment as Env
 from enum import Enum
 
 
-class Error_Input_Code(Enum):
+class ErrorInputCode(Enum):
     LONG_USERNAME = 1
     INVALID_EMAIL = 2
     INVALID_PASSWD = 3
@@ -32,19 +33,12 @@ class SignUpForm(QMainWindow):
         super().__init__()
         self.setWindowTitle("Sing up window")
         # Create widgets
-        self.username_label = QLabel('User Name:')
-        self.username_input = QLineEdit()
 
-        self.email_label = QLabel('Email:')
-        self.email_input = QLineEdit()
-
-        self.password_label = QLabel('Password:')
-        self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
-
-        self.reenter_password_label = QLabel('Re-enter Password:')
-        self.reenter_password_input = QLineEdit()
-        self.reenter_password_input.setEchoMode(QLineEdit.Password)
+        self.create_username_field()
+        self.create_email_field()
+        self.create_select_role()
+        self.create_password()
+        self.create_reenter_password()
 
         self.signup_button = QPushButton('Sign Up')
         self._build()
@@ -52,11 +46,41 @@ class SignUpForm(QMainWindow):
         self.user_controller = user_controller
         self.connect_signals()
 
+    def create_username_field(self):
+        self.username_label = QLabel('User Name:')
+        self.username_input = QLineEdit()
+
+    def create_email_field(self):
+        self.email_label = QLabel('Email:')
+        self.email_input = QLineEdit()
+
+    def create_select_role(self):
+        self.role_label  = QLabel('User Role:')
+        self.role_combo_box = QComboBox()
+        self.role_combo_box.addItem("Animator", userData=ROLE_ID.ANIMATOR.value)
+        self.role_combo_box.addItem("Developer", userData=ROLE_ID.DEV.value)
+
+        self.role_combo_box.currentIndexChanged.connect(self.on_combo_box_changed)
+
+    def on_combo_box_changed(self):
+        return
+
+    def create_password(self):
+        self.password_label = QLabel('Password:')
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+
+    def create_reenter_password(self):
+        self.reenter_password_label = QLabel('Re-enter Password:')
+        self.reenter_password_input = QLineEdit()
+        self.reenter_password_input.setEchoMode(QLineEdit.Password)
+
     def _build(self):
         # Create form layout and add widgets
         form_layout = QFormLayout()
         form_layout.addRow(self.username_label, self.username_input)
         form_layout.addRow(self.email_label, self.email_input)
+        form_layout.addRow(self.role_label, self.role_combo_box)
         form_layout.addRow(self.password_label, self.password_input)
         form_layout.addRow(self.reenter_password_label, self.reenter_password_input)
 
@@ -89,27 +113,32 @@ class SignUpForm(QMainWindow):
 
         role_model = UserRolesModel()
         if self.validate_form(username, password, email, re_password):
-            default_role_id = role_model.get_role_id(Env.DEFAULT_ROLE)
+            role_id = self.role_combo_box.currentData(Qt.ItemDataRole.UserRole)
+            print(role_id)
+            default_role_id = role_model.get_role_id(role_id)
+            print(default_role_id)
             if default_role_id:
                 if self.user_controller.add_user(username, password, email, default_role_id[0]):
                     self.close()
                 else:
                     self.error_message.emit(f"Error trying to add user: {username}")
+            else:
+                self.error_message.emit(f"Error trying to add user: {username} user role invalid")
         return
 
     def validate_form(self, username, password, email, re_password) -> bool:
         if username == "" or password == "" or email == "" or re_password == "":
-            self.input_error(Error_Input_Code.EMPTY_FIELDS)
+            self.input_error(ErrorInputCode.EMPTY_FIELDS)
             return False
 
         return password == re_password
 
     def input_error(self, error_code):
-        if error_code == Error_Input_Code.EMPTY_FIELDS:
+        if error_code == ErrorInputCode.EMPTY_FIELDS:
             self.error_message.emit("There are empty fields forms inside the sign up form")
-        elif error_code == Error_Input_Code.INVALID_EMAIL:
+        elif error_code == ErrorInputCode.INVALID_EMAIL:
             self.error_message.emit("The email is invalid")
-        elif error_code == Error_Input_Code.LONG_USERNAME:
+        elif error_code == ErrorInputCode.LONG_USERNAME:
             self.error_message.emit("Username limit is 10 characters")
 
     def apply_styles(self):
@@ -117,4 +146,5 @@ class SignUpForm(QMainWindow):
         CustomStyleSheetApplier.set_line_edit_style_and_colour(self.email_input)
         CustomStyleSheetApplier.set_line_edit_style_and_colour(self.password_input)
         CustomStyleSheetApplier.set_line_edit_style_and_colour(self.reenter_password_input)
+        CustomStyleSheetApplier.set_combo_box_style_and_colour(self.role_combo_box)
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.signup_button, colour="Yellow")

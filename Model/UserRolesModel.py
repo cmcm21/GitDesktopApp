@@ -38,12 +38,12 @@ class UserRolesModel(QObject):
     def get_role_id(self, user_role: int):
         try:
             return self.conn.execute_query_fetchone('''
-            SELECT * FROM roles WHERE user_role = ?
+            SELECT * FROM roles WHERE id = ?
             ''', (user_role, ))
         except sqlite3.Error as e:
             self.error_message_signal.emit(f"An error occurred while retrieving the role id({user_role}): {e}")
             print(f"An error occurred while retrieving the role id({user_role}): {e}")
-        return
+            return None
 
     def get_role_by_name(self, role: str) -> tuple:
         try:

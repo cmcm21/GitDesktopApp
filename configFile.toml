@@ -23,8 +23,8 @@ git_hosts = [
 ]
 
 [general]
-working_path = "D://RiggingLauncher/workingSpaces/default/"
-animator_path = "D://RiggingLauncher/workingSpaces/animator/"
+working_path = "/RiggingLauncher/workingSpaces/default/"
+animator_path = "/RiggingLauncher/workingSpaces/animator/"
 maya25_path = "C://Program Files/Autodesk/Maya2025/bin/maya.exe"
 maya24_path = "C://Program Files/Autodesk/Maya2024/bin/maya.exe"
 maya22_path = "C://Program Files/Autodesk/Maya2022/bin/maya.exe"
