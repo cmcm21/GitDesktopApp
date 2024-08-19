@@ -155,6 +155,7 @@ class LoginWindow(BaseWindow):
         super().open()
         self.username_input.setText("")
         self.password_input.setText("")
+        self.error_label.setText("")
 
     def apply_styles(self):
         CustomStyleSheetApplier.set_line_edit_style_and_colour(self.username_input, colour="White")
