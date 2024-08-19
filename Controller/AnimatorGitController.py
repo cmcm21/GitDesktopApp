@@ -18,16 +18,21 @@ class AnimatorGitController(GitController):
     config_rep_http_key = "repository_url"
     config_rep_id_key = "project_id"
     config_section = "git_anim"
+
     creating_anim_rep = Signal()
     anim_rep_creation_completed = Signal()
+    uploading_anim_files = Signal()
+    uploading_anim_files_completed = Signal()
 
     def __init__(self, config: dict):
         super().__init__(config)
         self.source_path = config["general"]["working_path"]
         self.repository_name = config["git_anim"]["repository_name"]
         self.username = config["git_anim"]["username"]
-        self.raw_working_path = FileManager.join_with_os_root_dir(config["general"]["animator_path"])
-        self.working_path = Path(FileManager.join_with_os_root_dir(config["general"]["animator_path"]))
+        self.raw_working_path = FileManager.join_with_os_root_dir(os.path.join(f"{self.repository_name}"
+                                                                               ,config["general"]["animator_path"]))
+        self.working_path = Path(FileManager.join_with_os_root_dir(os.path.join(f"{self.username}",
+                                                                                config["general"]["animator_path"])))
         self.personal_access_token = config["git"]["personal_access_token"]
         self.repository_url_https = config["git_anim"]["repository_url"]
         self.repository_url_ssh = config["git_anim"]["repository_url_ssh"]
@@ -114,11 +119,10 @@ class AnimatorGitController(GitController):
 
 
     def push_local_repository(self):
-
         self._run_git_command(["git", "remote", "set-url", "origin", self.git_protocol.repository_url])
         self._run_git_command(["git", "add", "."])
         self._run_git_command(["git", "commit", "-m", "Initial commit"])
-        self._run_git_command(["git", "push", "-u", "origin", "master"])
+        self._run_git_command(["git", "push" ])
 
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
 
@@ -131,9 +135,6 @@ class AnimatorGitController(GitController):
         FileManager.add_value_to_config_file(self.config_section, self.config_rep_ssh_key, self.repository_url_ssh)
         FileManager.add_value_to_config_file(self.config_section, self.config_rep_http_key, self.repository_url_https)
 
-    def get_cache_path(self):
-        return os.path.join(self.raw_working_path, "__pycache__")
-
     def compile_origin_files(self):
         user_session = UserSession()
         if user_session.role_id == ROLE_ID.ANIMATOR.value or user_session.role == ROLE_ID.ADMIN_ANIM.value:
@@ -141,11 +142,10 @@ class AnimatorGitController(GitController):
 
         # compile the files of the origin repository
         self.log_message.emit(f"Compiling python files... in {self.source_path}")
-        FileManager.compile_python_files(self.source_path)
+        FileManager.compile_python_files(self.source_path, self.log_message)
         # move files to the anim working path
-        source_dir = os.path.join(self.source_path, "__pycache__")
-        self.log_message.emit(f"Moving .pyc files from {source_dir} to {self.get_cache_path()}")
-        FileManager.move_dir(source_dir, self.raw_working_path)
+        FileManager.move_all_files_except_extension(
+            self.source_path, self.raw_working_path, '.py', self.log_message)
 
     def get_commit_count(self):
         headers = {"Private-Token": self.personal_access_token}
@@ -191,16 +191,16 @@ class AnimatorGitController(GitController):
 
     @Slot(str)
     def upload_files(self, message: str):
+        self.uploading_anim_files.emit()
+
         user_session = UserSession()
         if user_session.role_id == ROLE_ID.ANIMATOR.value:
             self.log_message.emit("Animator user is not allowed to upload files either compile .py -> .pyc")
 
         self.compile_origin_files()
+        self.push_local_repository()
 
-        if FileManager.ensure_all_files_extension(self.get_cache_path(), ".pyc"):
-            self.push_local_repository()
-        else:
-            self.error_message.emit("There was an error trying to compile all the files")
+        self.uploading_anim_files_completed.emit()
 
     @Slot()
     def verify_user_branch(self):

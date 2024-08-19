@@ -1,4 +1,7 @@
+import io
 import os
+import sys
+from PySide6.QtCore import QObject, Signal, SignalInstance
 from pathlib import Path
 import tomli_w
 import tomli
@@ -74,7 +77,7 @@ class FileManager:
             try:
                 shutil.move(source_path, dist_path)
             except Exception as e:
-                print(f"Error moving directory from {source_path} to {dist_path}: {e}")
+                FileManager.error_message.emit(f"Error moving directory from {source_path} to {dist_path}: {e}")
 
     @staticmethod
     def erase_dir(source_path: str):
@@ -95,10 +98,52 @@ class FileManager:
         return len(os.listdir(path))
 
     @staticmethod
-    def compile_python_files(source_path: str):
+    def compile_python_files(source_path: str, log_signal: SignalInstance):
         # WARNING: if you don't move to the working path before continue all the project files will be deleted
         FileManager.move_to(source_path)
-        compileall.compile_dir(source_path)
+        files = os.listdir(source_path)
+        # Create sys.stdout to the StringIO object
+        output = io.StringIO()
+
+        # Redirect sys.stdout to the StringIO object
+        old_stdout = sys.stdout
+        sys.stdout = output
+        try:
+            for file in files:
+                if os.path.isdir(file):
+                    compileall.compile_dir(file, maxlevels=5, force=True)
+            compileall.compile_dir(source_path, maxlevels=5)
+        finally:
+            # Reset sys.stdout to its original state
+            sys.stdout = old_stdout
+
+        # Get the output from the StringIO object
+        captured_output = output.getvalue()
+        log_signal.emit(captured_output)
+        output.close()
+
+    @staticmethod
+    def move_all_files_except_extension(src_dir: str, dst_dir: str, extension: str, log_signal: SignalInstance):
+        for root, dirs, files in os.walk(src_dir):
+            for file in files:
+                if not file.endswith(extension):
+                    # Construct full file path
+                    file_path = os.path.join(root, file)
+
+                    # Determine the relative path from the source directory
+                    relative_path = os.path.relpath(root, src_dir)
+
+                    # Create the corresponding directory in the destination if it doesn't exist
+                    destination_dir = os.path.join(dst_dir, relative_path)
+                    os.makedirs(destination_dir, exist_ok=True)
+
+                    # Move the file
+                    if file.endswith(".pyc"):
+                        shutil.move(file_path, os.path.join(destination_dir, file))
+                        log_signal.emit(f"Moved: {file_path} -> {os.path.join(destination_dir, file)}")
+                    else:
+                        shutil.copy(file_path, os.path.join(destination_dir, file))
+                        log_signal.emit(f"Copied: {file_path} -> {os.path.join(destination_dir, file)}")
 
     @staticmethod
     def get_os_root_dir():

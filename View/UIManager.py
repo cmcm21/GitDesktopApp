@@ -189,3 +189,11 @@ class UIManager(QObject):
     def on_login(self):
         self.launcher_window.logger_widget.clear_log()
 
+    @Slot()
+    def on_anim_upload_files_started(self):
+        self.launcher_window.loading.show_anim_screen()
+
+    @Slot()
+    def on_anim_upload_files_completed(self):
+        self.launcher_window.loading.stop_anim_screen()
+

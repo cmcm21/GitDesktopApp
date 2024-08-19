@@ -1,5 +1,4 @@
 from PySide6.QtWidgets import QApplication
-from PySide6.QtCore import QMetaMethod
 from View.UIManager import UIManager
 from View.UIManager import WindowID
 from Controller.GitController import GitController
@@ -152,6 +151,8 @@ class Application(QApplication):
             (self.anim_git_controller.error_message, self.ui_manager.on_err_signal_received),
             (self.anim_git_controller.creating_anim_rep, self.ui_manager.on_anim_rep_creating),
             (self.anim_git_controller.anim_rep_creation_completed, self.ui_manager.on_anim_rep_creation_completed),
+            (self.anim_git_controller.uploading_anim_files , self.ui_manager.on_anim_upload_files_started),
+            (self.anim_git_controller.uploading_anim_files_completed , self.ui_manager.on_anim_upload_files_completed)
         ])
 
         self._connect_signals(self, [
@@ -222,7 +223,6 @@ class Application(QApplication):
             (self.anim_git_controller.setup_completed, self.on_git_setup_completed),
             (self.anim_git_controller.get_latest_completed, self.ui_manager.on_get_latest_completed),
         ])
-
         self._disconnect_signals(self.ui_manager, [
             self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_anim_rep_latest,
             self.ui_manager.lw_git_changes_list_tab_clicked, self.anim_git_controller.publish_rep
