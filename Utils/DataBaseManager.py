@@ -49,8 +49,9 @@ class DataBaseManager(QObject):
 
         for index in range(len(users)):
             if not user_model.user_exists(users[index]):
-                role = role_model.get_role_id(users_roles[index])
-                user_model.add_user(users[index], default_passwrd, emails[index], role[0])
+                role = role_model.get_role_by_name(users_roles[index])
+                if role is not None:
+                    user_model.add_user(users[index], default_passwrd, emails[index], role[0])
 
         self.db_setup_done.emit()
 

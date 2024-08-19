@@ -31,7 +31,6 @@ class DataBaseConnection(metaclass=SingletonMeta):
     def execute_query_fetchone(self, query: str, params=()) -> tuple:
         with self.get_connection() as conn:
             cursor = conn.cursor()
-            print(query)
             cursor.execute(query, params)
             conn.commit()
             return cursor.fetchone()
