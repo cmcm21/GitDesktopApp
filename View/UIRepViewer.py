@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QApplication
 )
-from PySide6.QtCore import QModelIndex, Qt, Signal
+from PySide6.QtCore import QModelIndex, Qt, Signal, QRect
 from PySide6 import QtGui
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 import os
@@ -61,3 +61,7 @@ class RepositoryViewerWidget(QWidget):
         self.model.setRootPath(self.repository_path)
         self.tree.setRootIndex(self.model.index(self.repository_path))
 
+    def resizeEvent(self, event):
+        self.buttons_layout.setGeometry(QRect(0, 0, self.buttons_layout.sizeHint().width(),
+                                               self.buttons_layout.sizeHint().height()))
+        super().resizeEvent(event)

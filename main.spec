@@ -102,5 +102,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name='main',
+    name='puppet_launcher_v_0.0.1',
 )

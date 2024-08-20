@@ -8,11 +8,12 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QSplitter,
-    QSizePolicy
+    QSizePolicy,
+    QSpacerItem
 )
 from PySide6 import QtGui
 from PySide6.QtGui import QPixmap, QIcon, QAction, QFont
-from PySide6.QtCore import Signal, Qt, QSize
+from PySide6.QtCore import Signal, Qt, QSize, QRect
 from View.UIRepViewer import RepositoryViewerWidget
 from View.BaseWindow import BaseWindow
 from View.UIMergeRequestTab import MergeRequestTab
@@ -168,8 +169,8 @@ class UIGitTab(QWidget):
         self.publish_btn.setFixedSize(QSize(120, 35))
         """ Header Layout """
         self.repository_viewer.buttons_layout.addWidget(self.upload_btn, 0, Qt.AlignmentFlag.AlignLeft)
-        self.repository_viewer.buttons_layout.addWidget(self.download_btn, 3, Qt.AlignmentFlag.AlignLeft)
-        self.repository_viewer.buttons_layout.addWidget(self.publish_btn, 10, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.download_btn, 10, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.publish_btn, 0, Qt.AlignmentFlag.AlignLeft)
         """ Body layout """
         self.splitter.addWidget(self.repository_viewer)
         self.splitter.addWidget(self.git_sniffer)
