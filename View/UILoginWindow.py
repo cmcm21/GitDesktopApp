@@ -15,100 +15,108 @@ class LoginWindow(BaseWindow):
     sign_up_signal = Signal()
 
     def __init__(self, window_id: WindowID, width=350, height=450):
-        super(LoginWindow, self).__init__("Login", window_id, width, height)
+        super().__init__("Login", window_id, width, height)
         self.sign_up_window = None
         self.setFixedSize(width, height)
-        # Create widgets
-        self.user_icon = QLabel()
-        self.pixmap = self.get_pixmap("onigiri.png")
-        self.pixmap.scaled(QSize(90, 90), Qt.AspectRatioMode.KeepAspectRatio)
-        self.user_icon.setPixmap(self.pixmap)
-        self.icon_frame = self.create_default_frame("IconFrame")
-        self.icon_frame.setFixedSize(160, 150)
-        self.user_icon.setFixedSize(115, 128)
-        self.error_label = QLabel()
 
-        # Username
+        # Initialize controllers and models
+        self.user_controller = UserController()
+        self.role_model = UserRolesModel()
+
+        # Initialize UI elements
+        self._initialize_widgets()
+        self._initialize_layouts()
+
+        # Set window title and build UI
+        self.setWindowTitle('Login')
+        self._build_ui()
+        self.apply_styles()
+        self.connect_signals()
+        self.log("")
+
+    def _initialize_widgets(self):
+        """Initialize all widgets used in the UI."""
+        self.user_icon = QLabel()
+        self.user_icon.setPixmap(self.get_pixmap("onigiri.png"))
+        self.user_icon.setFixedSize(116, 128)
         self.user_icon.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
+
         self.username_label = QLabel('Username:')
         self.username_label.adjustSize()
         self.username_input = QLineEdit()
 
-        # Password
         self.password_label = QLabel('Password:')
         self.password_label.adjustSize()
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
 
-        # Buttons
         self.login_button = QPushButton('Login')
         self.signup_button = QPushButton('Sign Up')
 
-        # Create layouts
+        self.error_label = QLabel()
+        self.icon_frame = self.create_default_frame("IconFrame")
         self.frame = self.create_default_frame("LoginFrame")
+
+    def _initialize_layouts(self):
+        """Initialize all layouts used in the UI."""
         self.icon_layout = QVBoxLayout()
         self.username_layout = QHBoxLayout()
-        self.username_layout.setContentsMargins(0, 0, 0, 0)
-        self.username_layout.setSpacing(0)
         self.password_layout = QHBoxLayout()
-        self.password_layout.setContentsMargins(0, 0, 0, 0)
-        self.password_layout.setSpacing(0)
-        self.main_layout = QVBoxLayout()
         self.form_layout = QVBoxLayout()
         self.button_layout = QVBoxLayout()
+        self.main_layout = QVBoxLayout()
 
-        # Controllers and Models
-        self.user_controller = UserController()
-        self.role_model = UserRolesModel()
+        self._configure_layouts()
 
-        # Set window title
-        self.setWindowTitle('Login')
-        self._build()
-        self.apply_styles()
-        self.connect_signals()
-        self.log("")
+    def _configure_layouts(self):
+        """Configure the layout properties."""
+        self.username_layout.setContentsMargins(0, 0, 0, 0)
+        self.username_layout.setSpacing(0)
+        self.password_layout.setContentsMargins(0, 0, 0, 0)
+        self.password_layout.setSpacing(0)
 
-    def _build(self):
-        # Config Label
+    def _build_ui(self):
+        """Build the complete UI structure."""
+        self._configure_widgets()
+        self._assemble_layouts()
+
+        # Add main layout to central widget
+        widget = QWidget()
+        widget.setLayout(self.main_layout)
+        self.setCentralWidget(widget)
+
+    def _configure_widgets(self):
+        """Configure widget properties."""
         self.username_label.setFont(QFont("Courier New", 10))
         self.password_label.setFont(QFont("Courier New", 10))
-
-        # Config Buttons
         self.login_button.setFixedSize(128, 30)
         self.signup_button.setFixedSize(128, 30)
-
-        # Set frames
-        self.frame.setLayout(self.form_layout)
+        self.icon_frame.setFixedSize(160, 150)
         self.icon_frame.setLayout(self.icon_layout)
         self.icon_frame.layout().addWidget(self.user_icon)
         self.icon_frame.layout().setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        # Add widgets to form layout
-        self.frame.layout().addWidget(self.icon_frame, 0, Qt.AlignmentFlag.AlignCenter)
+    def _assemble_layouts(self):
+        """Assemble all widgets and layouts into the final UI."""
+        self.frame.setLayout(self.form_layout)
+        self.form_layout.addWidget(self.icon_frame, 0, Qt.AlignmentFlag.AlignCenter)
+
         self.username_layout.addWidget(self.username_label, 0, Qt.AlignmentFlag.AlignCenter)
         self.username_layout.addWidget(self.username_input, 0, Qt.AlignmentFlag.AlignCenter)
-        self.frame.layout().addLayout(self.username_layout)
+        self.form_layout.addLayout(self.username_layout)
 
         self.password_layout.addWidget(self.password_label, 0, Qt.AlignmentFlag.AlignCenter)
         self.password_layout.addWidget(self.password_input, 0, Qt.AlignmentFlag.AlignCenter)
-        self.frame.layout().addLayout(self.password_layout)
+        self.form_layout.addLayout(self.password_layout)
 
-        # Add buttons to button layout
         self.button_layout.addWidget(self.login_button, 0, Qt.AlignmentFlag.AlignCenter)
         self.button_layout.addWidget(self.signup_button, 0, Qt.AlignmentFlag.AlignCenter)
-        self.frame.layout().addLayout(self.button_layout)
+        self.form_layout.addLayout(self.button_layout)
 
-        # Add Error label
-        self.frame.layout().addWidget(self.error_label, 0, Qt.AlignmentFlag.AlignCenter)
+        self.form_layout.addWidget(self.error_label, 0, Qt.AlignmentFlag.AlignCenter)
 
-        # Add form layout and button layout to main layout
         self.main_layout.addWidget(self.frame)
         self.main_layout.addWidget(self.loading)
-
-        # Add the main layout
-        widget = QWidget()
-        widget.setLayout(self.main_layout)
-        self.setCentralWidget(widget)
 
     def connect_signals(self):
         self.signup_button.clicked.connect(self.on_signup_clicked)

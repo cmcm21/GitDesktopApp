@@ -42,56 +42,70 @@ class GitSnifferWidget(QWidget):
         super().__init__()
         self.changes_list_files_open = []
         self.changes = []
-        """ History """
-        self.history = QListWidget()
-        self.history.setFont(QtGui.QFont("Courier New", 10))
-        self.history.setSpacing(2)
-        self.history_tab = QWidget()
-        self.history_tab.setObjectName("HistoryTab")
-        """ Changes List """
-        self.changes_list = ChangesList()
-        self.changes_list.setFont(QtGui.QFont("Courier New", 10))
-        self.changes_list.setSpacing(2)
-        self.changes_list_tab = QWidget()
-        self.changes_list_tab.setObjectName("ChangesListTab")
-        """ Merge Request """
-        self.merge_request = MergeRequestTab()
-        self.merge_request_tab = QWidget()
-        self.merge_request_tab.setObjectName("MergeRequestTab")
-        """ Other Widgets """
+
+        # Initialize Widgets
+        self.history = self._create_list_widget("HistoryTab")
+        self.changes_list = self._create_changes_list_widget("ChangesListTab")
+        self.merge_request = self._create_merge_request_widget("MergeRequestTab")
+
+        # Initialize Tabs
         self.tabs = QTabWidget()
         self.layout = QVBoxLayout()
-        self.build()
+
+        # Build the UI
+        self._build()
         self.connect_signals()
 
-    def build(self):
-        """ History layout """
-        history_layout = QVBoxLayout()
-        history_label = QLabel("Commits History")
-        history_label.setFont(QFont("Courier New", 10))
-        history_label.setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, "
-                                    "stop: 1 #333333);")
-        history_layout.addWidget(history_label)
-        history_layout.addWidget(self.history)
-        self.history_tab.setLayout(history_layout)
-        """ Change list layout """
-        changes_list_layout = QVBoxLayout()
-        changes_list_label = QLabel("Changes List")
-        changes_list_label.setFont(QFont("Courier New", 10))
-        changes_list_label.setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, "
-                                         "stop: 1 #333333);")
-        changes_list_layout.addWidget(changes_list_label)
-        changes_list_layout.addWidget(self.changes_list)
-        self.changes_list_tab.setLayout(changes_list_layout)
-        """ Merge tab """
-        merge_request_layout = QVBoxLayout()
-        merge_request_layout.addWidget(self.merge_request)
-        self.merge_request_tab.setLayout(merge_request_layout)
-        """Tabs"""
+    @staticmethod
+    def _create_list_widget(object_name):
+        """Helper method to create a QListWidget with a specified object name."""
+        list_widget = QListWidget()
+        list_widget.setFont(QtGui.QFont("Courier New", 10))
+        list_widget.setSpacing(2)
+        widget = QWidget()
+        widget.setObjectName(object_name)
+        return list_widget
+
+    @staticmethod
+    def _create_changes_list_widget(object_name):
+        """Helper method to create a ChangesList widget with a specified object name."""
+        changes_list = ChangesList()
+        changes_list.setFont(QtGui.QFont("Courier New", 10))
+        changes_list.setSpacing(2)
+        widget = QWidget()
+        widget.setObjectName(object_name)
+        return changes_list
+
+    @staticmethod
+    def _create_merge_request_widget(object_name):
+        """Helper method to create a MergeRequestTab widget with a specified object name."""
+        merge_request_tab = MergeRequestTab()
+        widget = QWidget()
+        widget.setObjectName(object_name)
+        return merge_request_tab
+
+    @staticmethod
+    def _create_tab(widget, label_text):
+        """Helper method to create a tab with a layout containing a label and the provided widget."""
+        layout = QVBoxLayout()
+        label = QLabel(label_text)
+        label.setFont(QFont("Courier New", 10))
+        label.setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, stop: 1 #333333);")
+        layout.addWidget(label)
+        layout.addWidget(widget)
+        tab_widget = QWidget()
+        tab_widget.setLayout(layout)
+        return tab_widget
+
+    def _build(self):
+        """Build the layout of the UI."""
+        # Create and add tabs
         self.tabs.setFont(QtGui.QFont("Courier New", 10))
-        self.tabs.addTab(self.history_tab, "History")
-        self.tabs.addTab(self.changes_list_tab, "Change list")
-        self.tabs.addTab(self.merge_request_tab, "Marge Request")
+        self.tabs.addTab(self._create_tab(self.history, "Commits History"), "History")
+        self.tabs.addTab(self._create_tab(self.changes_list, "Changes List"), "Change list")
+        self.tabs.addTab(self._create_tab(self.merge_request, ""), "Merge Request")
+
+        # Set the main layout
         self.layout.addWidget(self.tabs)
         self.setLayout(self.layout)
 

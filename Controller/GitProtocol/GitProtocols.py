@@ -1,5 +1,7 @@
 import abc
 import subprocess
+from imghdr import tests
+
 import requests
 import json
 import os
@@ -85,8 +87,12 @@ class GitProtocolSSH(GitProtocolAbstract):
             ssh_public_key = self.get_ssh_public_key(public_key_path)
             self.add_ssh_key_to_gitlab(ssh_public_key)
             self.add_host_key(ssh_dir)
-            self.set_env_ssh_key_var(ssh_public_key)
-            return self.test_ssh_connection(private_key_path, self.repository_url)
+            if self.test_ssh_connection(private_key_path, self.repository_url):
+                self.set_env_ssh_key_var(private_key_path)
+                self.start_ssh_agent(private_key_path)
+                return True
+            else:
+                return False
         else:
             return True
 
@@ -159,19 +165,24 @@ class GitProtocolSSH(GitProtocolAbstract):
 
         return public_key
 
-    def test_ssh_connection(self, key_path, git_url):
+    def test_ssh_connection(self, private_key_path, git_url):
         try:
-            key = paramiko.RSAKey(filename=key_path)
+            key = paramiko.RSAKey(filename=private_key_path)
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             client.connect(hostname='gitlab.com', username='git', pkey=key)
             # Close the client after successful connection
             client.close()
-            self.git_controller.log_message.emit(f"Connection successful using new key: {key_path}")
+            self.git_controller.log_message.emit(f"Connection successful using new key: {private_key_path}")
             return True
         except Exception as e:
-            self.git_controller.error_message.emit(f"Failed to connect using key {key_path}: {e}")
+            self.git_controller.error_message.emit(f"Failed to connect using key {private_key_path}: {e}")
             return False
+
+    @staticmethod
+    def start_ssh_agent(public_key_path: str):
+        subprocess.run("start-ssh-agent", shell=True)
+        subprocess.run(f"ssh-add {public_key_path}", shell=True)
 
     def add_ssh_key_to_gitlab(self, ssh_key: str):
         user_session = UserSession()
