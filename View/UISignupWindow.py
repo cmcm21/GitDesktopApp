@@ -93,7 +93,7 @@ class SignUpForm(QMainWindow):
         self.setLayout(main_layout)
 
         # Set window title and fixed size
-        self.setFixedSize(300, 200)
+        self.setFixedSize(400, 250)
 
         # Add the main layout
         widget = QWidget()
@@ -114,9 +114,7 @@ class SignUpForm(QMainWindow):
         role_model = UserRolesModel()
         if self.validate_form(username, password, email, re_password):
             role_id = self.role_combo_box.currentData(Qt.ItemDataRole.UserRole)
-            print(role_id)
             default_role_id = role_model.get_role_id(role_id)
-            print(default_role_id)
             if default_role_id:
                 if self.user_controller.add_user(username, password, email, default_role_id[0]):
                     self.close()
