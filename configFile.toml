@@ -23,7 +23,7 @@ git_hosts = [
 ]
 
 [general]
-working_path = "D:/"
+working_path = "D:/PuppetLauncher/workspaces/default"
 animator_path = ""
 repository_prefix = "PuppetLauncher/workspaces/"
 maya25_path = "C://Program Files/Autodesk/Maya2025/bin/maya.exe"

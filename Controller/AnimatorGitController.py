@@ -211,6 +211,6 @@ class AnimatorGitController(GitController):
         self.raw_working_path = real_path
         self.working_path = Path(real_path)
 
-        FileManager.add_value_to_config_file("general", "animator_path", path)
+        FileManager.add_value_to_config_file("general", "animator_path", real_path)
         self.setup()
 

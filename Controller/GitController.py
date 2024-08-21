@@ -522,5 +522,5 @@ class GitController(QObject):
         self.raw_working_path = real_path
         self.working_path = Path(real_path)
 
-        FileManager.add_value_to_config_file("general", "working_path", path)
+        FileManager.add_value_to_config_file("general", "working_path", real_path)
         self.setup()
