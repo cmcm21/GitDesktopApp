@@ -1,10 +1,10 @@
 [git]
 username = "m-correa"
-repository_name = "testrepository"
-project_id = "58753861"
+repository_name = "Puppet"
+project_id = "60942723"
 personal_access_token = "glpat-7jNzAfWqokoiPuTjuKEh"
-repository_url = "https://m-correa:glpat-7jNzAfWqokoiPuTjuKEh@gitlab.com/m-correa/testrespository.git"
-repository_url_ssh = "git@gitlab.com:m-correa/testrespository.git"
+repository_url = "https://m-correa:glpat-7jNzAfWqokoiPuTjuKEh@gitlab.com/m-correa/Puppet.git"
+repository_url_ssh = "git@gitlab.com:m-correa/Puppet.git"
 gitlab_api_url = "https://gitlab.com/api/v4"
 git_hosts = [
     "gitlab.com",
@@ -12,19 +12,20 @@ git_hosts = [
 
 [git_anim]
 username = "m-correa"
-repository_name = "testrepository_anim"
-project_id = "60647725"
+repository_name = "Puppet_anim"
+project_id = "60945745"
 personal_access_token = "glpat-7jNzAfWqokoiPuTjuKEh"
-repository_url = "https://gitlab.com/m-correa/testrepository_anim.git"
-repository_url_ssh = "git@gitlab.com:m-correa/testrepository_anim.git"
+repository_url = "https://gitlab.com/m-correa/Puppet_anim.git"
+repository_url_ssh = "git@gitlab.com:m-correa/Puppet_anim.git"
 gitlab_api_url = "https://gitlab.com/api/v4"
 git_hosts = [
     "gitlab.com",
 ]
 
 [general]
-working_path = "/RiggingLauncher/workingSpaces/default/"
-animator_path = "/RiggingLauncher/workingSpaces/animator/"
+working_path = "D:/"
+animator_path = ""
+repository_prefix = "PuppetLauncher/workspaces/"
 maya25_path = "C://Program Files/Autodesk/Maya2025/bin/maya.exe"
 maya24_path = "C://Program Files/Autodesk/Maya2024/bin/maya.exe"
 maya22_path = "C://Program Files/Autodesk/Maya2022/bin/maya.exe"
@@ -43,22 +44,19 @@ default_role = "animator"
 user_names = [
     "m-correa",
     "s-shenoy",
-    "vladen",
 ]
 default_password = "1234"
 emails = [
     "m-correa@soleilgamestudios.com",
     "s-shenoy@soleilgamestudios.com",
-    "v.afanasjevs@soleilgamestudios.com",
 ]
 roles = [
     "admin",
     "admin",
-    "dev",
 ]
 
 [test]
-debug = false
+debug = true
 debug_user = "m-correa"
 
 [projects]

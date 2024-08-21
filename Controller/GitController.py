@@ -25,13 +25,15 @@ class GitController(QObject):
     send_merge_requests_comments = Signal(list)
     send_repository_history = Signal(list)
     send_current_changes = Signal(list, list)
+    set_working_path = Signal()
 
     def __init__(self, config: dict):
         super(GitController, self).__init__()
         self.repository_name = config["git"]["repository_name"]
         self.username = config["git"]["username"]
-        self.raw_working_path = FileManager.join_with_os_root_dir(config["general"]["working_path"])
-        self.working_path = Path(FileManager.join_with_os_root_dir(config["general"]["working_path"]))
+        self.raw_working_path = config["general"]["working_path"]
+        self.working_path = Path(config["general"]["working_path"])
+        self.working_path_prefix = config['general']['repository_prefix']
         self.personal_access_token = config["git"]["personal_access_token"]
         self.repository_url_https = config["git"]["repository_url"]
         self.repository_url_ssh = config["git"]["repository_url_ssh"]
@@ -293,6 +295,10 @@ class GitController(QObject):
 
     @Slot()
     def setup(self):
+        if self.raw_working_path == "":
+            self.set_working_path.emit()
+            return
+
         self.setup_started.emit()
         no_errors = True
         try:
@@ -509,3 +515,12 @@ class GitController(QObject):
         # Check the status of the repository
         self._run_git_command(['git', 'status'])
         self.get_latest_completed.emit()
+
+    @Slot(str)
+    def on_setup_working_path(self, path: str):
+        real_path = os.path.join(path, self.working_path_prefix, "default")
+        self.raw_working_path = real_path
+        self.working_path = Path(real_path)
+
+        FileManager.add_value_to_config_file("general", "working_path", path)
+        self.setup()

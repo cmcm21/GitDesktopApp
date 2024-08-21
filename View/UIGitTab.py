@@ -144,8 +144,8 @@ class UIGitTab(QWidget):
         self.repository_path = working_path
         """ Toolbar build """
         self.header = QHBoxLayout()
-        self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png")
-        self.download_btn: QPushButton = BaseWindow.create_button(self, "arrowDown.png")
+        self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png", "Upload")
+        self.download_btn: QPushButton = BaseWindow.create_button(self, "arrowDown.png", "Get Latest")
         self.publish_btn: QPushButton = BaseWindow.create_button(self, "publish.png", "Publish")
         """ Layouts """
         self.main_layout = QVBoxLayout()

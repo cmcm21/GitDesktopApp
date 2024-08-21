@@ -7,3 +7,4 @@ class WindowID(Enum):
     COMMIT = 2
     SIGNUP = 3
     ADMIN = 4
+    SELECT_DIRECTORY = 5

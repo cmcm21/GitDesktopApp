@@ -77,7 +77,7 @@ class FileManager:
             try:
                 shutil.move(source_path, dist_path)
             except Exception as e:
-                FileManager.error_message.emit(f"Error moving directory from {source_path} to {dist_path}: {e}")
+                print(f"Error moving directory from {source_path} to {dist_path}: {e}")
 
     @staticmethod
     def erase_dir(source_path: str):

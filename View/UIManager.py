@@ -1,10 +1,8 @@
 from View.LauncherWindow import LauncherWindow
 from View.UILoginWindow import LoginWindow
-from PySide6.QtWidgets import QPushButton
-from PySide6.QtCore import Slot, Signal, QObject, QTimer
 from View.WindowID import WindowID
-from Utils.Environment import ROLE_ID
-from Utils.UserSession import UserSession
+from View.SelectDirectory import SelectDirectoryWindow
+from PySide6.QtCore import Slot, Signal, QObject, QTimer
 
 
 class UIManager(QObject):
@@ -24,11 +22,13 @@ class UIManager(QObject):
     lw_destroy_application = Signal()
     lw_switch_account = Signal()
     lg_destroy_application = Signal()
+    sdw_select_directory = Signal(str)
 
     def __init__(self, config: dict):
         super().__init__()
         self.launcher_window = LauncherWindow(config, WindowID.LAUNCHER)
         self.login_window = LoginWindow(WindowID.LOGING)
+        self.select_directory_window = None
         self.current_window = None
         self.logger = self.launcher_window.logger_widget.logger
         self.windows = {
@@ -207,3 +207,12 @@ class UIManager(QObject):
     def on_anim_upload_files_completed(self):
         self.launcher_window.loading.stop_anim_screen()
 
+    @Slot()
+    def on_setup_no_directory(self):
+        self.select_directory_window = SelectDirectoryWindow()
+        self.select_directory_window.directory_selected.connect(self.test_select_dir)
+        self.select_directory_window.show()
+
+    @Slot(str)
+    def test_select_dir(self, path):
+        self.sdw_select_directory.emit(path)

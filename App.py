@@ -78,6 +78,7 @@ class Application(QApplication):
         ])
 
     def _connect_ui_manager_git_controller(self):
+        # Almost all this ui_manager signals are set using the setattr() method
         self._connect_signals(self.ui_manager, [
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.get_main_branch),
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.get_all_branches),
@@ -91,6 +92,7 @@ class Application(QApplication):
             (self.ui_manager.lw_uploaded_clicked, self.git_controller.push_changes),
             (self.ui_manager.lw_git_history_tab_clicked, self.git_controller.get_repository_history),
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
+            (self.ui_manager.sdw_select_directory, self.git_controller.on_setup_working_path)
         ])
 
     def _connect_ui_manager_login(self):
@@ -116,6 +118,7 @@ class Application(QApplication):
             (self.git_controller.send_merge_requests_comments, self.ui_manager.on_get_merge_requests_comments),
             (self.git_controller.send_repository_history, self.ui_manager.on_get_repository_history),
             (self.git_controller.send_current_changes, self.ui_manager.on_get_changes_list),
+            (self.git_controller.set_working_path, self.ui_manager.on_setup_no_directory)
         ])
 
         self._connect_signals(self, [
@@ -160,7 +163,9 @@ class Application(QApplication):
             (self.git_animator_setup, self.anim_git_controller.setup)
         ])
 
-        self._connect_signal(self.ui_manager, self.ui_manager.lw_publish_to_anim, self.anim_git_controller.publish_rep)
+        self._connect_signals(self.ui_manager, [
+            (self.ui_manager.lw_publish_to_anim, self.anim_git_controller.publish_rep),
+        ])
 
     def _connect_git_animator_controller(self):
         self._connect_signals(self.anim_git_controller,[
@@ -168,10 +173,13 @@ class Application(QApplication):
             (self.anim_git_controller.setup_completed, self.on_git_setup_completed),
             (self.anim_git_controller.setup_completed, self.ui_manager.on_setup_completed),
             (self.anim_git_controller.get_latest_completed, self.ui_manager.on_get_latest_completed),
+            (self.anim_git_controller.set_working_path, self.ui_manager.on_setup_no_directory)
         ])
 
-        self._connect_signal(self.ui_manager,
-                                self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_anim_rep_latest)
+        self._connect_signals(self.ui_manager,[
+            (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_anim_rep_latest),
+            (self.ui_manager.sdw_select_directory, self.anim_git_controller.on_setup_working_path)
+        ])
 
     def _disconnect_ui_manager_git_anim_controller(self):
         self._disconnect_signal(self.ui_manager,
@@ -193,6 +201,7 @@ class Application(QApplication):
             (self.git_controller.send_merge_requests_comments, self.ui_manager.on_get_merge_requests_comments),
             (self.git_controller.send_repository_history, self.ui_manager.on_get_repository_history),
             (self.git_controller.send_current_changes, self.ui_manager.on_get_changes_list),
+            (self.git_controller.set_working_path, self.ui_manager.on_setup_no_directory)
         ])
 
         self._disconnect_signals(self, [
@@ -214,6 +223,7 @@ class Application(QApplication):
             (self.ui_manager.lw_accept_merge_request_and_merge, self.git_controller.merge_request_accept_and_merge),
             (self.ui_manager.lw_git_history_tab_clicked, self.git_controller.get_repository_history),
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
+            (self.ui_manager.sdw_select_directory, self.git_controller.on_setup_working_path)
         ])
 
     def _disconnect_git_animator_controller(self):
@@ -222,10 +232,11 @@ class Application(QApplication):
             (self.anim_git_controller.setup_completed, self.ui_manager.on_setup_completed),
             (self.anim_git_controller.setup_completed, self.on_git_setup_completed),
             (self.anim_git_controller.get_latest_completed, self.ui_manager.on_get_latest_completed),
+            (self.anim_git_controller.set_working_path, self.ui_manager.on_setup_no_directory)
         ])
         self._disconnect_signals(self.ui_manager, [
             self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_anim_rep_latest,
-            self.ui_manager.lw_git_changes_list_tab_clicked, self.anim_git_controller.publish_rep
+            (self.ui_manager.sdw_select_directory, self.anim_git_controller.on_setup_working_path)
         ])
 
     @staticmethod

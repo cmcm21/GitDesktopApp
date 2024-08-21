@@ -171,7 +171,6 @@ class AnimatorGitController(GitController):
 
         return commit_count
 
-
     @Slot()
     def setup(self):
         print(f"class: {self.__class__.__name__} working in path: {self.raw_working_path}")
@@ -205,3 +204,13 @@ class AnimatorGitController(GitController):
     @Slot()
     def verify_user_branch(self):
         return
+
+    @Slot(str)
+    def on_setup_working_path(self, path: str):
+        real_path = os.path.join(path, self.working_path_prefix, "animator")
+        self.raw_working_path = real_path
+        self.working_path = Path(real_path)
+
+        FileManager.add_value_to_config_file("general", "animator_path", path)
+        self.setup()
+
