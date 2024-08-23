@@ -3,6 +3,7 @@ from pathlib import Path
 from Utils.UserSession import UserSession
 from Utils.Environment import ROLE_ID, FILE_CHANGE_DIC, CREATE_DIR
 from Utils.FileManager import FileManager
+from Utils.ConfigFileManager import ConfigFileManager
 from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
 import subprocess
 import requests
@@ -27,8 +28,10 @@ class GitController(QObject):
     send_current_changes = Signal(list, list)
     set_working_path = Signal()
 
-    def __init__(self, config: dict):
+    def __init__(self):
         super(GitController, self).__init__()
+        self.config_manager = ConfigFileManager()
+        config = self.config_manager.get_config()
         self.repository_name = config["git"]["repository_name"]
         self.username = config["git"]["username"]
         self.raw_working_path = config["general"]["working_path"]
@@ -293,10 +296,15 @@ class GitController(QObject):
         else:
             self._run_git_command(['git', 'remote', 'add', 'origin', url])
 
-    @Slot()
-    def setup(self):
+    def check_working_path(self) -> bool:
         if self.raw_working_path == "":
             self.set_working_path.emit()
+            return False
+        return True
+
+    @Slot()
+    def setup(self):
+        if not self.check_working_path():
             return
 
         self.setup_started.emit()
@@ -519,8 +527,10 @@ class GitController(QObject):
     @Slot(str)
     def on_setup_working_path(self, path: str):
         real_path = os.path.join(path, self.working_path_prefix, "default")
+        animator_path = os.path.join(path, self.working_path_prefix, "animator")
         self.raw_working_path = real_path
         self.working_path = Path(real_path)
 
-        FileManager.add_value_to_config_file("general", "working_path", real_path)
+        self.config_manager.add_value("general", "working_path", real_path)
+        self.config_manager.add_value("general", "animator_path", animator_path)
         self.setup()

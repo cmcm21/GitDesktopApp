@@ -1,4 +1,6 @@
 from PySide6.QtWidgets import QApplication
+
+from Utils.ConfigFileManager import ConfigFileManager
 from View.UIManager import UIManager
 from View.UIManager import WindowID
 from Controller.GitController import GitController
@@ -13,15 +15,6 @@ import tomli
 import os
 
 
-def get_config() -> dict:
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_file_path = os.path.join(script_dir,  "configFile.toml")
-    with open(config_file_path, "rb") as config_file:
-        config = tomli.load(config_file)
-
-    return config
-
-
 class Application(QApplication):
 
     git_setup = Signal()
@@ -34,11 +27,11 @@ class Application(QApplication):
         super().__init__([])
         """ Control variables """
         self._set_style_sheet()
-        self.config = get_config()
-        self.ui_manager = UIManager(self.config)
+        self.ui_manager = UIManager()
         self.logger = self.ui_manager.logger
         self.git_installed = False
         self.user_session = UserSession()
+        self.config = ConfigFileManager().get_config()
         """ Create objects threads """
         self._initialize_threads()
         """ Connect objects signals """
@@ -55,7 +48,7 @@ class Application(QApplication):
 
     def _create_controller(self, controller_cls, thread_name):
         thread = QThread(self)
-        controller = controller_cls(self.config)
+        controller = controller_cls()
         setattr(self, thread_name, thread)
         controller.moveToThread(thread)
         thread.start()

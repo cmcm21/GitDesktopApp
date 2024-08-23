@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMainWindow, QPushButton, QMessageBox, QWidget, QFrame
+from PySide6.QtWidgets import QMainWindow, QPushButton, QMessageBox,QFrame
 from PySide6.QtGui import QPixmap, QIcon
 from PySide6.QtCore import Signal
 from View.WindowID import WindowID

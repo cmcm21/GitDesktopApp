@@ -8,3 +8,4 @@ class WindowID(Enum):
     SIGNUP = 3
     ADMIN = 4
     SELECT_DIRECTORY = 5
+    SETTINGS = 6

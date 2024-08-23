@@ -6,6 +6,7 @@ from Controller.GitController import GitController
 from Controller.GitProtocol.GitProtocols import GitProtocolSSH
 from Controller.GitProtocol.GitProtocols import GitProtocolHTTPS
 from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
+from Utils.ConfigFileManager import ConfigFileManager
 import requests
 from pathlib import Path
 import os
@@ -24,15 +25,16 @@ class AnimatorGitController(GitController):
     uploading_anim_files = Signal()
     uploading_anim_files_completed = Signal()
 
-    def __init__(self, config: dict):
-        super().__init__(config)
+    def __init__(self):
+        super().__init__()
+        self.config_manager = ConfigFileManager()
+        config = self.config_manager.get_config()
+
         self.source_path = config["general"]["working_path"]
         self.repository_name = config["git_anim"]["repository_name"]
         self.username = config["git_anim"]["username"]
-        self.raw_working_path = FileManager.join_with_os_root_dir(os.path.join(f"{self.repository_name}"
-                                                                               ,config["general"]["animator_path"]))
-        self.working_path = Path(FileManager.join_with_os_root_dir(os.path.join(f"{self.username}",
-                                                                                config["general"]["animator_path"])))
+        self.raw_working_path = config["general"]["animator_path"]
+        self.working_path = Path(config["general"]["animator_path"])
         self.personal_access_token = config["git"]["personal_access_token"]
         self.repository_url_https = config["git_anim"]["repository_url"]
         self.repository_url_ssh = config["git_anim"]["repository_url_ssh"]
@@ -117,7 +119,6 @@ class AnimatorGitController(GitController):
         self.create_repository_dir()
         self._run_git_command(["git", "init", "."])
 
-
     def push_local_repository(self):
         self._run_git_command(["git", "remote", "set-url", "origin", self.git_protocol.repository_url])
         self._run_git_command(["git", "add", "."])
@@ -131,9 +132,9 @@ class AnimatorGitController(GitController):
         self.repository_url_https = project_info['http_url_to_repo']
         self.project_id = project_info['id']
 
-        FileManager.add_value_to_config_file(self.config_section, self.config_rep_id_key, str(self.project_id))
-        FileManager.add_value_to_config_file(self.config_section, self.config_rep_ssh_key, self.repository_url_ssh)
-        FileManager.add_value_to_config_file(self.config_section, self.config_rep_http_key, self.repository_url_https)
+        self.config_manager.add_value(self.config_section, self.config_rep_id_key, str(self.project_id))
+        self.config_manager.add_value(self.config_section, self.config_rep_ssh_key, self.repository_url_ssh)
+        self.config_manager.add_value(self.config_section, self.config_rep_http_key, self.repository_url_https)
 
     def compile_origin_files(self):
         user_session = UserSession()
@@ -161,7 +162,6 @@ class AnimatorGitController(GitController):
                 raise Exception(f"Failed to retrieve commits: {response.text}")
 
             commits = response.json()
-
             # Count the number of commits in the current page
             commit_count += len(commits)
             # Check if we have fetched all commits
@@ -173,6 +173,9 @@ class AnimatorGitController(GitController):
 
     @Slot()
     def setup(self):
+        if not self.check_working_path():
+            return
+
         print(f"class: {self.__class__.__name__} working in path: {self.raw_working_path}")
         self.check_anim_repository(from_setup=True)
         super().setup()
@@ -211,6 +214,6 @@ class AnimatorGitController(GitController):
         self.raw_working_path = real_path
         self.working_path = Path(real_path)
 
-        FileManager.add_value_to_config_file("general", "animator_path", real_path)
+        self.config_manager.add_value("general", "animator_path", real_path)
         self.setup()
 

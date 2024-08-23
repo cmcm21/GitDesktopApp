@@ -12,6 +12,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton
 )
+from Utils.ConfigFileManager import ConfigFileManager
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
 from View.UILogger import LoggerWidget
@@ -20,6 +21,7 @@ from View.UIGitTab import UIGitTab
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UISessionWidget import UserSessionWidget
 from View.UIAdminWidget import AdminWindow
+from View.UISettingsWindows import SettingWindows
 from Utils.UserSession import UserSession
 from Utils.Environment import ROLE_ID
 import Utils.Environment as Env
@@ -37,13 +39,17 @@ class LauncherWindow(BaseWindow):
     check_changes_list = Signal()
     switch_account = Signal(ROLE_ID)
 
-    def __init__(self, config: dict, window_id: WindowID, width=900, height=500):
+    def __init__(self, window_id: WindowID, width=900, height=500):
         super().__init__("Puppet Launcher", window_id, width, height)
         self.admin_window = None
         self.user_session = None
         self.commit_window = None
         self.publish_window = None
-        self.config = config
+        self.settings_window = None
+
+        self.config_manager = ConfigFileManager()
+        self.config = self.config_manager.get_config()
+
         self._initialize_attributes()
         self._create_all_elements()
         self._apply_styles()
@@ -77,9 +83,10 @@ class LauncherWindow(BaseWindow):
         self.user_menu = QMenu("User", self)
         self.set_project_combo_box()
 
-        self.new_workspace_btn = self._create_button("plus.png", "NewWorkspaceButton", "New Workspace")
+        #self.new_workspace_btn = self._create_button("plus.png", "NewWorkspaceButton", "New Workspace")
         self.maya_btn = self._create_button("mayaico.png", "MayaButton", "Open Maya")
         self.settings_btn = self._create_button("gear.png", "SettingsButton", "Open Settings")
+        self.settings_btn.clicked.connect(self.open_settings)
 
     def _create_button(self, icon_path: str, object_name: str, tooltip: str) -> QPushButton:
         button = self.create_button(self, icon_path, "")
@@ -92,6 +99,15 @@ class LauncherWindow(BaseWindow):
         self.left_frame = self._create_frame("MainWindowLeftFrame", max_width=120)
         self.git_tab_frame = self._create_frame("GitTabFrame")
         self.pv4_tab_frame = self._create_frame("Pv4TabFrame")
+
+    def open_settings(self):
+        self.settings_window = SettingWindows(WindowID.SETTINGS, self.logger_widget)
+        SignalManager.connect_signal(self.settings_window, self.settings_window.window_closed, self.settings_closed)
+        self.settings_window.show()
+
+    @Slot()
+    def settings_closed(self):
+        return
 
     @staticmethod
     def _create_frame(object_name: str, max_width: int = None) -> QFrame:
@@ -125,7 +141,7 @@ class LauncherWindow(BaseWindow):
 
     def _apply_styles(self):
         self._set_button_style(self.maya_btn)
-        self._set_button_style(self.new_workspace_btn)
+        # self._set_button_style(self.new_workspace_btn)
         self._set_button_style(self.settings_btn)
         CustomStyleSheetApplier.set_combo_box_style_and_colour(self.combo_box, "White")
         self.user_menu.setFont(QFont("Courier New", 10))
@@ -158,7 +174,7 @@ class LauncherWindow(BaseWindow):
         layout = self.left_frame.layout()
         layout.addWidget(self.combo_box, 0, Qt.AlignmentFlag.AlignTop)
         layout.addWidget(separator)
-        layout.addWidget(self.new_workspace_btn, 0, Qt.AlignmentFlag.AlignTop)
+       # layout.addWidget(self.new_workspace_btn, 0, Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.maya_btn, 0, Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self.settings_btn, 5, Qt.AlignmentFlag.AlignTop)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -212,14 +228,14 @@ class LauncherWindow(BaseWindow):
 
         message_box = QMessageBox()
         message_box.setWindowTitle("Confirm")
-        message_box.setIcon(QMessageBox.Information)
+        message_box.setIcon(QMessageBox.Icon.Information)
         message_box.setText("You are going to lose your changes. are you sure to get latest?")
-        message_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        message_box.setDefaultButton(QMessageBox.Ok)
+        message_box.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+        message_box.setDefaultButton(QMessageBox.StandardButton.Ok)
 
         reply = message_box.exec()
 
-        if reply == QMessageBox.Ok:
+        if reply == QMessageBox.StandardButton.Ok:
             self.get_latest.emit()
 
     def create_publish_window(self):
@@ -285,9 +301,9 @@ class LauncherWindow(BaseWindow):
         if self.user_session.role_id == ROLE_ID.ADMIN.value or self.user_session.role_id == ROLE_ID.ADMIN_ANIM.value:
             self.user_session_widget.admin_signal.connect(self.on_create_admin_window)
 
+            # noinspection PyTypeChecker
             SignalManager.connect_signal(self.user_session_widget,
-                                         self.user_session_widget.switch_account_signal,
-                                         self.on_switch_account)
+                                         self.user_session_widget.switch_account_signal, self.on_switch_account)
 
             self.user_menu.addAction(self.user_session_widget.get_admin_action())
             self.user_menu.addAction(self.user_session_widget.get_switch_account_action())
@@ -303,14 +319,16 @@ class LauncherWindow(BaseWindow):
 
         message_box = QMessageBox()
         message_box.setWindowTitle("Switch Roles")
-        message_box.setIcon(QMessageBox.Information)
+        message_box.setIcon(QMessageBox.Icon.Information)
         message_box.setText("Are you sure to switch roles?")
-        message_box.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
-        message_box.setDefaultButton(QMessageBox.Ok)
+        message_box.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+        message_box.setDefaultButton(QMessageBox.StandardButton.Ok)
 
         reply = message_box.exec()
 
-        if reply == QMessageBox.Ok:
+        if reply == QMessageBox.StandardButton.Ok:
+
+            # noinspection PyTypeChecker
             SignalManager.disconnect_signal(self.user_session_widget,
                                             self.user_session_widget.switch_account_signal, self.on_switch_account)
             self.switch_account.emit(role)

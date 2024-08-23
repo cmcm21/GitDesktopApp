@@ -144,9 +144,9 @@ class UIGitTab(QWidget):
         self.repository_path = working_path
         """ Toolbar build """
         self.header = QHBoxLayout()
-        self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png", "Upload")
+        self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png", "Upload Git")
         self.download_btn: QPushButton = BaseWindow.create_button(self, "arrowDown.png", "Get Latest")
-        self.publish_btn: QPushButton = BaseWindow.create_button(self, "publish.png", "Publish")
+        self.publish_btn: QPushButton = BaseWindow.create_button(self, "publish.png", "Publish Anim")
         """ Layouts """
         self.main_layout = QVBoxLayout()
         self.body_layout = QHBoxLayout()
@@ -168,8 +168,8 @@ class UIGitTab(QWidget):
         self.download_btn.setFixedSize(QSize(120, 35))
         self.publish_btn.setFixedSize(QSize(120, 35))
         """ Header Layout """
-        self.repository_viewer.buttons_layout.addWidget(self.upload_btn, 0, Qt.AlignmentFlag.AlignLeft)
-        self.repository_viewer.buttons_layout.addWidget(self.download_btn, 10, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.download_btn, 0, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.upload_btn, 10, Qt.AlignmentFlag.AlignLeft)
         self.repository_viewer.buttons_layout.addWidget(self.publish_btn, 0, Qt.AlignmentFlag.AlignLeft)
         """ Body layout """
         self.splitter.addWidget(self.repository_viewer)

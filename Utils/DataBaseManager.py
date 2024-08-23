@@ -1,6 +1,7 @@
 from PySide6.QtCore import QObject, Signal, Slot
 from Model.UserModel import UserModel
 from Model.UserRolesModel import UserRolesModel
+from Utils.ConfigFileManager import ConfigFileManager
 from Utils.DataBaseConnection import DataBaseConnection
 from Utils.FileManager import FileManager
 import Utils.Environment as Env
@@ -12,9 +13,10 @@ class DataBaseManager(QObject):
     db_setup_start = Signal()
     db_setup_done = Signal()
 
-    def __init__(self, config):
+    def __init__(self):
         super(DataBaseManager, self).__init__()
-        self.config = config
+        self.config_manager = ConfigFileManager()
+        self.config = self.config_manager.get_config()
         self.database_conn = DataBaseConnection()
 
     @Slot()

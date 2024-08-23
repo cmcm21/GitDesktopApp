@@ -1,5 +1,6 @@
 from PySide6.QtCore import QObject, Signal, Slot
 from Utils.FileManager import FileManager
+from Utils.ConfigFileManager import ConfigFileManager
 from pathlib import Path
 import shutil
 import winreg
@@ -27,9 +28,11 @@ class SystemController(QObject):
     ]
     maya_bin = ""
 
-    def __init__(self, config):
+    def __init__(self):
         super(SystemController, self).__init__()
-        self.config = config
+        self.config_manager = ConfigFileManager()
+        config = self.config_manager.get_config()
+
         self.git_path = config["general"]["git_path"]
         self.git_installer_url = config["general"]["git_installer_url"]
         self.git_token = config["git"]["personal_access_token"]
@@ -130,6 +133,32 @@ class SystemController(QObject):
                 if file.endswith('.py'):
                     os.remove(os.path.join(root, file))
 
+    def run_command(self, command: str):
+        try:
+            process = subprocess.Popen(
+                command,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                shell=True,
+                text=True,
+            )
+            stdout, stderr = process.communicate()
+            if stdout or "push" in command or "pull" in command:
+                self.log_message.emit(stdout)
+                return True
+            elif stderr:
+                if "fatal" in stderr:
+                    self.error_message.emit(f"An error occurred executing command: {command}, {stderr}")
+                    return False
+                else:
+                    self.log_message.emit(f"{stderr}")
+                    return True
+
+        except subprocess.CalledProcessError as e:
+            self.error_message.emit(f"An error occurred executing command: {command}, error: {e.stderr}")
+            raise subprocess.CalledProcessError(e.returncode, e.stderr)
+
     @Slot()
     def setup(self):
         self.setup_started.emit()
@@ -142,12 +171,13 @@ class SystemController(QObject):
     def open_maya(self):
         if not self.maya_installed:
             return
-        self.log_message.emit("Opening Maya...")
-        result = subprocess.run([self.maya_bin])
+        self.bat_bin = self.config_manager.get_config()['general']['selected_maya_bat']
 
-        self.log_message.emit(result.stdout)
-        if result.stderr:
-            self.error_message.emit(result.stderr)
+        self.log_message.emit("Opening Maya...")
+        if self.bat_bin != "":
+            self.run_command(self.bat_bin)
+        else:
+            self.run_command(self.maya_bin)
 
     @Slot(str)
     def open_file(self, file_path: str):
@@ -164,4 +194,9 @@ class SystemController(QObject):
                 subprocess.run(['xdg-open', file_path], check=True)
         except Exception as e:
             self.error_message.emit(f"Failed to open file: {e}")
+
+    @Slot(str)
+    def select_maya_version(self, maya_bin: str, bat_bin = ""):
+        self.maya_bin = maya_bin
+        self.bat_bin = bat_bin
 

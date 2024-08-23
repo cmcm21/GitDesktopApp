@@ -1,12 +1,12 @@
 import io
 import os
 import sys
+import fnmatch
 from PySide6.QtCore import QObject, Signal, SignalInstance
 from pathlib import Path
-import tomli_w
-import tomli
 import shutil
 import compileall
+import tomli
 
 
 class FileManager:
@@ -57,17 +57,6 @@ class FileManager:
     def move_to_local_dir():
         if not FileManager.in_path(FileManager.get_local_path()):
             FileManager.move_to(FileManager.get_local_path())
-
-    @staticmethod
-    def add_value_to_config_file(section: str, key: str, value):
-        file_path = os.path.join(FileManager.get_local_path(), "configFile.toml")
-        with open(file_path, 'rb') as file:
-            data = tomli.load(file)
-
-        data[section][key] = value
-
-        with open(file_path, 'wb') as file:
-            tomli_w.dump(data, file)
 
     @staticmethod
     def move_dir(source_path: str, dist_path: str):
@@ -121,6 +110,39 @@ class FileManager:
         captured_output = output.getvalue()
         log_signal.emit(captured_output)
         output.close()
+
+    @staticmethod
+    def find_files(pattern, extension, directory) -> list:
+        matches = []
+        # Traverse the directory tree
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                if file.endswith(f".{extension}") and pattern in file:
+                    print(file)
+                    full_path = os.path.join(root, fr"{file}")
+                    matches.append(full_path)
+
+        return matches
+
+    @staticmethod
+    def get_files_extension(extension, directory) -> list:
+        matches = []
+        for root, dirs, files in os.walk(directory):
+            for file in files:
+                if file.endswith(f".{extension}"):
+                    matches.append(file)
+
+        return matches
+
+    @staticmethod
+    def find_directories(pattern: str, root_directory: str):
+        directories = []
+
+        for root, dirs, files in os.walk(root_directory):
+            for dir_name in fnmatch.filter(dirs, pattern):
+                directories.append(os.path.join(root, dir_name))
+
+        return directories
 
     @staticmethod
     def move_all_files_except_extension(src_dir: str, dst_dir: str, extension: str, log_signal: SignalInstance):

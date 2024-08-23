@@ -1,3 +1,4 @@
+from Utils.ConfigFileManager import ConfigFileManager
 from View.LauncherWindow import LauncherWindow
 from View.UILoginWindow import LoginWindow
 from View.WindowID import WindowID
@@ -24,9 +25,11 @@ class UIManager(QObject):
     lg_destroy_application = Signal()
     sdw_select_directory = Signal(str)
 
-    def __init__(self, config: dict):
+    def __init__(self):
         super().__init__()
-        self.launcher_window = LauncherWindow(config, WindowID.LAUNCHER)
+        self.config_manager = ConfigFileManager()
+        self.config = self.config_manager
+        self.launcher_window = LauncherWindow(window_id=WindowID.LAUNCHER)
         self.login_window = LoginWindow(WindowID.LOGING)
         self.select_directory_window = None
         self.current_window = None
@@ -35,7 +38,6 @@ class UIManager(QObject):
             WindowID.LAUNCHER: self.launcher_window,
             WindowID.LOGING: self.login_window
         }
-        self.config = config
         self._connect_launcher_windows()
         self._connect_login_window()
         self._connect_launcher_windows_to_loading_screen()
@@ -70,11 +72,9 @@ class UIManager(QObject):
             (self.launcher_window.upload_repository, 'lw_uploaded_clicked'),
             (self.launcher_window.maya_btn.clicked, 'lw_open_maya_clicked'),
             (self.launcher_window.window_closed, 'lw_window_closed'),
-            (
-            self.launcher_window.git_tab.git_sniffer.merge_request.selected_mr_changed, 'lw_get_merge_request_changed'),
+            (self.launcher_window.git_tab.git_sniffer.merge_request.selected_mr_changed, 'lw_get_merge_request_changed'),
             (self.launcher_window.git_tab.git_sniffer.merge_request.add_comment, 'lw_merge_request_add_comment'),
-            (self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge,
-             'lw_accept_merge_request_and_merge'),
+            (self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge,'lw_accept_merge_request_and_merge'),
             (self.launcher_window.login_out, 'lw_login_out'),
             (self.launcher_window.application_destroyed, 'lw_destroy_application'),
             (self.launcher_window.git_tab.repository_viewer.file_selected, 'lw_file_tree_clicked'),
@@ -114,7 +114,6 @@ class UIManager(QObject):
             return
         self.launcher_window.on_setup_completed(success)
         self.launcher_window.loading.stop_anim_screen()
-        self.current_window.showMaximized()
         self.launcher_window.git_tab.send_starting_signals()
 
     @Slot(str)
