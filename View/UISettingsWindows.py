@@ -1,5 +1,3 @@
-from logging import Logger
-
 from PySide6.QtWidgets import QComboBox, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy
 from PySide6.QtCore import Qt, Signal
 from Utils.ConfigFileManager import ConfigFileManager
@@ -18,7 +16,6 @@ Maya_Versions = {
     "Maya2024": "C://Program Files/Autodesk/Maya2024/bin/maya.exe",
     "Maya2025": "C://Program Files/Autodesk/Maya2025/bin/maya.exe"
 }
-
 config_section = "general"
 selected_maya_key = "selected_maya_bat"
 selected_bat_key = "selected_bat"
@@ -110,7 +107,6 @@ class SettingWindows(BaseWindow):
 
         if selected_bat_index != -1:
             self.bat_dir_combo_box.setCurrentIndex(selected_bat_index)
-
 
     def on_bat_dir_change(self, index):
         bat_data: str = self.bat_dir_combo_box.itemData(index, Qt.ItemDataRole.UserRole)
