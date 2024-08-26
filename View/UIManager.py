@@ -12,7 +12,7 @@ class UIManager(QObject):
     lw_uploaded_clicked = Signal(str)
     lw_publish_to_anim = Signal(str)
     lw_open_maya_clicked = Signal()
-    lw_login_out = Signal()
+    lw_log_out = Signal()
     lw_new_workspace_clicked = Signal()
     lw_window_closed = Signal()
     lw_get_merge_request_changed = Signal(int)

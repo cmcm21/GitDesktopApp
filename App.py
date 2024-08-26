@@ -62,7 +62,7 @@ class Application(QApplication):
     def _connect_ui_manager_launcher(self):
         self._connect_signals(self.ui_manager, [
             (self.ui_manager.lw_window_closed, self.on_main_window_closed),
-            (self.ui_manager.lw_login_out, self.on_login_out),
+            (self.ui_manager.lw_log_out, self.on_login_out),
             (self.ui_manager.lw_open_maya_clicked, self.system_controller.open_maya),
             (self.ui_manager.lw_destroy_application, self.on_application_destroyed),
             (self.ui_manager.lg_destroy_application, self.on_application_destroyed),
@@ -85,7 +85,8 @@ class Application(QApplication):
             (self.ui_manager.lw_uploaded_clicked, self.git_controller.push_changes),
             (self.ui_manager.lw_git_history_tab_clicked, self.git_controller.get_repository_history),
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
-            (self.ui_manager.sdw_select_directory, self.git_controller.on_setup_working_path)
+            (self.ui_manager.sdw_select_directory, self.git_controller.on_setup_working_path),
+            (self.ui_manager.lw_log_out, self.git_controller.on_log_out)
         ])
 
     def _connect_ui_manager_login(self):
@@ -194,7 +195,8 @@ class Application(QApplication):
             (self.git_controller.send_merge_requests_comments, self.ui_manager.on_get_merge_requests_comments),
             (self.git_controller.send_repository_history, self.ui_manager.on_get_repository_history),
             (self.git_controller.send_current_changes, self.ui_manager.on_get_changes_list),
-            (self.git_controller.set_working_path, self.ui_manager.on_setup_no_directory)
+            (self.git_controller.set_working_path, self.ui_manager.on_setup_no_directory),
+            (self.ui_manager.lw_log_out, self.git_controller.on_log_out)
         ])
 
         self._disconnect_signals(self, [
@@ -281,6 +283,7 @@ class Application(QApplication):
         self.user_session.login(username)
         if role != ROLE_ID.NONE:
             self.user_session.role_id = role.value
+
         self.ui_manager.launcher_window.set_user_session(self.user_session)
         self.ui_manager.open_window(WindowID.LAUNCHER)
         self._connect_git_animator_controller_generic()

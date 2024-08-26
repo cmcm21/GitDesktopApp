@@ -44,6 +44,8 @@ class GitController(QObject):
         self.git_hosts = config["git"]["git_hosts"]
         self.project_id = config["git"]["project_id"]
         self.user_session = None
+        self.attends = 0
+        self.reset_ssh = False
 
         # avoid circular import
         from Controller.GitProtocol.GitProtocols import GitProtocolSSH
@@ -85,6 +87,8 @@ class GitController(QObject):
                 self.log_message.emit(stdout)
                 return True
             elif stderr:
+                if "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!" in stderr:
+                    self.reset_ssh = True
                 if "fatal" in stderr:
                     self.error_message.emit(f"An error occurred executing command: {command_str}, {stderr}")
                     return False
@@ -302,6 +306,14 @@ class GitController(QObject):
             return False
         return True
 
+    def catch_ssh_connection_error(self):
+        from Controller.GitProtocol.GitProtocols import GitProtocolSSH
+        if isinstance(self.git_protocol, GitProtocolSSH) and self.attends < 2:
+            self.attends += 1
+            self.git_protocol.remove_offending_host_key()
+            self.git_protocol.reconnect_to_host()
+            self.setup()
+
     @Slot()
     def setup(self):
         if not self.check_working_path():
@@ -337,8 +349,12 @@ class GitController(QObject):
             self.log_message.emit(f" Setup Completed ")
             self.setup_completed.emit(self.repo_exist())
 
-        except subprocess.CalledProcessError as e:
-            self.log_message.emit(f"An error occurred : {e.stderr}")
+            if self.reset_ssh:
+                self.reset_ssh = False
+                return self.catch_ssh_connection_error()
+
+        except Exception as e:
+            self.log_message.emit(f"An error occurred : {e}")
 
     @Slot(str)
     def push_changes(self, message: str):
@@ -533,3 +549,7 @@ class GitController(QObject):
         self.config_manager.add_value("general", "working_path", real_path)
         self.config_manager.add_value("general", "animator_path", animator_path)
         self.setup()
+
+    @Slot()
+    def on_log_out(self):
+        self.attends = 0
