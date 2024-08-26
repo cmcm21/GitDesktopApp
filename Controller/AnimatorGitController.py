@@ -10,8 +10,6 @@ from Utils.ConfigFileManager import ConfigFileManager
 import requests
 from pathlib import Path
 import os
-import shutil
-import subprocess
 
 
 class AnimatorGitController(GitController):
@@ -173,8 +171,7 @@ class AnimatorGitController(GitController):
 
     @Slot()
     def setup(self):
-        if not self.check_working_path():
-            return
+        self.check_working_path()
 
         print(f"class: {self.__class__.__name__} working in path: {self.raw_working_path}")
         self.check_anim_repository(from_setup=True)
@@ -217,3 +214,9 @@ class AnimatorGitController(GitController):
         self.config_manager.add_value("general", "animator_path", real_path)
         self.setup()
 
+    def check_working_path(self):
+        if self.raw_working_path == "":
+            self.raw_working_path = FileManager.get_working_path(
+                self.config_manager.get_config()["general"]["repository_prefix"],"animator")
+            self.config_manager.add_value("general","animator_path", self.raw_working_path)
+            self.working_path = Path(self.raw_working_path)

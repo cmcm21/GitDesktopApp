@@ -26,7 +26,6 @@ class GitController(QObject):
     send_merge_requests_comments = Signal(list)
     send_repository_history = Signal(list)
     send_current_changes = Signal(list, list)
-    set_working_path = Signal()
 
     def __init__(self):
         super(GitController, self).__init__()
@@ -121,6 +120,7 @@ class GitController(QObject):
             else:
                 self.log_message.emit(f"merge request for branch : {branch_name} created successfully!!")
                 self.add_commits_to_merge_request(merge_request_id, branch_name)
+
         self.load_merge_requests()
 
     def check_branch_exists(self, branch_name) -> bool:
@@ -299,11 +299,12 @@ class GitController(QObject):
         else:
             self._run_git_command(['git', 'remote', 'add', 'origin', url])
 
-    def check_working_path(self) -> bool:
+    def check_working_path(self):
         if self.raw_working_path == "":
-            self.set_working_path.emit()
-            return False
-        return True
+            self.raw_working_path = FileManager.get_working_path(
+                self.config_manager.get_config()["general"]["repository_prefix"],"default")
+            self.config_manager.add_value("general","working_path", self.raw_working_path)
+            self.working_path = Path(self.raw_working_path)
 
     def catch_ssh_connection_error(self):
         from Controller.GitProtocol.GitProtocols import GitProtocolSSH
@@ -315,8 +316,7 @@ class GitController(QObject):
 
     @Slot()
     def setup(self):
-        if not self.check_working_path():
-            return
+        self.check_working_path()
 
         self.setup_started.emit()
         no_errors = True

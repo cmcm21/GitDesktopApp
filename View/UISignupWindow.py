@@ -2,7 +2,6 @@ from PySide6.QtWidgets import (
     QWidget,
     QLabel,
     QLineEdit,
-    QPushButton,
     QVBoxLayout,
     QFormLayout,
     QComboBox,
@@ -11,10 +10,10 @@ from PySide6.QtWidgets import (
 
 from Utils.Environment import ROLE_ID
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View.EnterButton import EnterButton
 from Model.UserRolesModel import UserRolesModel
 from Controller.UserController import UserController
 from PySide6.QtCore import Signal, Qt
-import Utils.Environment as Env
 from enum import Enum
 
 
@@ -40,7 +39,7 @@ class SignUpForm(QMainWindow):
         self.create_password()
         self.create_reenter_password()
 
-        self.signup_button = QPushButton('Sign Up')
+        self.signup_button = EnterButton('Sign Up', self)
         self._build()
         self.apply_styles()
         self.user_controller = user_controller

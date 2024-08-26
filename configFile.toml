@@ -23,15 +23,15 @@ git_hosts = [
 ]
 
 [general]
-working_path = "E:/PuppetLauncher/workspaces/default"
-animator_path = "E:/PuppetLauncher/workspaces/animator"
+working_path = "C:\\Users\\m-correa\\PycharmProjects\\pythonProject\\Utils\\../../PuppetLauncher/workspaces/default"
+animator_path = "C:\\Users\\m-correa\\PycharmProjects\\pythonProject\\Utils\\../PuppetLauncher/workspaces/animator"
 repository_prefix = "PuppetLauncher/workspaces/"
 maya25_path = "C://Program Files/Autodesk/Maya2025/bin/maya.exe"
 maya24_path = "C://Program Files/Autodesk/Maya2024/bin/maya.exe"
 maya22_path = "C://Program Files/Autodesk/Maya2022/bin/maya.exe"
 git_path = "C://Program Files/Git/git-cmd.exe"
 git_installer_url = "https://github.com/git-for-windows/git/releases/download/v2.41.0.windows.1/Git-2.41.0-64-bit.exe"
-selected_maya_bat = "E:/PuppetLauncher/workspaces/default\\Tempura\\AdminMaya2023.bat"
+selected_maya_bat = "E:/PuppetLauncher/workspaces/default\\Tempura\\AdminMaya2025.bat"
 selected_bat = "E:/PuppetLauncher/workspaces/default\\Tempura"
 
 [db.roles]
@@ -58,7 +58,7 @@ roles = [
 ]
 
 [test]
-debug = true
+debug = false
 debug_user = "m-correa"
 
 [projects]

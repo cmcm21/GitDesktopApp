@@ -5,6 +5,7 @@ from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UISignupWindow import SignUpForm
+from View.EnterButton import EnterButton
 from Controller.UserController import UserController
 from Model.UserRolesModel import UserRolesModel
 import Utils.Environment as Env
@@ -50,7 +51,7 @@ class LoginWindow(BaseWindow):
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
 
-        self.login_button = QPushButton('Login')
+        self.login_button = EnterButton('Login',self)
         self.signup_button = QPushButton('Sign Up')
 
         self.error_label = QLabel()

@@ -6,10 +6,15 @@ from PySide6.QtCore import QObject, Signal, SignalInstance
 from pathlib import Path
 import shutil
 import compileall
-import tomli
 
 
 class FileManager:
+
+    @staticmethod
+    def get_working_path(default_path: str, user: str) -> str:
+        local_path = FileManager.get_local_path()
+        root = os.path.join(local_path, default_path)
+        return os.path.join(root, user)
 
     @staticmethod
     def path_exists(path: str) -> bool:
