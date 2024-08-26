@@ -102,7 +102,7 @@ class GitProtocolSSH(GitProtocolAbstract):
     def check_ssh_installed(self) -> bool:
         try:
             # Attempt to run the ssh command with the version flag
-            result = subprocess.run(['ssh', '-V'], capture_output=True, text=True, shell=True)
+            result = subprocess.run(['ssh', '-V'], capture_output=True, text=True)
             if result.returncode == 0:
                 self.git_controller.log_message.emit("SSH is installed.")
                 self.git_controller.log_message.emit(result.stdout or result.stderr)  # ssh -V outputs to stderr
@@ -185,7 +185,7 @@ class GitProtocolSSH(GitProtocolAbstract):
             return False
 
     def add_private_key_to_agent(self, private_key_path: str):
-        result = subprocess.run(["ssh-add" , private_key_path], shell=True)
+        result = subprocess.run(["ssh-add" , private_key_path])
         self.git_controller.log_message.emit(result.stdout)
         if result.stderr:
             self.git_controller.error_message.emit(result.stderr)
@@ -363,11 +363,7 @@ class GitProtocolSSH(GitProtocolAbstract):
             self.git_controller.log_message.emit(f"Executing command: {command}")
 
             # Start the subprocess
-            process = subprocess.Popen(command,
-                                       stdin=subprocess.PIPE,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.PIPE,
-                                       text=True)
+            process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
             # Send input ("yes\n") to the process to accept the host key
             stdout, stderr = process.communicate("yes\n")

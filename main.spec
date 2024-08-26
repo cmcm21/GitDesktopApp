@@ -4,6 +4,7 @@
 a = Analysis(
     [
         'App.py',
+        'main.py',
         'Controller/GitController.py',
         'Controller/GitProtocol/GitProtocols.py',
         'Controller/GitProtocol/__init__.py',
@@ -40,8 +41,7 @@ a = Analysis(
         'View/UISessionWidget.py',
         'View/UISignupWindow.py',
         'View/WindowID.py',
-        'View/__init__.py',
-        'main.py'
+        'View/__init__.py'
     ],
     pathex=['.'],
     binaries=[],
@@ -81,7 +81,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name='Rigging Launcher',
+    name='Puppet Launcher',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

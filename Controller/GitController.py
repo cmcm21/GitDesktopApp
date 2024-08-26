@@ -79,7 +79,6 @@ class GitController(QObject):
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                shell=True,
                 text=True,
             )
             stdout, stderr = process.communicate()
@@ -270,7 +269,7 @@ class GitController(QObject):
 
     def get_current_branch(self):
         FileManager.move_to(self.raw_working_path)
-        result = subprocess.run('git branch --show-current', shell=True, capture_output=True, text=True)
+        result = subprocess.run('git branch --show-current', capture_output=True, text=True)
         if result.returncode == 0:
             return result.stdout.strip()
         else:

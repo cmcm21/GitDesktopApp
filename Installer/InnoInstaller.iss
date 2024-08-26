@@ -4,7 +4,7 @@
 #define MyAppName "Puppet Launcher"
 #define MyAppVersion "0.0.1"
 #define MyAppPublisher "Soleil"
-#define MyAppExeName "Rigging Launcher.exe"
+#define MyAppExeName "Puppet Launcher.exe"
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
@@ -45,8 +45,8 @@ Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "C:\Users\m-correa\PycharmProjects\pythonProject\dist\main\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\Users\m-correa\PycharmProjects\pythonProject\dist\main\_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "C:\Users\m-correa\PycharmProjects\pythonProject\dist\puppet_launcher_v_0.0.1\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\m-correa\PycharmProjects\pythonProject\dist\puppet_launcher_v_0.0.1\_internal\*"; DestDir: "{app}\_internal"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]

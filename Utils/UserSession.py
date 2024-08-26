@@ -19,11 +19,12 @@ class UserSession(metaclass=SingletonMeta):
     def login(self, username):
         user_controller = UserController()
         user_data = user_controller.get_user(username)
-        self.user_id = user_data[0]
-        self.username = user_data[1]
-        self.email = user_data[3]
-        self.role = user_data[4]
-        self.role_id = user_data[5]
+        if user_data:
+            self.user_id = user_data[0]
+            self.username = user_data[1]
+            self.email = user_data[3]
+            self.role = user_data[4]
+            self.role_id = user_data[5]
 
     def logout(self):
         self.user_id = -1
