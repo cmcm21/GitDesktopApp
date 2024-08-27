@@ -101,17 +101,11 @@ class UIManager(QObject):
 
         # Connect each no-parameters-signal to the corresponding attribute
         for signal, attr_name in connections:
-            print(f"Connecting {signal} with {attr_name} ")
             setattr(self, attr_name, signal)
-            #signal.connect( lambda : self.emit_signal_wrapper(signal, attr_name) )
 
         # Additional connections
         self.lw_destroy_application.connect(self._on_application_destroyed)
         self.login_window.application_destroyed.connect(self._on_application_destroyed)
-
-    def emit_signal_wrapper(self, signal:str, attr_name:str):
-        print(f"{signal} was triggered")
-        getattr(self, attr_name).emit()
 
     def _on_application_destroyed(self):
         for window in self.windows.values():
