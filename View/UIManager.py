@@ -1,4 +1,5 @@
 from Utils.ConfigFileManager import ConfigFileManager
+from Utils.Environment import ROLE_ID
 from View.LauncherWindow import LauncherWindow
 from View.UILoginWindow import LoginWindow
 from View.WindowID import WindowID
@@ -9,21 +10,25 @@ from PySide6.QtCore import Slot, Signal, QObject, QTimer
 class UIManager(QObject):
     """Launcher window buttons signals"""
     lw_get_latest_clicked = Signal()
-    lw_uploaded_clicked = Signal(str)
-    lw_publish_to_anim = Signal(str)
     lw_open_maya_clicked = Signal()
     lw_log_out = Signal()
     lw_new_workspace_clicked = Signal()
     lw_window_closed = Signal()
+    lw_destroy_application = Signal()
+    lg_destroy_application = Signal()
+    lw_git_history_tab_clicked = Signal()
+    lw_git_changes_list_tab_clicked = Signal()
+    lw_git_merge_request_tab_clicked = Signal()
+
+    lw_publish_to_anim = Signal(str)
+    lw_uploaded_clicked = Signal(str)
     lw_get_merge_request_changed = Signal(int)
     lw_merge_request_add_comment = Signal(str, int)
     lw_accept_merge_request_and_merge = Signal(int, str)
     lw_file_tree_clicked = Signal(str)
-    lg_login_accepted = Signal()
-    lw_destroy_application = Signal()
-    lw_switch_account = Signal()
-    lg_destroy_application = Signal()
     sdw_select_directory = Signal(str)
+    lw_switch_account = Signal(ROLE_ID)
+    lg_login_accepted = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -68,34 +73,52 @@ class UIManager(QObject):
             (self.launcher_window.git_tab.history_tab_clicked, 'lw_git_history_tab_clicked'),
             (self.launcher_window.git_tab.changes_list_clicked, 'lw_git_changes_list_tab_clicked'),
             (self.launcher_window.git_tab.merge_request_clicked, 'lw_git_merge_request_tab_clicked'),
+            (self.launcher_window.maya_btn.clicked, 'lw_open_maya_clicked'),
             (self.launcher_window.get_latest, 'lw_get_latest_clicked'),
             (self.launcher_window.upload_repository, 'lw_uploaded_clicked'),
-            (self.launcher_window.maya_btn.clicked, 'lw_open_maya_clicked'),
             (self.launcher_window.window_closed, 'lw_window_closed'),
-            (self.launcher_window.git_tab.git_sniffer.merge_request.selected_mr_changed, 'lw_get_merge_request_changed'),
-            (self.launcher_window.git_tab.git_sniffer.merge_request.add_comment, 'lw_merge_request_add_comment'),
-            (self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge,'lw_accept_merge_request_and_merge'),
-            (self.launcher_window.login_out, 'lw_login_out'),
             (self.launcher_window.application_destroyed, 'lw_destroy_application'),
-            (self.launcher_window.git_tab.repository_viewer.file_selected, 'lw_file_tree_clicked'),
-            (self.launcher_window.publish_to_anim_rep, 'lw_publish_to_anim'),
-            (self.launcher_window.switch_account, 'lw_switch_account'),
+            (self.launcher_window.log_out, 'lw_log_out')
         ]
 
-        # Connect each signal to the corresponding attribute
+        self.launcher_window.git_tab.git_sniffer.merge_request.selected_mr_changed.connect(
+            lambda index: self.lw_get_merge_request_changed(index))
+
+        self.launcher_window.git_tab.git_sniffer.merge_request.add_comment.connect(
+            lambda comment: self.lw_merge_request_add_comment(comment))
+
+        self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge.connect(
+            lambda comment: self.lw_accept_merge_request_and_merge(comment))
+
+        self.launcher_window.git_tab.repository_viewer.file_selected.connect(
+            lambda file_path: self.lw_file_tree_clicked.emit(file_path))
+
+        self.launcher_window.publish_to_anim_rep.connect(
+            lambda comment: self.lw_publish_to_anim.emit(comment))
+
+        self.launcher_window.switch_account.connect(
+            lambda role_id: self.lw_switch_account.emit(role_id))
+
+        # Connect each no-parameters-signal to the corresponding attribute
         for signal, attr_name in connections:
+            print(f"Connecting {signal} with {attr_name} ")
             setattr(self, attr_name, signal)
+            #signal.connect( lambda : self.emit_signal_wrapper(signal, attr_name) )
 
         # Additional connections
         self.lw_destroy_application.connect(self._on_application_destroyed)
         self.login_window.application_destroyed.connect(self._on_application_destroyed)
+
+    def emit_signal_wrapper(self, signal:str, attr_name:str):
+        print(f"{signal} was triggered")
+        getattr(self, attr_name).emit()
 
     def _on_application_destroyed(self):
         for window in self.windows.values():
             window.loading.stop_anim_screen()
 
     def _connect_login_window(self):
-        self.lg_login_accepted = self.login_window.login_signal
+        self.login_window.login_signal.connect(lambda username: self.lg_login_accepted.emit(username))
 
     def _connect_launcher_windows_to_loading_screen(self):
         self.lw_get_merge_request_changed.connect(lambda: self.launcher_window.loading.show_anim_screen())

@@ -12,9 +12,10 @@ class FileManager:
 
     @staticmethod
     def get_working_path(default_path: str, user: str) -> str:
-        local_path = FileManager.get_local_path()
-        root = os.path.join(local_path, default_path)
-        return os.path.join(root, user)
+        current_script = Path(__file__).resolve()
+        project_path = current_script.parents[2]
+        work_path = os.path.join(project_path, default_path, user)
+        return work_path
 
     @staticmethod
     def path_exists(path: str) -> bool:

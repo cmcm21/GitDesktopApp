@@ -34,10 +34,10 @@ class LauncherWindow(BaseWindow):
     publish_to_anim_rep = Signal(str)
     project_changed = Signal(str)
     window_closed = Signal()
-    login_out = Signal()
     admin_window_clicked = Signal()
     check_changes_list = Signal()
     switch_account = Signal(ROLE_ID)
+    log_out = Signal()
 
     def __init__(self, window_id: WindowID, width=900, height=500):
         super().__init__("Puppet Launcher", window_id, width, height)
@@ -167,8 +167,8 @@ class LauncherWindow(BaseWindow):
 
     def _build_body_left(self):
         separator = QFrame()
-        separator.setFrameShape(QFrame.HLine)
-        separator.setFrameShadow(QFrame.Sunken)
+        separator.setFrameShape(QFrame.Shape.HLine)
+        separator.setFrameShadow(QFrame.Shadow.Sunken)
 
         self.left_frame.setLayout(self.body_left)
         layout = self.left_frame.layout()
@@ -219,7 +219,11 @@ class LauncherWindow(BaseWindow):
         self.git_tab.upload_btn.clicked.connect(self.create_commit_windows)
         self.git_tab.download_btn.clicked.connect(self.on_get_latest_clicked)
         self.git_tab.publish_btn.clicked.connect(self.create_publish_window)
-        self.user_session_widget.logout_signal = self.login_out
+        self.user_session_widget.logout_signal.connect(self._log_out)
+
+    def _log_out(self):
+        print("Log out signal emitted")
+        self.log_out.emit()
 
     def on_get_latest_clicked(self):
         if len(self.git_tab.git_sniffer.changes) == 0:

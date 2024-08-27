@@ -126,6 +126,7 @@ class LoginWindow(BaseWindow):
         self.user_controller.error_message.connect(self.log_error)
 
     def on_check_login(self):
+        print("Login pressed")
         self.loading.show_anim_screen()
         username = self.username_input.text()
         password = self.password_input.text()

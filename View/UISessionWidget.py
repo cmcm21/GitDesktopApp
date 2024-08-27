@@ -48,11 +48,11 @@ class UserSessionWidget(QWidget):
             self,
             'Logout',
             'Are you sure you want to Logout?',
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No
         )
 
-        if reply == QMessageBox.Yes:
+        if reply == QMessageBox.StandardButton.Yes:
             self.logout_signal.emit()
 
     def set_user(self):

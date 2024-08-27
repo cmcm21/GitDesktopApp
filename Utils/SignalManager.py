@@ -17,7 +17,7 @@ class SignalManager(QObject):
     @staticmethod
     def disconnect_signal(signal_object: QObject, signal: SignalInstance, method: Slot):
         signal_meta_method = QMetaMethod.fromSignal(signal)
-        if signal_object.isSignalConnected(signal_meta_method) or SignalManager.is_method_connected(signal, method):
+        if signal_object.isSignalConnected(signal_meta_method) and SignalManager.is_method_connected(signal, method):
             signal.disconnect(method)
             SignalManager._unregister_connection(signal, method)
 
@@ -34,5 +34,5 @@ class SignalManager(QObject):
 
     @staticmethod
     def _unregister_connection(signal: SignalInstance, method: Slot):
-        if signal in SignalManager._connected_signals and method in SignalManager._connected_signals[signal]:
+        if signal in SignalManager._connected_signals and SignalManager.is_method_connected(signal, method):
             SignalManager._connected_signals[signal].remove(method)

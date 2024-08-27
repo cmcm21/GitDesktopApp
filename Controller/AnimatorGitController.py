@@ -177,10 +177,6 @@ class AnimatorGitController(GitController):
         self.check_anim_repository(from_setup=True)
         super().setup()
 
-    @Slot()
-    def get_anim_rep_latest(self):
-        self.get_latest()
-
     @Slot(str)
     def publish_rep(self, message: str):
         if self.check_anim_repository():

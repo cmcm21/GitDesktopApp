@@ -238,7 +238,7 @@ class GitController(QObject):
 
     def _commit_and_push_everything(self, comment: str, branch: str):
         # Add all changes to the staging area
-        self._run_git_command(['git', 'add', '--all'])
+        self._run_git_command(['git', 'add', '.', '-f'])
 
         # Commit changes with a specified message
         self._run_git_command(['git', 'commit', '-m', comment])
@@ -303,6 +303,7 @@ class GitController(QObject):
         if self.raw_working_path == "":
             self.raw_working_path = FileManager.get_working_path(
                 self.config_manager.get_config()["general"]["repository_prefix"],"default")
+            print(self.raw_working_path)
             self.config_manager.add_value("general","working_path", self.raw_working_path)
             self.working_path = Path(self.raw_working_path)
 

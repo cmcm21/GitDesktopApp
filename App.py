@@ -62,11 +62,11 @@ class Application(QApplication):
     def _connect_ui_manager_launcher(self):
         self._connect_signals(self.ui_manager, [
             (self.ui_manager.lw_window_closed, self.on_main_window_closed),
-            (self.ui_manager.lw_log_out, self.on_login_out),
             (self.ui_manager.lw_open_maya_clicked, self.system_controller.open_maya),
             (self.ui_manager.lw_destroy_application, self.on_application_destroyed),
             (self.ui_manager.lg_destroy_application, self.on_application_destroyed),
             (self.ui_manager.lw_file_tree_clicked, self.system_controller.open_file),
+            (self.ui_manager.lw_log_out, self.on_login_out),
             (self.ui_manager.lw_switch_account, self.on_switch_account)
         ])
 
@@ -168,12 +168,12 @@ class Application(QApplication):
         ])
 
         self._connect_signals(self.ui_manager,[
-            (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_anim_rep_latest),
+            (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest),
         ])
 
     def _disconnect_ui_manager_git_anim_controller(self):
         self._disconnect_signal(self.ui_manager,
-                                self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_anim_rep_latest)
+                                self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest)
 
     def _disconnect_git_controller(self):
         self._disconnect_signals(self.git_controller, [
@@ -191,7 +191,7 @@ class Application(QApplication):
             (self.git_controller.send_merge_requests_comments, self.ui_manager.on_get_merge_requests_comments),
             (self.git_controller.send_repository_history, self.ui_manager.on_get_repository_history),
             (self.git_controller.send_current_changes, self.ui_manager.on_get_changes_list),
-            (self.ui_manager.lw_log_out, self.git_controller.on_log_out)
+            #(self.ui_manager.lw_log_out, self.git_controller.on_log_out)
         ])
 
         self._disconnect_signals(self, [
@@ -223,7 +223,7 @@ class Application(QApplication):
             (self.anim_git_controller.get_latest_completed, self.ui_manager.on_get_latest_completed),
         ])
         self._disconnect_signals(self.ui_manager, [
-            self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_anim_rep_latest,
+            (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest)
         ])
 
     @staticmethod
@@ -287,8 +287,8 @@ class Application(QApplication):
 
             self._connect_git_animator_controller()
         else:
-            self._disconnect_ui_manager_git_controller()
             self._disconnect_ui_manager_git_anim_controller()
+            self._disconnect_git_animator_controller()
 
             self._connect_git_controller()
             self._connect_ui_manager_git_controller()
@@ -340,6 +340,7 @@ class Application(QApplication):
 
     @Slot()
     def on_login_out(self):
+        print("Logout!!!!")
         self.user_session.logout()
         self.ui_manager.open_window(WindowID.LOGING)
 
