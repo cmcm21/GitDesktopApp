@@ -15,7 +15,7 @@ from Model.UserRolesModel import UserRolesModel
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
-from Utils.Environment import ROLE_ID
+from Utils.Environment import RoleID
 from enum import Enum
 
 
@@ -69,7 +69,7 @@ class UserTableView(QTableView):
             self.message_log(f" Error trying to get row data!!, role: {row_data[INDEX_NAME.value]}")
 
         role_id = role[0]
-        if role_id == ROLE_ID.ADMIN.value:
+        if role_id == RoleID.ADMIN.value:
             self.show_info_message("You can not delete an admin account")
         else:
             reply = QMessageBox.question(

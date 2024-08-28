@@ -1,7 +1,7 @@
 from PySide6.QtCore import Signal, Slot
 from Utils.FileManager import FileManager
 from Utils.UserSession import UserSession
-from Utils.Environment import ROLE_ID
+from Utils.Environment import RoleID
 from Controller.GitController import GitController
 from Controller.GitProtocol.GitProtocols import GitProtocolSSH
 from Controller.GitProtocol.GitProtocols import GitProtocolHTTPS
@@ -136,7 +136,7 @@ class AnimatorGitController(GitController):
 
     def compile_origin_files(self):
         user_session = UserSession()
-        if user_session.role_id == ROLE_ID.ANIMATOR.value or user_session.role == ROLE_ID.ADMIN_ANIM.value:
+        if user_session.role_id == RoleID.ANIMATOR.value or user_session.role == RoleID.ADMIN_ANIM.value:
             return
 
         # compile the files of the origin repository
@@ -189,7 +189,7 @@ class AnimatorGitController(GitController):
         self.uploading_anim_files.emit()
 
         user_session = UserSession()
-        if user_session.role_id == ROLE_ID.ANIMATOR.value:
+        if user_session.role_id == RoleID.ANIMATOR.value:
             self.log_message.emit("Animator user is not allowed to upload files either compile .py -> .pyc")
 
         self.compile_origin_files()

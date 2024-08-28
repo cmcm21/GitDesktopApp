@@ -1,5 +1,4 @@
 from PySide6.QtWidgets import QApplication
-
 from Utils.ConfigFileManager import ConfigFileManager
 from View.UIManager import UIManager
 from View.UIManager import WindowID
@@ -8,15 +7,14 @@ from Controller.SystemController import SystemController
 from PySide6.QtCore import QThread, Signal, Slot
 from Utils.DataBaseManager import DataBaseManager
 from Utils.UserSession import UserSession
-from Utils.Environment import ROLE_ID
+from Utils.Environment import RoleID
 from Utils.SignalManager import SignalManager
 from Controller.AnimatorGitController import AnimatorGitController
-import tomli
 import os
+import tomli
 
 
 class Application(QApplication):
-
     git_setup = Signal()
     git_animator_setup = Signal()
     check_user_branch = Signal()
@@ -56,23 +54,30 @@ class Application(QApplication):
 
     def _connect_ui_manager(self):
         self._connect_ui_manager_launcher()
+        self._connect_ui_manager_system_controller()
         self._connect_ui_manager_git_controller()
         self._connect_ui_manager_login()
 
     def _connect_ui_manager_launcher(self):
-        self._connect_signals(self.ui_manager, [
+        SignalManager.connect_signals(self.ui_manager, [
             (self.ui_manager.lw_window_closed, self.on_main_window_closed),
-            (self.ui_manager.lw_open_maya_clicked, self.system_controller.open_maya),
             (self.ui_manager.lw_destroy_application, self.on_application_destroyed),
             (self.ui_manager.lg_destroy_application, self.on_application_destroyed),
-            (self.ui_manager.lw_file_tree_clicked, self.system_controller.open_file),
             (self.ui_manager.lw_log_out, self.on_login_out),
             (self.ui_manager.lw_switch_account, self.on_switch_account)
         ])
 
+    def _connect_ui_manager_system_controller(self):
+        SignalManager.connect_signals(self.ui_manager, [
+            (self.ui_manager.lw_open_maya_clicked, self.system_controller.open_maya),
+            (self.ui_manager.lw_rep_viewer_open_file, self.system_controller.open_file),
+            (self.ui_manager.lw_rep_viewer_open_explorer, self.system_controller.open_in_explorer),
+            (self.ui_manager.lw_rep_viewer_delete_file, self.system_controller.delete_file)
+        ])
+
     def _connect_ui_manager_git_controller(self):
         # Almost all this ui_manager signals are set using the setattr() method
-        self._connect_signals(self.ui_manager, [
+        SignalManager.connect_signals(self.ui_manager, [
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.get_main_branch),
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.get_all_branches),
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.load_merge_requests),
@@ -85,17 +90,18 @@ class Application(QApplication):
             (self.ui_manager.lw_uploaded_clicked, self.git_controller.push_changes),
             (self.ui_manager.lw_git_history_tab_clicked, self.git_controller.get_repository_history),
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
-            (self.ui_manager.lw_log_out, self.git_controller.on_log_out)
+            (self.ui_manager.lw_log_out, self.git_controller.on_log_out),
+            (self.ui_manager.lw_rep_viewer_rep_updated, self.git_controller.get_repository_changes)
         ])
 
     def _connect_ui_manager_login(self):
-        self._connect_signals(self.ui_manager, [
+        SignalManager.connect_signals(self.ui_manager, [
             (self.ui_manager.lg_login_accepted, self.login_accepted),
             (self.ui_manager.lg_login_accepted, self.ui_manager.on_login)
         ])
 
     def _connect_git_controller(self):
-        self._connect_signals(self.git_controller, [
+        SignalManager.connect_signals(self.git_controller, [
             (self.git_controller.setup_completed, self.on_git_setup_completed),
             (self.git_controller.setup_completed, self.ui_manager.on_setup_completed),
             (self.git_controller.setup_started, self.ui_manager.on_git_setup_started),
@@ -113,13 +119,13 @@ class Application(QApplication):
             (self.git_controller.send_current_changes, self.ui_manager.on_get_changes_list),
         ])
 
-        self._connect_signals(self, [
+        SignalManager.connect_signals(self, [
             (self.git_setup, self.git_controller.setup),
             (self.check_user_branch, self.git_controller.verify_user_branch)
         ])
 
     def _connect_system_controller(self):
-        self._connect_signals(self.system_controller, [
+        SignalManager.connect_signals(self.system_controller, [
             (self.system_controller.setup_started, self.ui_manager.on_system_controller_setup_started),
             (self.system_controller.log_message, self.ui_manager.on_log_signal_received),
             (self.system_controller.error_message, self.ui_manager.on_err_signal_received),
@@ -129,10 +135,10 @@ class Application(QApplication):
             (self.system_controller.setup_finished, self.on_system_controller_setup_finished),
         ])
 
-        self._connect_signal(self, self.system_controller_setup, self.system_controller.setup)
+        SignalManager.connect_signal(self, self.system_controller_setup, self.system_controller.setup)
 
     def _connect_db_manager(self):
-        self._connect_signals(self.db_manager, [
+        SignalManager.connect_signals(self.db_manager, [
             (self.db_manager.message_signal, self.ui_manager.on_log_signal_received),
             (self.db_manager.error_message_signal, self.ui_manager.on_err_signal_received),
             (self.db_manager.db_setup_start, self.ui_manager.on_db_setup_start),
@@ -141,7 +147,7 @@ class Application(QApplication):
         ])
 
     def _connect_git_animator_controller_generic(self):
-        self._connect_signals(self.anim_git_controller, [
+        SignalManager.connect_signals(self.anim_git_controller, [
             (self.anim_git_controller.log_message, self.ui_manager.on_log_signal_received),
             (self.anim_git_controller.error_message, self.ui_manager.on_err_signal_received),
             (self.anim_git_controller.creating_anim_rep, self.ui_manager.on_anim_rep_creating),
@@ -150,33 +156,33 @@ class Application(QApplication):
             (self.anim_git_controller.uploading_anim_files_completed , self.ui_manager.on_anim_upload_files_completed)
         ])
 
-        self._connect_signals(self, [
+        SignalManager.connect_signals(self, [
             (self.check_user_branch, self.anim_git_controller.verify_user_branch),
             (self.git_animator_setup, self.anim_git_controller.setup)
         ])
 
-        self._connect_signals(self.ui_manager, [
+        SignalManager.connect_signals(self.ui_manager, [
             (self.ui_manager.lw_publish_to_anim, self.anim_git_controller.publish_rep),
         ])
 
     def _connect_git_animator_controller(self):
-        self._connect_signals(self.anim_git_controller,[
+        SignalManager.connect_signals(self.anim_git_controller,[
             (self.anim_git_controller.setup_started, self.ui_manager.on_git_setup_started),
             (self.anim_git_controller.setup_completed, self.on_git_setup_completed),
             (self.anim_git_controller.setup_completed, self.ui_manager.on_setup_completed),
             (self.anim_git_controller.get_latest_completed, self.ui_manager.on_get_latest_completed),
         ])
 
-        self._connect_signals(self.ui_manager,[
+        SignalManager.connect_signals(self.ui_manager,[
             (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest),
         ])
 
     def _disconnect_ui_manager_git_anim_controller(self):
-        self._disconnect_signal(self.ui_manager,
+        SignalManager.disconnect_signal(self.ui_manager,
                                 self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest)
 
     def _disconnect_git_controller(self):
-        self._disconnect_signals(self.git_controller, [
+        SignalManager.disconnect_signals(self.git_controller, [
             (self.git_controller.setup_started, self.ui_manager.on_git_setup_started),
             (self.git_controller.setup_completed, self.on_git_setup_completed),
             (self.git_controller.push_completed, self.ui_manager.on_upload_completed),
@@ -194,13 +200,13 @@ class Application(QApplication):
             #(self.ui_manager.lw_log_out, self.git_controller.on_log_out)
         ])
 
-        self._disconnect_signals(self, [
+        SignalManager.disconnect_signals(self, [
             (self.git_setup, self.git_controller.setup),
             (self.check_user_branch, self.git_controller.verify_user_branch)
         ])
 
     def _disconnect_ui_manager_git_controller(self):
-        self._disconnect_signals(self.ui_manager, [
+        SignalManager.disconnect_signals(self.ui_manager, [
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.get_main_branch),
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.get_all_branches),
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.load_merge_requests),
@@ -216,31 +222,17 @@ class Application(QApplication):
         ])
 
     def _disconnect_git_animator_controller(self):
-        self._disconnect_signals(self.anim_git_controller, [
+        SignalManager.disconnect_signals(self.anim_git_controller, [
             (self.anim_git_controller.setup_started, self.ui_manager.on_git_setup_started),
             (self.anim_git_controller.setup_completed, self.ui_manager.on_setup_completed),
             (self.anim_git_controller.setup_completed, self.on_git_setup_completed),
             (self.anim_git_controller.get_latest_completed, self.ui_manager.on_get_latest_completed),
         ])
-        self._disconnect_signals(self.ui_manager, [
+
+        SignalManager.disconnect_signals(self.ui_manager, [
             (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest)
         ])
 
-    @staticmethod
-    def _connect_signal(signal_obj, signal, slot):
-        SignalManager.connect_signal(signal_obj, signal, slot)
-
-    def _connect_signals(self, signal_obj, signal_slot_pairs):
-        for signal, slot in signal_slot_pairs:
-            self._connect_signal(signal_obj, signal, slot)
-
-    @staticmethod
-    def _disconnect_signal(signal_obj, signal, slot):
-        SignalManager.disconnect_signal(signal_obj, signal, slot)
-
-    def _disconnect_signals(self, signal_obj, signal_slot_pairs):
-        for signal, slot in signal_slot_pairs:
-            self._disconnect_signal(signal_obj, signal, slot)
 
     def on_git_setup_completed(self, success: bool):
         self.check_user_branch.emit()
@@ -267,13 +259,13 @@ class Application(QApplication):
         return
 
     @staticmethod
-    def is_animator(role: ROLE_ID):
-        return role == ROLE_ID.ANIMATOR.value or role == ROLE_ID.ADMIN_ANIM.value
+    def is_animator(role: RoleID):
+        return role == RoleID.ANIMATOR.value or role == RoleID.ADMIN_ANIM.value
 
     @Slot(str)
-    def login_accepted(self, username: str, role: ROLE_ID = ROLE_ID.NONE):
+    def login_accepted(self, username: str, role: RoleID = RoleID.NONE):
         self.user_session.login(username)
-        if role != ROLE_ID.NONE:
+        if role != RoleID.NONE:
             self.user_session.role_id = role.value
 
         self.ui_manager.launcher_window.set_user_session(self.user_session)
@@ -340,12 +332,11 @@ class Application(QApplication):
 
     @Slot()
     def on_login_out(self):
-        print("Logout!!!!")
         self.user_session.logout()
         self.ui_manager.open_window(WindowID.LOGING)
 
     @Slot()
-    def on_switch_account(self, role: ROLE_ID):
+    def on_switch_account(self, role: RoleID):
         self.ui_manager.launcher_window.logger_widget.clear_log()
         self.login_accepted(self.user_session.username, role)
 

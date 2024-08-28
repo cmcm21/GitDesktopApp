@@ -10,11 +10,12 @@ FILE_CHANGE_DIC = {
     "A": "Added",
     "R": "Renamed",
     "C": "Copied",
-    "U": "Updated but Unmerged"
+    "U": "Updated but Unmerged",
+    "??": "New File/Folder added"
 }
 
 
-class ROLE_ID(Enum):
+class RoleID(Enum):
     NONE = 0
     ADMIN = 1
     DEV = 2
@@ -22,7 +23,7 @@ class ROLE_ID(Enum):
     ADMIN_ANIM = 4
 
 
-class CREATE_DIR(Enum):
+class CreateDir(Enum):
     ALREADY_EXIST = 1
     DIR_CREATED = 2
     JUST_DIR = 3

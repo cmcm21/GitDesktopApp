@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QMainWindow, QPushButton, QMessageBox,QFrame
 from PySide6.QtGui import QPixmap, QIcon
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, SignalInstance
 from View.WindowID import WindowID
 from View.UILoadingWidget import LoadingWidget
 from Utils.FileManager import FileManager
@@ -33,11 +33,11 @@ class BaseWindow(QMainWindow):
                 self,
                 'Quit',
                 'Are you sure you want to quit?',
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
             )
 
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 event.accept()
                 self.application_destroyed.emit()
             else:
@@ -61,8 +61,8 @@ class BaseWindow(QMainWindow):
     @staticmethod
     def create_default_frame(frame_name: str) -> QFrame:
         frame = QFrame()
-        frame.setFrameShape(QFrame.Box)
-        frame.setFrameShadow(QFrame.Raised)
+        frame.setFrameShape(QFrame.Shape.Box)
+        frame.setFrameShadow(QFrame.Shadow.Raised)
         frame.setLineWidth(2)
         frame.setObjectName(frame_name)
         return frame
@@ -74,3 +74,16 @@ class BaseWindow(QMainWindow):
             text=button_text,
             parent=parent
         )
+
+    @staticmethod
+    def throw_message_box(title: str, text: str, icon = QMessageBox.Icon.Information) -> bool:
+        message_box = QMessageBox()
+        message_box.setWindowTitle(title)
+        message_box.setIcon(icon)
+        message_box.setText(text)
+        message_box.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
+        message_box.setDefaultButton(QMessageBox.StandardButton.Ok)
+
+        reply = message_box.exec()
+
+        return reply == QMessageBox.StandardButton.Ok

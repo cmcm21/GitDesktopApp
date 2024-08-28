@@ -1,7 +1,7 @@
 from PySide6.QtCore import QObject, Signal, Slot
 from pathlib import Path
 from Utils.UserSession import UserSession
-from Utils.Environment import ROLE_ID, FILE_CHANGE_DIC, CREATE_DIR
+from Utils.Environment import RoleID, FILE_CHANGE_DIC, CreateDir
 from Utils.FileManager import FileManager
 from Utils.ConfigFileManager import ConfigFileManager
 from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
@@ -54,19 +54,19 @@ class GitController(QObject):
         git_directory = self.working_path.joinpath(".git/")
         return os.path.isdir(self.working_path) and os.path.isdir(git_directory)
 
-    def create_repository_dir(self) -> CREATE_DIR:
+    def create_repository_dir(self) -> CreateDir:
         # Check if the repository directory exists check for the directory and the .git file
         if self.repo_exist():
             self.log_message.emit(f"The directory '{self.working_path}' already exists.")
-            return CREATE_DIR.ALREADY_EXIST
+            return CreateDir.ALREADY_EXIST
         else:
             self.log_message.emit(f"Creating directory : {self.working_path} "
                                                  f"using protocol: {self.__str__()}")
             if not self.working_path.exists():
                 self.working_path.mkdir(parents=True)
-                return CREATE_DIR.DIR_CREATED
+                return CreateDir.DIR_CREATED
             else:
-                return CREATE_DIR.JUST_DIR
+                return CreateDir.JUST_DIR
 
     def _run_git_command(self, command: list) -> bool:
         FileManager.move_to(self.raw_working_path)
@@ -236,7 +236,7 @@ class GitController(QObject):
         self.user_session = UserSession()
         return f"branch_{self.user_session.username}"
 
-    def _commit_and_push_everything(self, comment: str, branch: str):
+    def _commit_and_push_everything(self, comment: str, branch = ""):
         # Add all changes to the staging area
         self._run_git_command(['git', 'add', '.', '-f'])
 
@@ -247,7 +247,10 @@ class GitController(QObject):
         self._run_git_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
 
         # Push changes to the remote repository
-        self._run_git_command(['git', 'push', '--force'])
+        if branch == "":
+            self._run_git_command(['git', 'push', '--force'])
+        else:
+            self._run_git_command(['git', 'push', '-u', 'origin', branch])
 
         # Check the status of the repository
         self._run_git_command(['git', 'status'])
@@ -360,10 +363,10 @@ class GitController(QObject):
     def push_changes(self, message: str):
         self.check_user_session()
         self.log_message.emit("pushing changes...")
-        if self.user_session.role_id == ROLE_ID.DEV.value:
+        if self.user_session.role_id == RoleID.DEV.value:
             self.arrange_dev_push(message)
         else:
-            self._commit_and_push_everything(message, self._get_main_branch_name())
+            self._commit_and_push_everything(message)
         self.push_completed.emit()
 
     @Slot()
@@ -489,7 +492,7 @@ class GitController(QObject):
     def verify_user_branch(self):
         self.check_user_session()
         current_branch = self.get_current_branch()
-        if self.user_session.role_id == ROLE_ID.DEV.value:
+        if self.user_session.role_id == RoleID.DEV.value:
             if current_branch != self.get_dev_branch_name():
                 self.create_local_branch(self.get_dev_branch_name(), self._get_main_branch_name())
         else:
@@ -515,8 +518,11 @@ class GitController(QObject):
                     diff = self._run_git_command_get_output(['git', 'diff', changed_file])
                     if diff:
                         changes_modified.append((changed_file, diff))
-                elif change in FILE_CHANGE_DIC:
-                    other_changes.append((changed_file, FILE_CHANGE_DIC[change]))
+                else:
+                    if not change in FILE_CHANGE_DIC:
+                        other_changes.append((changed_file,"Unknown change"))
+                    else:
+                        other_changes.append((changed_file, FILE_CHANGE_DIC[change]))
 
         self.send_current_changes.emit(changes_modified, other_changes)
 

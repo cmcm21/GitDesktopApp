@@ -1,5 +1,4 @@
 from PySide6.QtCore import QObject, Signal, Slot
-from Utils.FileManager import FileManager
 from Utils.ConfigFileManager import ConfigFileManager
 from pathlib import Path
 import shutil
@@ -8,7 +7,7 @@ import os
 import subprocess
 import platform
 import urllib.request
-import time
+import sys
 
 
 class SystemController(QObject):
@@ -30,6 +29,7 @@ class SystemController(QObject):
 
     def __init__(self):
         super(SystemController, self).__init__()
+        self.bat_bin = None
         self.config_manager = ConfigFileManager()
         config = self.config_manager.get_config()
 
@@ -196,7 +196,25 @@ class SystemController(QObject):
             self.error_message.emit(f"Failed to open file: {e}")
 
     @Slot(str)
+    def delete_file(self, path: str):
+        if os.path.exists(path) and not os.path.isdir(path):
+            os.remove(path)
+        if os.path.isdir(path):
+            os.removedirs(path)
+
+    @Slot(str)
+    def open_in_explorer(self, path: str):
+        if os.path.isdir(path):
+            if sys.platform == 'win32':
+                os.startfile(path)
+            elif sys.platform == 'darwin':
+                subprocess.Popen(['open', path])
+            else:
+                subprocess.Popen(['xdg-open', path])
+
+    @Slot(str)
     def select_maya_version(self, maya_bin: str, bat_bin = ""):
         self.maya_bin = maya_bin
         self.bat_bin = bat_bin
+
 

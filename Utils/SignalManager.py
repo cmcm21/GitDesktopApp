@@ -1,5 +1,5 @@
 from PySide6.QtCore import QMetaMethod
-from PySide6.QtCore import QObject, Signal, Slot, SignalInstance
+from PySide6.QtCore import QObject, Slot, SignalInstance
 
 
 class SignalManager(QObject):
@@ -36,3 +36,13 @@ class SignalManager(QObject):
     def _unregister_connection(signal: SignalInstance, method: Slot):
         if signal in SignalManager._connected_signals and SignalManager.is_method_connected(signal, method):
             SignalManager._connected_signals[signal].remove(method)
+
+    @staticmethod
+    def connect_signals(signal_obj, signal_slot_pairs):
+        for signal, slot in signal_slot_pairs:
+            SignalManager.connect_signal(signal_obj, signal, slot)
+
+    @staticmethod
+    def disconnect_signals(signal_obj, signal_slot_pairs):
+        for signal, slot in signal_slot_pairs:
+            SignalManager.disconnect_signal(signal_obj, signal, slot)

@@ -16,7 +16,7 @@ from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UICommitWindow import CommitWindow
 from View.UIDiffsWidget import DiffsWidget
 from Utils.UserSession import UserSession
-from Utils.Environment import ROLE_ID
+from Utils.Environment import RoleID
 Mr_Status = [
     "Opened",
     "Closed",
@@ -265,7 +265,7 @@ class MergeRequestTab(QWidget):
         if user_session is None:
             return
         self.accept_btn.setVisible(merge_request_data['state'] != 'merged' and
-                                   user_session.role_id == ROLE_ID.ADMIN.value)
+                                   user_session.role_id == RoleID.ADMIN.value)
 
     def _on_accept_clicked(self):
         self.commit_window = CommitWindow("Insert merge message")

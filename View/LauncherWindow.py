@@ -23,7 +23,7 @@ from View.UISessionWidget import UserSessionWidget
 from View.UIAdminWidget import AdminWindow
 from View.UISettingsWindows import SettingWindows
 from Utils.UserSession import UserSession
-from Utils.Environment import ROLE_ID
+from Utils.Environment import RoleID
 import Utils.Environment as Env
 from Utils.SignalManager import SignalManager
 
@@ -35,9 +35,11 @@ class LauncherWindow(BaseWindow):
     project_changed = Signal(str)
     window_closed = Signal()
     admin_window_clicked = Signal()
+    public_to_anim = Signal
     check_changes_list = Signal()
-    switch_account = Signal(ROLE_ID)
+    switch_account = Signal(RoleID)
     log_out = Signal()
+    open_maya = Signal()
 
     def __init__(self, window_id: WindowID, width=900, height=500):
         super().__init__("Puppet Launcher", window_id, width, height)
@@ -85,6 +87,8 @@ class LauncherWindow(BaseWindow):
 
         #self.new_workspace_btn = self._create_button("plus.png", "NewWorkspaceButton", "New Workspace")
         self.maya_btn = self._create_button("mayaico.png", "MayaButton", "Open Maya")
+        self.maya_btn.clicked.connect(lambda: self.open_maya.emit())
+
         self.settings_btn = self._create_button("gear.png", "SettingsButton", "Open Settings")
         self.settings_btn.clicked.connect(self.open_settings)
 
@@ -222,7 +226,6 @@ class LauncherWindow(BaseWindow):
         self.user_session_widget.logout_signal.connect(self._log_out)
 
     def _log_out(self):
-        print("Log out signal emitted")
         self.log_out.emit()
 
     def on_get_latest_clicked(self):
@@ -230,16 +233,8 @@ class LauncherWindow(BaseWindow):
             self.get_latest.emit()
             return
 
-        message_box = QMessageBox()
-        message_box.setWindowTitle("Confirm")
-        message_box.setIcon(QMessageBox.Icon.Information)
-        message_box.setText("You are going to lose your changes. are you sure to get latest?")
-        message_box.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
-        message_box.setDefaultButton(QMessageBox.StandardButton.Ok)
-
-        reply = message_box.exec()
-
-        if reply == QMessageBox.StandardButton.Ok:
+        if (self.throw_message_box("Confirm get latest",
+                               "You're going to lose your changes. Are you Sure to Get Latest?")):
             self.get_latest.emit()
 
     def create_publish_window(self):
@@ -261,14 +256,14 @@ class LauncherWindow(BaseWindow):
         self.user_menu.setTitle(self.user_session.username)
 
     def set_user_buttons(self):
-        if (self.user_session.role_id == Env.ROLE_ID.ANIMATOR.value or
-                self.user_session.role_id == Env.ROLE_ID.ADMIN_ANIM.value):
+        if (self.user_session.role_id == Env.RoleID.ANIMATOR.value or
+                self.user_session.role_id == Env.RoleID.ADMIN_ANIM.value):
             self.set_animator()
 
-        if self.user_session.role_id == Env.ROLE_ID.DEV.value:
+        if self.user_session.role_id == Env.RoleID.DEV.value:
             self.set_dev_user()
 
-        if self.user_session.role_id == Env.ROLE_ID.ADMIN.value:
+        if self.user_session.role_id == Env.RoleID.ADMIN.value:
             self.set_admin_user()
 
     def set_animator(self):
@@ -302,7 +297,7 @@ class LauncherWindow(BaseWindow):
         self.user_menu.addAction(self.user_session_widget.user_action)
         self.user_menu.addAction(self.user_session_widget.logout_action)
 
-        if self.user_session.role_id == ROLE_ID.ADMIN.value or self.user_session.role_id == ROLE_ID.ADMIN_ANIM.value:
+        if self.user_session.role_id == RoleID.ADMIN.value or self.user_session.role_id == RoleID.ADMIN_ANIM.value:
             self.user_session_widget.admin_signal.connect(self.on_create_admin_window)
 
             # noinspection PyTypeChecker
@@ -318,8 +313,8 @@ class LauncherWindow(BaseWindow):
 
         self.admin_window.show()
 
-    @Slot(ROLE_ID)
-    def on_switch_account(self, role: ROLE_ID):
+    @Slot(RoleID)
+    def on_switch_account(self, role: RoleID):
 
         message_box = QMessageBox()
         message_box.setWindowTitle("Switch Roles")

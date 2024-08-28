@@ -11,9 +11,8 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QSpacerItem
 )
-from PySide6 import QtGui
 from PySide6.QtGui import QPixmap, QIcon, QAction, QFont
-from PySide6.QtCore import Signal, Qt, QSize, QRect
+from PySide6.QtCore import Signal, Qt, QSize
 from View.UIRepViewer import RepositoryViewerWidget
 from View.BaseWindow import BaseWindow
 from View.UIMergeRequestTab import MergeRequestTab
@@ -61,7 +60,7 @@ class GitSnifferWidget(QWidget):
     def _create_list_widget(object_name):
         """Helper method to create a QListWidget with a specified object name."""
         list_widget = QListWidget()
-        list_widget.setFont(QtGui.QFont("Courier New", 10))
+        list_widget.setFont(QFont("Courier New", 10))
         list_widget.setSpacing(2)
         widget = QWidget()
         widget.setObjectName(object_name)
@@ -71,7 +70,7 @@ class GitSnifferWidget(QWidget):
     def _create_changes_list_widget(object_name):
         """Helper method to create a ChangesList widget with a specified object name."""
         changes_list = ChangesList()
-        changes_list.setFont(QtGui.QFont("Courier New", 10))
+        changes_list.setFont(QFont("Courier New", 10))
         changes_list.setSpacing(2)
         widget = QWidget()
         widget.setObjectName(object_name)
@@ -101,7 +100,7 @@ class GitSnifferWidget(QWidget):
     def _build(self):
         """Build the layout of the UI."""
         # Create and add tabs
-        self.tabs.setFont(QtGui.QFont("Courier New", 10))
+        self.tabs.setFont(QFont("Courier New", 10))
         self.tabs.addTab(self._create_tab(self.history, "Commits History"), "History")
         self.tabs.addTab(self._create_tab(self.changes_list, "Changes List"), "Change list")
         self.tabs.addTab(self._create_tab(self.merge_request, ""), "Merge Request")
@@ -111,8 +110,8 @@ class GitSnifferWidget(QWidget):
         self.setLayout(self.layout)
 
     def connect_signals(self):
-        self.changes_list.itemClicked.connect(self.on_change_list_clicked)
-        self.history.itemClicked.connect(self.on_commit_clicked)
+        self.changes_list.doubleClicked.connect(self.on_change_list_clicked)
+        self.history.doubleClicked.connect(self.on_commit_clicked)
 
     def on_change_list_clicked(self, item: QListWidgetItem):
         if not item:
@@ -156,7 +155,7 @@ class UIGitTab(QWidget):
         self.git_sniffer = GitSnifferWidget()
         self.git_sniffer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         """ Other widgets """
-        self.splitter = QSplitter(Qt.Horizontal)
+        self.splitter = QSplitter(Qt.Orientation.Horizontal)
         self.build()
         self.apply_styles()
         self.connect_signals()

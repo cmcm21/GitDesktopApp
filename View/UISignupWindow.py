@@ -8,7 +8,7 @@ from PySide6.QtWidgets import (
     QMainWindow
 )
 
-from Utils.Environment import ROLE_ID
+from Utils.Environment import RoleID
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.EnterButton import EnterButton
 from Model.UserRolesModel import UserRolesModel
@@ -56,8 +56,8 @@ class SignUpForm(QMainWindow):
     def create_select_role(self):
         self.role_label  = QLabel('User Role:')
         self.role_combo_box = QComboBox()
-        self.role_combo_box.addItem("Animator", userData=ROLE_ID.ANIMATOR.value)
-        self.role_combo_box.addItem("Developer", userData=ROLE_ID.DEV.value)
+        self.role_combo_box.addItem("Animator", userData=RoleID.ANIMATOR.value)
+        self.role_combo_box.addItem("Developer", userData=RoleID.DEV.value)
 
         self.role_combo_box.currentIndexChanged.connect(self.on_combo_box_changed)
 

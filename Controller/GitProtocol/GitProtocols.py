@@ -1,6 +1,6 @@
 from Controller.GitController import GitController
 from Utils.UserSession import UserSession
-from Utils.Environment import CREATE_DIR
+from Utils.Environment import CreateDir
 import abc
 import subprocess
 import requests
@@ -397,7 +397,7 @@ class GitProtocolHTTPS(GitProtocolAbstract):
 
     def setup(self) -> bool:
         result = self.git_controller.create_repository_dir()
-        if result == CREATE_DIR.ALREADY_EXIST:
+        if result == CreateDir.ALREADY_EXIST:
             return True
 
         process = subprocess.Popen(

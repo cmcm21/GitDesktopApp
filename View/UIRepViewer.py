@@ -5,46 +5,61 @@ from PySide6.QtWidgets import (
     QFileSystemModel,
     QHBoxLayout,
     QSizePolicy,
-    QLabel,
-    QApplication
+    QMenu,
+    QMessageBox
 )
-from PySide6.QtCore import QModelIndex, Qt, Signal, QRect
-from PySide6 import QtGui
+from PySide6.QtCore import QModelIndex, Qt, Signal, QRect, QPoint, QFileSystemWatcher
+from PySide6.QtGui import QFont, QAction
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View.BaseWindow import BaseWindow
 import os
 
 
+class CustomFileSystemModel(QFileSystemModel):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def data(self, index, role):
+        # Get the default data
+        if role == Qt.ItemDataRole.DisplayRole:
+            return super().data(index, role)
+
+        # Provide tooltip text for each item
+        if role == Qt.ItemDataRole.ToolTipRole:
+            file_path = self.filePath(index)
+            file_info = self.fileInfo(index)
+            tooltip_text = f"Name: {file_info.fileName()}\nSize: {file_info.size()} bytes\nPath: {file_path}"
+            return tooltip_text
+
+        return super().data(index, role)
+
 class RepositoryViewerWidget(QWidget):
 
-    file_selected = Signal(str)
+    open_file = Signal(str)
+    open_explorer = Signal(str)
+    delete_file = Signal(str)
+    repo_updated = Signal()
 
     def __init__(self, repository_path: str):
         super().__init__()
 
         # Set up the layout
+        self.watcher = None
         self.layout = QVBoxLayout()
         self.buttons_layout = QHBoxLayout()
 
         # Create a file system model
-        self.model = QFileSystemModel()
+        self.model = CustomFileSystemModel()
+        self.raw_repository_path = repository_path
         self.repository_path = os.path.join(repository_path, "../")
         self.model.setRootPath(self.repository_path)
         # Create a tree view and set the model
         self.tree = QTreeView()
-        self.tree.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.tree.setModel(self.model)
-        self.tree.setRootIndex(self.model.index(self.repository_path))
-        self.tree.setAutoScroll(True)
-        self.tree.setFont(QtGui.QFont("Courier New", 10))
-        self.tree.setColumnWidth(0, 200)
-        self.tree.setColumnWidth(1, 100)
-        self.tree.setColumnWidth(2, 150)
-        self.tree.setColumnWidth(3, 150)
+
+        self.setup_tree()
+        self.setup_watcher()
+
         CustomStyleSheetApplier.set_q_text_edit_style_and_colour(self.tree)
-
-        # Connect the tree view's clicked signal to a slot
-        self.tree.doubleClicked.connect(self.on_tree_view_clicked)
-
         # Add the tree view and label to the layout
         self.layout.addLayout(self.buttons_layout)
         self.layout.addWidget(self.tree)
@@ -52,16 +67,71 @@ class RepositoryViewerWidget(QWidget):
         # Set the layout for the main widget
         self.setLayout(self.layout)
 
+    def setup_tree(self):
+        self.tree.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.tree.setModel(self.model)
+        self.tree.setRootIndex(self.model.index(self.repository_path))
+        self.tree.setAutoScroll(True)
+
+        self.tree.setFont(QFont("Courier New", 10))
+        self.tree.setColumnWidth(0, 200)
+        self.tree.setColumnWidth(1, 100)
+        self.tree.setColumnWidth(2, 150)
+        self.tree.setColumnWidth(3, 150)
+
+        self.tree.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.tree.customContextMenuRequested.connect(self.open_menu)
+
+    def setup_watcher(self):
+        self.watcher = QFileSystemWatcher()
+        self.watcher.addPath(self.raw_repository_path)
+
+        self.watcher.directoryChanged.connect(self.on_repo_updated)
+        self.watcher.fileChanged.connect(self.on_repo_updated)
+
+    def on_repo_updated(self):
+        self.repo_updated.emit()
+
+    def open_menu(self, position: QPoint):
+        index = self.tree.indexAt(position)
+        if not index.isValid():
+            return
+
+        file_path = self.model.filePath(index)
+        file_name = self.model.fileName(index)
+
+        # create a context menu
+        menu = QMenu()
+
+        open_file = QAction("Open", self)
+        open_explorer = QAction("Open Explorer", self)
+        delete_file =  QAction("Delete File", self)
+
+        menu.addAction(open_file)
+        menu.addAction(open_explorer)
+        menu.addAction(delete_file)
+
+        open_file.triggered.connect(lambda: self.open_file.emit(file_path))
+        open_explorer.triggered.connect(lambda: self.open_explorer.emit(file_path))
+        delete_file.triggered.connect(lambda: self.on_delete_file(file_path))
+
+        menu.exec(self.tree.viewport().mapToGlobal(position))
+
+    def on_delete_file(self, file_path):
+        if (BaseWindow.throw_message_box(
+                f"Delete file", f"Are you sure to Delete: {file_path}", QMessageBox.Icon.Warning)):
+            self.delete_file.emit(file_path)
+
     def on_tree_view_clicked(self, index: QModelIndex):
         # Get the file path from the model
         file_path = self.model.filePath(index)
-        self.file_selected.emit(file_path)
+        self.open_file.emit(file_path)
 
     def set_root_directory(self):
         self.model.setRootPath(self.repository_path)
         self.tree.setRootIndex(self.model.index(self.repository_path))
 
     def resizeEvent(self, event):
-        self.buttons_layout.setGeometry(QRect(0, 0, self.buttons_layout.sizeHint().width(),
-                                               self.buttons_layout.sizeHint().height()))
+        self.buttons_layout.setGeometry(
+            QRect(0, 0, self.buttons_layout.sizeHint().width(),self.buttons_layout.sizeHint().height()))
         super().resizeEvent(event)

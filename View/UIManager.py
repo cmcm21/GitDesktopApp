@@ -1,5 +1,6 @@
 from Utils.ConfigFileManager import ConfigFileManager
-from Utils.Environment import ROLE_ID
+from Utils.Environment import RoleID
+from Utils.SignalManager import SignalManager
 from View.LauncherWindow import LauncherWindow
 from View.UILoginWindow import LoginWindow
 from View.WindowID import WindowID
@@ -25,10 +26,13 @@ class UIManager(QObject):
     lw_get_merge_request_changed = Signal(int)
     lw_merge_request_add_comment = Signal(str, int)
     lw_accept_merge_request_and_merge = Signal(int, str)
-    lw_file_tree_clicked = Signal(str)
     sdw_select_directory = Signal(str)
-    lw_switch_account = Signal(ROLE_ID)
+    lw_switch_account = Signal(RoleID)
     lg_login_accepted = Signal(str)
+    lw_rep_viewer_open_file = Signal(str)
+    lw_rep_viewer_delete_file = Signal(str)
+    lw_rep_viewer_open_explorer = Signal(str)
+    lw_rep_viewer_rep_updated = Signal()
 
     def __init__(self):
         super().__init__()
@@ -67,45 +71,48 @@ class UIManager(QObject):
 
     def _connect_launcher_windows(self):
         """Using UIManager signals to bridge between UI Signals and Controllers"""
-
-        # Define a list of (signal, slot) tuples
-        connections = [
-            (self.launcher_window.git_tab.history_tab_clicked, 'lw_git_history_tab_clicked'),
-            (self.launcher_window.git_tab.changes_list_clicked, 'lw_git_changes_list_tab_clicked'),
-            (self.launcher_window.git_tab.merge_request_clicked, 'lw_git_merge_request_tab_clicked'),
-            (self.launcher_window.maya_btn.clicked, 'lw_open_maya_clicked'),
-            (self.launcher_window.get_latest, 'lw_get_latest_clicked'),
-            (self.launcher_window.upload_repository, 'lw_uploaded_clicked'),
-            (self.launcher_window.window_closed, 'lw_window_closed'),
-            (self.launcher_window.application_destroyed, 'lw_destroy_application'),
-            (self.launcher_window.log_out, 'lw_log_out')
-        ]
-
-        self.launcher_window.git_tab.git_sniffer.merge_request.selected_mr_changed.connect(
-            lambda index: self.lw_get_merge_request_changed(index))
-
-        self.launcher_window.git_tab.git_sniffer.merge_request.add_comment.connect(
-            lambda comment: self.lw_merge_request_add_comment(comment))
-
-        self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge.connect(
-            lambda comment: self.lw_accept_merge_request_and_merge(comment))
-
-        self.launcher_window.git_tab.repository_viewer.file_selected.connect(
-            lambda file_path: self.lw_file_tree_clicked.emit(file_path))
-
-        self.launcher_window.publish_to_anim_rep.connect(
-            lambda comment: self.lw_publish_to_anim.emit(comment))
-
-        self.launcher_window.switch_account.connect(
-            lambda role_id: self.lw_switch_account.emit(role_id))
-
-        # Connect each no-parameters-signal to the corresponding attribute
-        for signal, attr_name in connections:
-            setattr(self, attr_name, signal)
+        self._connect_git_tab()
+        self._connect_git_merge_request_signals()
+        self._connect_repository_viewer_signals()
+        self._connect_launcher_window_signals()
 
         # Additional connections
         self.lw_destroy_application.connect(self._on_application_destroyed)
         self.login_window.application_destroyed.connect(self._on_application_destroyed)
+
+    def _connect_git_merge_request_signals(self):
+        SignalManager.connect_signals(self.launcher_window.git_tab.git_sniffer, [
+            (self.launcher_window.git_tab.git_sniffer.merge_request.selected_mr_changed, self.lw_get_merge_request_changed.emit),
+            (self.launcher_window.git_tab.git_sniffer.merge_request.add_comment, self.lw_merge_request_add_comment.emit),
+            (self.launcher_window.git_tab.git_sniffer.merge_request.accept_and_merge, self.lw_accept_merge_request_and_merge.emit)
+        ])
+
+    def _connect_repository_viewer_signals(self):
+        SignalManager.connect_signals(self.launcher_window.git_tab.repository_viewer, [
+            (self.launcher_window.git_tab.repository_viewer.open_file, self.lw_rep_viewer_open_file.emit),
+            (self.launcher_window.git_tab.repository_viewer.delete_file, self.lw_rep_viewer_delete_file.emit),
+            (self.launcher_window.git_tab.repository_viewer.open_explorer, self.lw_rep_viewer_open_explorer.emit),
+            (self.launcher_window.git_tab.repository_viewer.repo_updated, self.lw_rep_viewer_rep_updated.emit)
+        ])
+
+    def _connect_launcher_window_signals(self):
+        SignalManager.connect_signals(self.launcher_window, [
+            (self.launcher_window.publish_to_anim_rep, self.lw_publish_to_anim.emit),
+            (self.launcher_window.get_latest, self.lw_get_latest_clicked),
+            (self.launcher_window.switch_account, self.lw_switch_account.emit),
+            (self.launcher_window.upload_repository, self.lw_uploaded_clicked.emit),
+            (self.launcher_window.open_maya, self.lw_open_maya_clicked.emit),
+            (self.launcher_window.window_closed, self.lw_window_closed.emit),
+            (self.launcher_window.application_destroyed, self.lw_destroy_application.emit),
+            (self.launcher_window.log_out, self.lw_log_out.emit)
+        ])
+
+    def _connect_git_tab(self):
+        SignalManager.connect_signals(self.launcher_window.git_tab, [
+            (self.launcher_window.git_tab.history_tab_clicked, self.lw_git_history_tab_clicked.emit),
+            (self.launcher_window.git_tab.changes_list_clicked, self.lw_git_changes_list_tab_clicked.emit),
+            (self.launcher_window.git_tab.merge_request_clicked, self.lw_git_merge_request_tab_clicked.emit)
+        ])
 
     def _on_application_destroyed(self):
         for window in self.windows.values():
