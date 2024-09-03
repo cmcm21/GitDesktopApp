@@ -269,8 +269,8 @@ class MergeRequestTab(QWidget):
 
     def _on_accept_clicked(self):
         self.commit_window = CommitWindow("Insert merge message")
-        self.commit_window.accept_clicked_signal.connect(self._on_commit_window_accept)
-        self.commit_window.cancel_clicked_signal.connect(self._on_commit_window_cancel)
+        self.commit_window.accept_signal.connect(self._on_commit_window_accept)
+        self.commit_window.cancel_signal.connect(self._on_commit_window_cancel)
         self.commit_window.show()
 
     def _on_commit_window_accept(self, message: str):

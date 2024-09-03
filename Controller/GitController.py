@@ -7,6 +7,7 @@ from Utils.ConfigFileManager import ConfigFileManager
 from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
 import subprocess
 import requests
+import asyncio
 import os
 
 
@@ -68,7 +69,7 @@ class GitController(QObject):
             else:
                 return CreateDir.JUST_DIR
 
-    def _run_git_command(self, command: list) -> bool:
+    def run_command(self, command: list) -> bool:
         FileManager.move_to(self.raw_working_path)
         command_str = " ".join(command)
 
@@ -79,7 +80,9 @@ class GitController(QObject):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
+                bufsize=1
             )
+
             stdout, stderr = process.communicate()
             if stdout or "push" in command or "pull" in command:
                 self.log_message.emit(stdout)
@@ -137,18 +140,18 @@ class GitController(QObject):
 
     def create_local_branch(self, branch_name, source_branch):
         # Fetch latest changes from remote
-        if not self._run_git_command(['git', 'fetch', 'origin']):
+        if not self.run_command(['git', 'fetch', 'origin']):
             print("git fetch error")
         # Checkout to source branch and pull latest changes
-        if not self._run_git_command(['git', 'checkout', source_branch]):
+        if not self.run_command(['git', 'checkout', source_branch]):
             print("git checkout error")
-        if not self._run_git_command(['git', 'pull', 'origin', source_branch]):
+        if not self.run_command(['git', 'pull', 'origin', source_branch]):
             print("git pull origin error")
         # Create and checkout to the new branch
         if not self.check_branch_exists(branch_name):
-            self._run_git_command(['git', 'checkout', '-b', branch_name])
+            self.run_command(['git', 'checkout', '-b', branch_name])
         else:
-            self._run_git_command(['git', 'checkout', branch_name])
+            self.run_command(['git', 'checkout', branch_name])
 
         return True
 
@@ -238,22 +241,22 @@ class GitController(QObject):
 
     def _commit_and_push_everything(self, comment: str, branch = ""):
         # Add all changes to the staging area
-        self._run_git_command(['git', 'add', '.', '-f'])
+        self.run_command(['git', 'add', '.', '-f'])
 
         # Commit changes with a specified message
-        self._run_git_command(['git', 'commit', '-m', comment])
+        self.run_command(['git', 'commit', '-m', comment])
 
         # Ensure that the remote origin is correct
-        self._run_git_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
+        self.run_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
 
         # Push changes to the remote repository
         if branch == "":
-            self._run_git_command(['git', 'push', '--force'])
+            self.run_command(['git', 'push', '--force'])
         else:
-            self._run_git_command(['git', 'push', '-u', 'origin', branch])
+            self.run_command(['git', 'push', '-u', 'origin', branch])
 
         # Check the status of the repository
-        self._run_git_command(['git', 'status'])
+        self.run_command(['git', 'status'])
 
     def add_commits_to_merge_request(self, merge_request_id: int, branch_name: str):
         url = f"{self.git_api_url}/api/v4/projects/{self.project_id}/merge_requests/{merge_request_id}/commits"
@@ -281,10 +284,10 @@ class GitController(QObject):
 
     def restore_git_repository(self):
         # Reset the working directory to the last commit
-        self._run_git_command(['git', 'reset', '--hard'])
+        self.run_command(['git', 'reset', '--hard'])
 
         # Remove all untracked files and directories
-        self._run_git_command(['git', 'clean', '-fd'])
+        self.run_command(['git', 'clean', '-fd'])
 
     def _get_merge_request_url(self):
         return f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
@@ -292,7 +295,7 @@ class GitController(QObject):
     def clone_repository(self):
         clone_command = f'git clone {self.git_protocol.repository_url} {self.working_path}'
         self.log_message.emit(clone_command)
-        self._run_git_command(['git', 'clone', self.git_protocol.repository_url, self.raw_working_path])
+        self.run_command(['git', 'clone', self.git_protocol.repository_url, self.raw_working_path])
 
     def check_and_add_origin(self, url):
         result = self._run_git_command_get_output(['git', 'remote'])
@@ -300,7 +303,7 @@ class GitController(QObject):
         if "origin" in remotes:
             self.log_message.emit(f"Remote 'origin' is already added")
         else:
-            self._run_git_command(['git', 'remote', 'add', 'origin', url])
+            self.run_command(['git', 'remote', 'add', 'origin', url])
 
     def check_working_path(self):
         if self.raw_working_path == "":
@@ -341,13 +344,13 @@ class GitController(QObject):
             # Set or update the remote URL (if needed)
             set_remote_command = f'git remote set-url origin {self.git_protocol.repository_url}'
             self.log_message.emit(f"Running command: {set_remote_command}")
-            self._run_git_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
+            self.run_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
             # Verify remote repository
-            self._run_git_command(['git', 'ls-remote', '--get-url', 'origin'])
+            self.run_command(['git', 'ls-remote', '--get-url', 'origin'])
             # Fetch updates from the remote repository
             fetch_command = 'git fetch origin'
             self.log_message.emit(f"Running command: {fetch_command}")
-            self._run_git_command(['git', 'fetch', 'origin'])
+            self.run_command(['git', 'fetch', 'origin'])
             # Send setup signal
             self.log_message.emit(f" Setup Completed ")
             self.setup_completed.emit(self.repo_exist())
@@ -367,6 +370,8 @@ class GitController(QObject):
             self.arrange_dev_push(message)
         else:
             self._commit_and_push_everything(message)
+
+        self.get_repository_changes()
         self.push_completed.emit()
 
     @Slot()
@@ -463,7 +468,7 @@ class GitController(QObject):
         response = requests.post(url, headers=headers, data=data)
         if response.status_code == 201:
             self.get_merge_requests_comments(merge_request_id)
-            self.log_message.emit("Comment upload correctly")
+            self.log_message.emit("Comment , alignment=Qt.AlignmentFlag.AlignCenterupload correctly")
         else:
             self.error_message.emit(f"Failed to add comment to : {url}")
 
@@ -497,7 +502,7 @@ class GitController(QObject):
                 self.create_local_branch(self.get_dev_branch_name(), self._get_main_branch_name())
         else:
             if current_branch != self._get_main_branch_name():
-                self._run_git_command(['git', 'checkout', self._get_main_branch_name()])
+                self.run_command(['git', 'checkout', self._get_main_branch_name()])
 
     @Slot()
     def get_repository_history(self):
@@ -507,24 +512,26 @@ class GitController(QObject):
             self.send_repository_history.emit(commits)
 
     @Slot()
-    def get_repository_changes(self):
+    def get_repository_changes(self) -> tuple:
         changes_modified = []
         other_changes = []
         changed_files_out = self._run_git_command_get_output(['git', 'status', '--porcelain'])
         if changed_files_out:
             changed_files = [(line[:3].replace(" ", ""), line[3:]) for line in changed_files_out.splitlines() if line]
             for change, changed_file in changed_files:
+                changed_file = changed_file.strip('""')
                 if change == "M":
                     diff = self._run_git_command_get_output(['git', 'diff', changed_file])
                     if diff:
-                        changes_modified.append((changed_file, diff))
+                        changes_modified.append((fr"{changed_file}", diff))
                 else:
                     if not change in FILE_CHANGE_DIC:
-                        other_changes.append((changed_file,"Unknown change"))
+                        other_changes.append((fr"{changed_file}","Unknown change"))
                     else:
-                        other_changes.append((changed_file, FILE_CHANGE_DIC[change]))
+                        other_changes.append((fr"{changed_file}", change))
 
         self.send_current_changes.emit(changes_modified, other_changes)
+        return changes_modified, other_changes
 
     @Slot()
     def get_latest(self):
@@ -536,13 +543,13 @@ class GitController(QObject):
         os.chdir(self.raw_working_path)
 
         # Fetch changes from the remote repository
-        self._run_git_command(['git', 'fetch', 'origin'])
+        self.run_command(['git', 'fetch', 'origin'])
 
         # Pull the changes directly
-        self._run_git_command(['git', 'pull', 'origin', self._get_main_branch_name()])
+        self.run_command(['git', 'pull', 'origin', self._get_main_branch_name()])
 
         # Check the status of the repository
-        self._run_git_command(['git', 'status'])
+        self.run_command(['git', 'status'])
         self.get_latest_completed.emit()
 
     @Slot(str)

@@ -1,3 +1,5 @@
+from idlelib.configdialog import changes
+
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -9,10 +11,12 @@ from PySide6.QtWidgets import (
     QPushButton,
     QSplitter,
     QSizePolicy,
-    QSpacerItem
+    QSpacerItem, QFrame
 )
 from PySide6.QtGui import QPixmap, QIcon, QAction, QFont
 from PySide6.QtCore import Signal, Qt, QSize
+
+from Utils.Environment import FILE_CHANGE_DIC
 from View.UIRepViewer import RepositoryViewerWidget
 from View.BaseWindow import BaseWindow
 from View.UIMergeRequestTab import MergeRequestTab
@@ -37,6 +41,7 @@ class TabIndex:
 
 class GitSnifferWidget(QWidget):
     merge_request_selected = Signal()
+    upload_to_git_clicked = Signal()
 
     def __init__(self):
         super().__init__()
@@ -45,7 +50,7 @@ class GitSnifferWidget(QWidget):
 
         # Initialize Widgets
         self.history = self._create_list_widget("HistoryTab")
-        self.changes_list = self._create_changes_list_widget("ChangesListTab")
+        self.changes_list_widget = self._create_changes_list_widget("ChangesListTab")
         self.merge_request = self._create_merge_request_widget("MergeRequestTab")
 
         # Initialize Tabs
@@ -62,26 +67,34 @@ class GitSnifferWidget(QWidget):
         list_widget = QListWidget()
         list_widget.setFont(QFont("Courier New", 10))
         list_widget.setSpacing(2)
-        widget = QWidget()
-        widget.setObjectName(object_name)
+        list_widget.setObjectName(object_name)
         return list_widget
 
-    @staticmethod
-    def _create_changes_list_widget(object_name):
+    def _create_changes_list_widget(self, object_name: str):
         """Helper method to create a ChangesList widget with a specified object name."""
-        changes_list = ChangesList()
-        changes_list.setFont(QFont("Courier New", 10))
-        changes_list.setSpacing(2)
+        changes_list_layout = QVBoxLayout()
+        self.changes_list = ChangesList()
+        self.changes_list.setFont(QFont("Courier New", 10))
+        self.changes_list.setSpacing(2)
+        self.changes_list.setObjectName(object_name)
+
+        self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png", "Upload Git")
+        self.upload_btn.clicked.connect(lambda: self.upload_to_git_clicked.emit())
+        self.upload_btn.setFixedSize(QSize(120, 35))
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.upload_btn, "Blue")
+
+        changes_list_layout.addWidget(self.changes_list)
+        changes_list_layout.addWidget(self.upload_btn, alignment=Qt.AlignmentFlag.AlignCenter)
+
         widget = QWidget()
-        widget.setObjectName(object_name)
-        return changes_list
+        widget.setLayout(changes_list_layout)
+        return widget
 
     @staticmethod
     def _create_merge_request_widget(object_name):
         """Helper method to create a MergeRequestTab widget with a specified object name."""
         merge_request_tab = MergeRequestTab()
-        widget = QWidget()
-        widget.setObjectName(object_name)
+        merge_request_tab.setObjectName(object_name)
         return merge_request_tab
 
     @staticmethod
@@ -102,7 +115,7 @@ class GitSnifferWidget(QWidget):
         # Create and add tabs
         self.tabs.setFont(QFont("Courier New", 10))
         self.tabs.addTab(self._create_tab(self.history, "Commits History"), "History")
-        self.tabs.addTab(self._create_tab(self.changes_list, "Changes List"), "Change list")
+        self.tabs.addTab(self._create_tab(self.changes_list_widget, "Changes List"), "Change list")
         self.tabs.addTab(self._create_tab(self.merge_request, ""), "Merge Request")
 
         # Set the main layout
@@ -143,7 +156,6 @@ class UIGitTab(QWidget):
         self.repository_path = working_path
         """ Toolbar build """
         self.header = QHBoxLayout()
-        self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png", "Upload Git")
         self.download_btn: QPushButton = BaseWindow.create_button(self, "arrowDown.png", "Get Latest")
         self.publish_btn: QPushButton = BaseWindow.create_button(self, "publish.png", "Publish Anim")
         """ Layouts """
@@ -156,6 +168,7 @@ class UIGitTab(QWidget):
         self.git_sniffer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         """ Other widgets """
         self.splitter = QSplitter(Qt.Orientation.Horizontal)
+
         self.build()
         self.apply_styles()
         self.connect_signals()
@@ -163,12 +176,10 @@ class UIGitTab(QWidget):
 
     def build(self):
         """Buttons"""
-        self.upload_btn.setFixedSize(QSize(120, 35))
         self.download_btn.setFixedSize(QSize(120, 35))
         self.publish_btn.setFixedSize(QSize(120, 35))
         """ Header Layout """
         self.repository_viewer.buttons_layout.addWidget(self.download_btn, 0, Qt.AlignmentFlag.AlignLeft)
-        self.repository_viewer.buttons_layout.addWidget(self.upload_btn, 10, Qt.AlignmentFlag.AlignLeft)
         self.repository_viewer.buttons_layout.addWidget(self.publish_btn, 0, Qt.AlignmentFlag.AlignLeft)
         """ Body layout """
         self.splitter.addWidget(self.repository_viewer)
@@ -180,7 +191,6 @@ class UIGitTab(QWidget):
         self.setLayout(self.main_layout)
 
     def apply_styles(self):
-        CustomStyleSheetApplier.set_buttons_style_and_colour(self.upload_btn, "Blue")
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.download_btn, "Blue")
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.publish_btn, "Brown")
 
@@ -229,14 +239,14 @@ class UIGitTab(QWidget):
 
         for change_file, diff in modified:
             change_item = QListWidgetItem(change_file)
-            change_item.setData(Qt.ItemDataRole.UserRole, (change_file, diff))
             change_item.setToolTip(diff)
+            change_item.setData(Qt.ItemDataRole.UserRole, (change_file, diff))
             self.git_sniffer.changes_list.addItem(change_item)
             self.git_sniffer.changes.append(change_file)
 
         for change_file, change in changes:
             change_item = QListWidgetItem()
-            change_item.setText(f"{change_file}: -> ({change})")
+            change_item.setText(f"{change_file}: -> ({FILE_CHANGE_DIC[change]})")
             change_item.setData(Qt.ItemDataRole.UserRole, (change_file, change))
             self.git_sniffer.changes_list.addItem(change_item)
             self.git_sniffer.changes.append(change_file)
@@ -246,10 +256,12 @@ class UIGitTab(QWidget):
 
     def show_anim_tab(self):
         self.splitter.setSizes([1, 0])
+        self.splitter.setDisabled(True)
         self.git_sniffer.setDisabled(True)
 
     def hide_anim_tab(self):
         self.splitter.setSizes([1, 1])
+        self.splitter.setDisabled(False)
         self.git_sniffer.setDisabled(False)
 
     def on_repository_path_updated(self):

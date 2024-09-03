@@ -1,11 +1,8 @@
 from PySide6.QtCore import Signal, Slot
 from Utils.FileManager import FileManager
 from Utils.UserSession import UserSession
-from Utils.Environment import RoleID
+from Utils.Environment import RoleID, FILE_CHANGE_DIC
 from Controller.GitController import GitController
-from Controller.GitProtocol.GitProtocols import GitProtocolSSH
-from Controller.GitProtocol.GitProtocols import GitProtocolHTTPS
-from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
 from Utils.ConfigFileManager import ConfigFileManager
 import requests
 from pathlib import Path
@@ -18,8 +15,8 @@ class AnimatorGitController(GitController):
     config_rep_id_key = "project_id"
     config_section = "git_anim"
 
-    creating_anim_rep = Signal()
-    anim_rep_creation_completed = Signal()
+    publishing_anim_rep = Signal()
+    publishing_anim_rep_completed = Signal()
     uploading_anim_files = Signal()
     uploading_anim_files_completed = Signal()
 
@@ -41,50 +38,14 @@ class AnimatorGitController(GitController):
         self.project_id = config["git_anim"]["project_id"]
         self.ssh_setup = False
         self.user_session = None
+        self.fresh_new_rep = False
 
         # avoid circular import
         from Controller.GitProtocol.GitProtocols import GitProtocolSSH
         self.git_protocol = GitProtocolSSH(self, self.repository_url_ssh)
 
-    def _run_git_command(self, command: list) -> bool:
-        print(self.working_path)
-        return super()._run_git_command(command)
-
-    def check_anim_repository(self, from_setup=False) -> bool:
-        # TODO: Refactor this method
-        self.creating_anim_rep.emit()
-
-        try:
-
-            anim_project = self.looking_for_project_remote()
-            if anim_project is not None:
-                self.log_message.emit(f"Remote repository '{self.repository_name}' already exists on GitLab.")
-                self.write_anim_config(anim_project)
-            else:
-                self.create_remote_repository()
-
-            if not from_setup:
-                self.git_protocol = GitProtocolSSH(self, self.repository_url_ssh)
-                self.git_protocol.setup()
-                if not self.git_protocol.check_with_existing_keys():
-                    self.git_protocol = GitProtocolHTTPS(self, self.repository_url_https)
-                    if not self.git_protocol.setup():
-                        raise GitProtocolException("None SSH Nether HTTP Protocols could setup correctly",
-                                                   GitProtocolErrorCode.SETUP_FAILED)
-
-            if FileManager.path_exists(self.raw_working_path):
-                self.log_message.emit(f"Local repository '{self.repository_name}' already exists.")
-            else:
-                self.create_local_repository()
-
-            self._run_git_command(["git", "remote", "set-url", "origin", self.git_protocol.repository_url])
-            return True
-
-        except Exception as e:
-            self.error_message.emit(f"Error trying to create animation repository, error: {e}")
-            return False
-        finally:
-            self.anim_rep_creation_completed.emit()
+    def run_command(self, command: list) -> bool:
+        return super().run_command(command)
 
     def looking_for_project_remote(self) -> dir:
         headers = {"Private-Token": self.personal_access_token}
@@ -113,18 +74,6 @@ class AnimatorGitController(GitController):
         self.write_anim_config(project_info)
         return True
 
-    def create_local_repository(self):
-        self.create_repository_dir()
-        self._run_git_command(["git", "init", "."])
-
-    def push_local_repository(self):
-        self._run_git_command(["git", "remote", "set-url", "origin", self.git_protocol.repository_url])
-        self._run_git_command(["git", "add", "."])
-        self._run_git_command(["git", "commit", "-m", "Initial commit"])
-        self._run_git_command(["git", "push" ])
-
-        self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
-
     def write_anim_config(self, project_info: dict):
         self.repository_url_ssh = project_info['ssh_url_to_repo']
         self.repository_url_https = project_info['http_url_to_repo']
@@ -134,17 +83,25 @@ class AnimatorGitController(GitController):
         self.config_manager.add_value(self.config_section, self.config_rep_ssh_key, self.repository_url_ssh)
         self.config_manager.add_value(self.config_section, self.config_rep_http_key, self.repository_url_https)
 
-    def compile_origin_files(self):
+    def compile_files(self, files=None):
         user_session = UserSession()
         if user_session.role_id == RoleID.ANIMATOR.value or user_session.role == RoleID.ADMIN_ANIM.value:
             return
 
         # compile the files of the origin repository
         self.log_message.emit(f"Compiling python files... in {self.source_path}")
-        FileManager.compile_python_files(self.source_path, self.log_message)
+
+        if files is not None:
+            FileManager.compile_python_files(self.source_path, files, self.log_message)
+            modifies, changes = self.get_changes_from_default_rep()
+            files, deleted_files = self.extract_just_file_paths(modifies, changes)
+            FileManager.move_files(files, self.source_path,'.py', self.raw_working_path, self.log_message)
+            FileManager.remove_files(deleted_files, self.raw_working_path, self.log_message)
+        else:
+            FileManager.compile_python_files_from_source(self.source_path, self.log_message)
+            FileManager.move_all_files_except_extension(
+                self.source_path, self.raw_working_path, '.py', self.log_message)
         # move files to the anim working path
-        FileManager.move_all_files_except_extension(
-            self.source_path, self.raw_working_path, '.py', self.log_message)
 
     def get_commit_count(self):
         headers = {"Private-Token": self.personal_access_token}
@@ -169,37 +126,60 @@ class AnimatorGitController(GitController):
 
         return commit_count
 
-    @Slot()
-    def setup(self):
-        self.check_working_path()
-
-        print(f"class: {self.__class__.__name__} working in path: {self.raw_working_path}")
-        self.check_anim_repository(from_setup=True)
-        super().setup()
-
-    @Slot(str)
-    def publish_rep(self, message: str):
-        if self.check_anim_repository():
-            self.upload_files(message)
-        else:
-            self.error_message.emit("An error occur while trying to publish repository")
-
-    @Slot(str)
-    def upload_files(self, message: str):
-        self.uploading_anim_files.emit()
-
+    def upload_files(self, message: str, compile_all: bool):
         user_session = UserSession()
         if user_session.role_id == RoleID.ANIMATOR.value:
             self.log_message.emit("Animator user is not allowed to upload files either compile .py -> .pyc")
 
-        self.compile_origin_files()
-        self.push_local_repository()
+        self.setup()
+        self.uploading_anim_files.emit()
 
+        if self.fresh_new_rep or compile_all:
+            self.compile_files()
+        else:
+            modifies, changes = self.get_changes_from_default_rep()
+            files, deleted_files = self.extract_just_file_paths(modifies, changes)
+            self.compile_files(files)
+
+        FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
+        FileManager.sync_directories_erase(self.source_path, self.raw_working_path)
+        # self._commit_and_push_everything(message)
+        self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
 
-    @Slot()
-    def verify_user_branch(self):
-        return
+    def get_changes_from_default_rep(self) -> tuple:
+        temp_url = self.raw_working_path
+        self.raw_working_path = self.config_manager.get_config()["general"]["working_path"]
+        modifies, changes = self.get_repository_changes()
+        self.raw_working_path = temp_url
+
+        return modifies, changes
+
+    def extract_just_file_paths(self, modifies, changes) -> tuple:
+        default_working_path = self.config_manager.get_config()["general"]["working_path"]
+        file_paths = []
+        deleted_files = []
+
+        for file, modification in modifies:
+            if modification != "D":
+                file_paths.append(file)
+            else:
+                deleted_files.append(file)
+
+        for file, change in changes:
+            if change != "D":
+                file_paths.append(file)
+            else:
+                deleted_files.append(file)
+
+        return file_paths, deleted_files
+
+    def check_working_path(self):
+        if self.raw_working_path == "":
+            self.raw_working_path = FileManager.get_working_path(
+                self.config_manager.get_config()["general"]["repository_prefix"],"animator")
+            self.config_manager.add_value("general","animator_path", self.raw_working_path)
+            self.working_path = Path(self.raw_working_path)
 
     @Slot(str)
     def on_setup_working_path(self, path: str):
@@ -210,9 +190,40 @@ class AnimatorGitController(GitController):
         self.config_manager.add_value("general", "animator_path", real_path)
         self.setup()
 
-    def check_working_path(self):
-        if self.raw_working_path == "":
-            self.raw_working_path = FileManager.get_working_path(
-                self.config_manager.get_config()["general"]["repository_prefix"],"animator")
-            self.config_manager.add_value("general","animator_path", self.raw_working_path)
-            self.working_path = Path(self.raw_working_path)
+    @Slot()
+    def verify_user_branch(self):
+        return
+
+    @Slot(str, bool)
+    def publish_rep(self, message: str, compile_all: bool):
+        if self.setup():
+            self.upload_files(message, compile_all)
+        else:
+            self.error_message.emit("An error occur while trying to publish repository")
+
+    @Slot()
+    def setup(self) -> bool:
+        self.check_working_path()
+
+        print(f"class: {self.__class__.__name__} working in path: {self.raw_working_path}")
+        self.publishing_anim_rep.emit()
+
+        try:
+            anim_project = self.looking_for_project_remote()
+            if anim_project is not None:
+                self.log_message.emit(f"Remote repository '{self.repository_name}' already exists on GitLab.")
+                self.write_anim_config(anim_project)
+                self.fresh_new_rep = False
+            else:
+                self.create_remote_repository()
+                self.fresh_new_rep = True
+
+            super().setup()
+            return True
+
+        except Exception as e:
+            self.error_message.emit(f"Error trying to create animation repository, error: {e}")
+            return False
+
+        finally:
+            self.publishing_anim_rep_completed.emit()

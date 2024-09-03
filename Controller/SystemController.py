@@ -9,6 +9,8 @@ import platform
 import urllib.request
 import sys
 
+from Utils.FileManager import FileManager
+
 
 class SystemController(QObject):
     """Signals"""
@@ -197,10 +199,13 @@ class SystemController(QObject):
 
     @Slot(str)
     def delete_file(self, path: str):
-        if os.path.exists(path) and not os.path.isdir(path):
+        if not os.path.exists(path):
+            return
+        if not os.path.isdir(path):
             os.remove(path)
-        if os.path.isdir(path):
-            os.removedirs(path)
+        else:
+            FileManager.erase_dir_files(path)
+            FileManager.erase_dir(path)
 
     @Slot(str)
     def open_in_explorer(self, path: str):
@@ -216,5 +221,4 @@ class SystemController(QObject):
     def select_maya_version(self, maya_bin: str, bat_bin = ""):
         self.maya_bin = maya_bin
         self.bat_bin = bat_bin
-
 

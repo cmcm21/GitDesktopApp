@@ -10,7 +10,8 @@ from PySide6.QtWidgets import (
     QMenu,
     QFrame,
     QMessageBox,
-    QPushButton
+    QPushButton,
+    QSplitter
 )
 from Utils.ConfigFileManager import ConfigFileManager
 from View.BaseWindow import BaseWindow
@@ -22,6 +23,7 @@ from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UISessionWidget import UserSessionWidget
 from View.UIAdminWidget import AdminWindow
 from View.UISettingsWindows import SettingWindows
+from View.PublishWindow import PublishWindow
 from Utils.UserSession import UserSession
 from Utils.Environment import RoleID
 import Utils.Environment as Env
@@ -31,7 +33,7 @@ from Utils.SignalManager import SignalManager
 class LauncherWindow(BaseWindow):
     upload_repository = Signal(str)
     get_latest = Signal()
-    publish_to_anim_rep = Signal(str)
+    publish_to_anim_rep = Signal(str, bool)
     project_changed = Signal(str)
     window_closed = Signal()
     admin_window_clicked = Signal()
@@ -59,11 +61,12 @@ class LauncherWindow(BaseWindow):
         self._connect_signals()
 
     def _initialize_attributes(self):
-        self.user_session: UserSession = None
+        self.user_session = None
         self.project_combo_box_actions = {}
         self.admin_window = None
         self.commit_window = None
         self.publish_window = None
+
 
     def _create_all_elements(self):
         self._create_layouts()
@@ -140,6 +143,7 @@ class LauncherWindow(BaseWindow):
         self.body_tap.addTab(frame, title)
 
     def _create_misc_widgets(self):
+        self.splitter = QSplitter(Qt.Orientation.Vertical)
         self.logger_widget = LoggerWidget()
         self.user_session_widget = UserSessionWidget()
 
@@ -158,7 +162,7 @@ class LauncherWindow(BaseWindow):
         self._build_header()
         self._build_body_left()
         self._build_body_right()
-        self._nest_layouts()
+        self._build_main_layout()
         self._build_menu_bar()
 
         widget = QWidget()
@@ -187,13 +191,18 @@ class LauncherWindow(BaseWindow):
         self.body_right.addWidget(self.body_tap, 0)
         self.body_right.addWidget(self.logger_widget, 5)
 
-    def _nest_layouts(self):
+    def _build_main_layout(self):
         self.body_layout.addWidget(self.left_frame, 1)
         self.body_layout.addLayout(self.body_right, 6)
         self.body_layout.setSpacing(10)
+
         self.main_layout.addLayout(self.body_layout, 1, 0)
         self.main_layout.addLayout(self.footer_layout, 2, 0)
         self.main_layout.addLayout(self.loading_layout, 3, 0)
+
+        #self.splitter.addWidget(self.body_right.widget())
+        #self.splitter.addWidget(self.logger_widget)
+
         self.main_layout.setSpacing(2)
 
     def _build_menu_bar(self):
@@ -220,7 +229,7 @@ class LauncherWindow(BaseWindow):
         return
 
     def _connect_signals(self):
-        self.git_tab.upload_btn.clicked.connect(self.create_commit_windows)
+        self.git_tab.git_sniffer.upload_btn.clicked.connect(self.create_commit_windows)
         self.git_tab.download_btn.clicked.connect(self.on_get_latest_clicked)
         self.git_tab.publish_btn.clicked.connect(self.create_publish_window)
         self.user_session_widget.logout_signal.connect(self._log_out)
@@ -238,15 +247,19 @@ class LauncherWindow(BaseWindow):
             self.get_latest.emit()
 
     def create_publish_window(self):
-        self.publish_window = CommitWindow(" Publish current scripts ", "Add a publish comment")
-        self.publish_window.accept_clicked_signal.connect(self._on_publish_window_accept)
-        self.publish_window.cancel_clicked_signal.connect(self._on_publish_window_cancel)
+        self.publish_window = PublishWindow(" Publish to animator repository ", "Add a publish comment")
+        self.publish_window.compile_all_signal.connect(
+            lambda message: self._on_publish_window_accept(message, True))
+        self.publish_window.compile_just_change_list_signal.connect(
+            lambda message: self._on_publish_window_accept(message, False))
+
+        self.publish_window.cancel_signal.connect(self._on_publish_window_cancel)
         self.publish_window.show()
 
     def create_commit_windows(self):
         self.commit_window = CommitWindow(" Commit Windows")
-        self.commit_window.accept_clicked_signal.connect(self._on_commit_window_accept)
-        self.commit_window.cancel_clicked_signal.connect(self._on_commit_window_cancel)
+        self.commit_window.accept_signal.connect(self._on_commit_window_accept)
+        self.commit_window.cancel_signal.connect(self._on_commit_window_cancel)
         self.commit_window.show()
 
     def set_user_session(self, user_session: UserSession):
@@ -267,7 +280,6 @@ class LauncherWindow(BaseWindow):
             self.set_admin_user()
 
     def set_animator(self):
-        self.git_tab.upload_btn.hide()
         self.git_tab.show_anim_tab()
         self.git_tab.publish_btn.hide()
         self.build_session_menu()
@@ -276,13 +288,10 @@ class LauncherWindow(BaseWindow):
         self.git_tab.git_sniffer.merge_request.accept_btn.hide()
         self.git_tab.hide_anim_tab()
         self.git_tab.publish_btn.show()
-        self.git_tab.upload_btn.show()
         self.build_session_menu()
 
     def set_admin_user(self):
-        self.git_tab.upload_btn.show()
         self.git_tab.hide_anim_tab()
-        self.git_tab.upload_btn.show()
         self.git_tab.publish_btn.show()
         self.build_session_menu()
 
@@ -355,8 +364,8 @@ class LauncherWindow(BaseWindow):
         self._close_commit_window()
 
     @Slot(str)
-    def _on_publish_window_accept(self, message):
-        self.publish_to_anim_rep.emit(self.add_username(message))
+    def _on_publish_window_accept(self, message, compile_all):
+        self.publish_to_anim_rep.emit(self.add_username(message), compile_all)
         self._close_publish_window()
 
     @Slot()

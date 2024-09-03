@@ -2,15 +2,15 @@ from View.BaseWindow import BaseWindow
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QWidget, QMainWindow
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QFont
-from View.WindowID import WindowID
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View.WindowID import WindowID
 
 
 class CommitWindow(QMainWindow):
-    accept_clicked_signal = Signal(str)
-    cancel_clicked_signal = Signal()
+    accept_signal = Signal(str)
+    cancel_signal = Signal()
 
-    def __init__(self, title, label="Insert a commit message", width=400, height=300):
+    def __init__(self, title, label="Insert a commit message", width=300, height=150):
         super().__init__()
         self.setWindowTitle(title)
         self.setMinimumWidth(width)
@@ -54,7 +54,7 @@ class CommitWindow(QMainWindow):
             self.input_message.setPlaceholderText("Enter a commit message!!!")
         else:
             message: str = self.input_message.text()
-            self.accept_clicked_signal.emit(message)
+            self.accept_signal.emit(message)
 
     def _on_cancel_clicked_signal(self):
-        self.cancel_clicked_signal.emit()
+        self.cancel_signal.emit()

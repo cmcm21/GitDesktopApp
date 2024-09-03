@@ -3,6 +3,7 @@ from PySide6.QtGui import QPixmap, QIcon
 from PySide6.QtCore import Signal, SignalInstance
 from View.WindowID import WindowID
 from View.UILoadingWidget import LoadingWidget
+from View.EnterButton import EnterButton
 from Utils.FileManager import FileManager
 
 
@@ -68,8 +69,8 @@ class BaseWindow(QMainWindow):
         return frame
 
     @staticmethod
-    def create_button(parent, image_name: str, button_text: str = "") -> QPushButton:
-        return QPushButton(
+    def create_button(parent, image_name: str = "", button_text: str = "") -> QPushButton:
+        return EnterButton(
             icon=QIcon(BaseWindow.get_pixmap(image_name)),
             text=button_text,
             parent=parent

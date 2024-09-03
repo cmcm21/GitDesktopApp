@@ -150,8 +150,8 @@ class Application(QApplication):
         SignalManager.connect_signals(self.anim_git_controller, [
             (self.anim_git_controller.log_message, self.ui_manager.on_log_signal_received),
             (self.anim_git_controller.error_message, self.ui_manager.on_err_signal_received),
-            (self.anim_git_controller.creating_anim_rep, self.ui_manager.on_anim_rep_creating),
-            (self.anim_git_controller.anim_rep_creation_completed, self.ui_manager.on_anim_rep_creation_completed),
+            (self.anim_git_controller.publishing_anim_rep, self.ui_manager.on_anim_rep_publishing),
+            (self.anim_git_controller.publishing_anim_rep_completed, self.ui_manager.on_anim_rep_publishing_completed),
             (self.anim_git_controller.uploading_anim_files , self.ui_manager.on_anim_upload_files_started),
             (self.anim_git_controller.uploading_anim_files_completed , self.ui_manager.on_anim_upload_files_completed)
         ])
@@ -197,7 +197,7 @@ class Application(QApplication):
             (self.git_controller.send_merge_requests_comments, self.ui_manager.on_get_merge_requests_comments),
             (self.git_controller.send_repository_history, self.ui_manager.on_get_repository_history),
             (self.git_controller.send_current_changes, self.ui_manager.on_get_changes_list),
-            #(self.ui_manager.lw_log_out, self.git_controller.on_log_out)
+            (self.ui_manager.lw_log_out, self.git_controller.on_log_out)
         ])
 
         SignalManager.disconnect_signals(self, [
@@ -232,7 +232,6 @@ class Application(QApplication):
         SignalManager.disconnect_signals(self.ui_manager, [
             (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest)
         ])
-
 
     def on_git_setup_completed(self, success: bool):
         self.check_user_branch.emit()

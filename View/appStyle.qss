@@ -284,3 +284,9 @@ QMenu::item:selected{
 #LauncherUserMenu {
     border: 2px solid black;
 }
+
+QSplitter::handle {
+    background-color: #aaaaaa;  /* Light gray color */
+    border: 0.5px solid #666666;  /* Darker gray border */
+    margin: 0.5px;                /* Some margin for visibility */
+}

@@ -19,7 +19,7 @@ class CustomFileSystemModel(QFileSystemModel):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-    def data(self, index, role):
+    def data(self, index: QModelIndex, role: Qt.DisplayRole):
         # Get the default data
         if role == Qt.ItemDataRole.DisplayRole:
             return super().data(index, role)
@@ -102,13 +102,17 @@ class RepositoryViewerWidget(QWidget):
 
         # create a context menu
         menu = QMenu()
+        type_path = "Directory" if os.path.isdir(file_path) else "File"
 
-        open_file = QAction("Open", self)
-        open_explorer = QAction("Open Explorer", self)
-        delete_file =  QAction("Delete File", self)
+        open_file = QAction(f"Open {type_path}", self)
+        open_explorer = QAction("Open In Explorer", self)
+        delete_file =  QAction(f"Delete {type_path}", self)
 
-        menu.addAction(open_file)
-        menu.addAction(open_explorer)
+        if os.path.isdir(file_path):
+            menu.addAction(open_explorer)
+        else:
+            menu.addAction(open_file)
+
         menu.addAction(delete_file)
 
         open_file.triggered.connect(lambda: self.open_file.emit(file_path))

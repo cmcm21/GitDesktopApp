@@ -48,18 +48,10 @@ class GitProtocolSSH(GitProtocolAbstract):
             return True
 
         self.git_controller.log_message.emit(f"Running git clone command...")
-        process = subprocess.Popen(
-            ['git', 'clone', self.repository_url, self.git_controller.raw_working_path],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        stdout, stderr = process.communicate(input="yes\n")
-        if stdout:
-            self.git_controller.log_message.emit(stdout)
-        if stderr:
-            self.git_controller.error_message.emit(stderr)
+        return_code = self.git_controller.run_command(
+            ['git', 'clone', self.repository_url, self.git_controller.raw_working_path])
+
+        if not return_code:
             return self.git_controller.repo_exist()
 
         return True
@@ -377,12 +369,11 @@ class GitProtocolSSH(GitProtocolAbstract):
 
             # Check the exit status
             exit_code = process.returncode
-            print(f"Exit Code: {exit_code}")
+            self.git_controller.log_message(f"Exit Code: {exit_code}")
 
             # Check for errors in the stderr
             if exit_code != 0:
-                print("An error occurred:")
-                print(stderr)
+                self.git_controller.error_message(f"An error occurred: {stderr}")
 
             self.git_controller.log_message.emit(f"New host key for gitlab.com added to {known_hosts_file} -> {stdout}")
 

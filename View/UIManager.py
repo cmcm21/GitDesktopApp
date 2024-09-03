@@ -21,7 +21,7 @@ class UIManager(QObject):
     lw_git_changes_list_tab_clicked = Signal()
     lw_git_merge_request_tab_clicked = Signal()
 
-    lw_publish_to_anim = Signal(str)
+    lw_publish_to_anim = Signal(str, bool)
     lw_uploaded_clicked = Signal(str)
     lw_get_merge_request_changed = Signal(int)
     lw_merge_request_add_comment = Signal(str, int)
@@ -211,11 +211,11 @@ class UIManager(QObject):
         self.launcher_window.git_tab.on_get_current_changes(changes_modified, changes)
 
     @Slot()
-    def on_anim_rep_creating(self):
+    def on_anim_rep_publishing(self):
         self.launcher_window.loading.show_anim_screen()
 
     @Slot()
-    def on_anim_rep_creation_completed(self):
+    def on_anim_rep_publishing_completed(self):
         self.launcher_window.loading.stop_anim_screen()
 
     @Slot()
