@@ -138,7 +138,8 @@ class GitProtocolSSH(GitProtocolAbstract):
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
             stdout, stderr = process.communicate(input="n\n")
             self.git_controller.log_message.emit("SSH keys generated.")

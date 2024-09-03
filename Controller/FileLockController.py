@@ -1,7 +1,6 @@
 from PySide6.QtCore import QObject, Signal, Slot
 import git
 import os
-import gitlab
 
 
 class FileLockController(QObject):

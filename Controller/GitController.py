@@ -80,7 +80,8 @@ class GitController(QObject):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
-                bufsize=1
+                bufsize=1,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
 
             stdout, stderr = process.communicate()
@@ -104,7 +105,13 @@ class GitController(QObject):
     def _run_git_command_get_output(self, command) -> str:
         FileManager.move_to(self.raw_working_path)
         try:
-            result = subprocess.run(command, capture_output=True, text=True, check=True)
+            result = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                check=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
+            )
             return result.stdout
         except subprocess.CalledProcessError as e:
             self.error_message.emit(f"Git command failed: {e}")
@@ -337,7 +344,7 @@ class GitController(QObject):
                     raise GitProtocolException("None SSH Nether HTTP Protocols could setup correctly",
                                                GitProtocolErrorCode.SETUP_FAILED)
 
-            """ TODO: Check the first state set up, if it not finished with success code then change protocol"""
+            """ TODO: Check the first state set up, if it not finished with success code then change protocol """
             # Change directory to the cloned repository
             os.chdir(self.working_path)
             self.check_and_add_origin(self.git_protocol.repository_url)
