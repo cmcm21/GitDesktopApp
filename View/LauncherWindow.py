@@ -24,6 +24,7 @@ from View.UISessionWidget import UserSessionWidget
 from View.UIAdminWidget import AdminWindow
 from View.UISettingsWindows import SettingWindows
 from View.PublishWindow import PublishWindow
+from View.CustomSplitter import CustomSplitter
 from Utils.UserSession import UserSession
 from Utils.Environment import RoleID
 import Utils.Environment as Env
@@ -67,7 +68,6 @@ class LauncherWindow(BaseWindow):
         self.commit_window = None
         self.publish_window = None
 
-
     def _create_all_elements(self):
         self._create_layouts()
         self._create_buttons()
@@ -81,7 +81,6 @@ class LauncherWindow(BaseWindow):
         self.body_layout = QHBoxLayout()
         self.body_left = QVBoxLayout()
         self.body_right = QVBoxLayout()
-        self.footer_layout = QHBoxLayout()
 
     def _create_buttons(self):
         self.combo_box = QComboBox(self)
@@ -143,7 +142,7 @@ class LauncherWindow(BaseWindow):
         self.body_tap.addTab(frame, title)
 
     def _create_misc_widgets(self):
-        self.splitter = QSplitter(Qt.Orientation.Vertical)
+        self.splitter = CustomSplitter(Qt.Orientation.Vertical)
         self.logger_widget = LoggerWidget()
         self.user_session_widget = UserSessionWidget()
 
@@ -188,20 +187,17 @@ class LauncherWindow(BaseWindow):
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def _build_body_right(self):
-        self.body_right.addWidget(self.body_tap, 0)
-        self.body_right.addWidget(self.logger_widget, 5)
+        self.splitter.addWidget(self.body_tap)
+        self.splitter.addWidget(self.logger_widget)
+        self.body_right.addWidget(self.splitter)
+
 
     def _build_main_layout(self):
         self.body_layout.addWidget(self.left_frame, 1)
         self.body_layout.addLayout(self.body_right, 6)
-        self.body_layout.setSpacing(10)
 
         self.main_layout.addLayout(self.body_layout, 1, 0)
-        self.main_layout.addLayout(self.footer_layout, 2, 0)
         self.main_layout.addLayout(self.loading_layout, 3, 0)
-
-        #self.splitter.addWidget(self.body_right.widget())
-        #self.splitter.addWidget(self.logger_widget)
 
         self.main_layout.setSpacing(2)
 

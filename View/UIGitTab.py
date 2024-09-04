@@ -15,7 +15,6 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtGui import QPixmap, QIcon, QAction, QFont
 from PySide6.QtCore import Signal, Qt, QSize
-
 from Utils.Environment import FILE_CHANGE_DIC
 from View.UIRepViewer import RepositoryViewerWidget
 from View.BaseWindow import BaseWindow
@@ -23,6 +22,7 @@ from View.UIMergeRequestTab import MergeRequestTab
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UIDiffsWidget import DiffsWidget
 from View.UIChangesList import ChangesList
+from View.CustomSplitter import CustomSplitter
 import os
 
 
@@ -167,7 +167,7 @@ class UIGitTab(QWidget):
         self.git_sniffer = GitSnifferWidget()
         self.git_sniffer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         """ Other widgets """
-        self.splitter = QSplitter(Qt.Orientation.Horizontal)
+        self.splitter = CustomSplitter(Qt.Orientation.Horizontal)
 
         self.build()
         self.apply_styles()
@@ -256,12 +256,12 @@ class UIGitTab(QWidget):
 
     def show_anim_tab(self):
         self.splitter.setSizes([1, 0])
-        self.splitter.setDisabled(True)
         self.git_sniffer.setDisabled(True)
+        self.splitter.handle.setDisabled(True)
 
     def hide_anim_tab(self):
         self.splitter.setSizes([1, 1])
-        self.splitter.setDisabled(False)
+        self.splitter.handle.setDisabled(False)
         self.git_sniffer.setDisabled(False)
 
     def on_repository_path_updated(self):

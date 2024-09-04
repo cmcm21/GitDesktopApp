@@ -1,3 +1,5 @@
+import ctypes
+
 from PySide6.QtCore import QObject, Signal, Slot
 from Utils.ConfigFileManager import ConfigFileManager
 from pathlib import Path
@@ -40,7 +42,9 @@ class SystemController(QObject):
         self.git_token = config["git"]["personal_access_token"]
         self.git_api_url = config["git"]["gitlab_api_url"]
         self.git_user = config["git"]["username"]
+        self.python2_alias = config['general']["python2_alias"]
         self.working_path = config["general"]["working_path"]
+        self.python2_installer_url = config["general"]["python2_installer_url"]
         self.maya_installed = False
 
     def _check_for_maya(self):
@@ -129,12 +133,6 @@ class SystemController(QObject):
         except OSError as e:
             self.error_message.emit(f"Error removing installer: {e}")
 
-    def delete_py_files(self):
-        for root, dirs, files in os.walk(self.working_path):
-            for file in files:
-                if file.endswith('.py'):
-                    os.remove(os.path.join(root, file))
-
     def run_command(self, command: str):
         try:
             process = subprocess.Popen(
@@ -161,12 +159,109 @@ class SystemController(QObject):
             self.error_message.emit(f"An error occurred executing command: {command}, error: {e.stderr}")
             raise subprocess.CalledProcessError(e.returncode, e.stderr)
 
+    def install_python2_on_windows(self):
+        installer = "python-2.7.18.amd64.msi"
+        python_install_dir = "C:\\Python27"
+
+        try:
+            # Download the installer
+            self.log_message.emit("Downloading Python 2 installer...")
+            subprocess.run(["curl", "-o", installer, self.python2_installer_url], check=True, shell=True)
+
+            # Run the installer
+            self.log_message.emit("Running Python 2 installer...")
+            subprocess.run(["msiexec", "/i", installer, "/quiet", "/norestart"], check=True)
+
+            self.log_message.emit("Python 2 installed successfully.")
+
+            self.add_to_path(python_install_dir)
+            self.add_to_path(os.path.join(python_install_dir, "Scripts"))
+
+            os.remove(installer)  # Clean up the installer file
+        except Exception as e:
+            self.error_message.emit(f"An error occurred during installation: {e}")
+
+    def is_python2_installed(self):
+        try:
+            if not os.path.exists(self.python2_alias):
+                self.log_message.emit("Python 2 is not installed.")
+                return False
+
+            result = subprocess.run([self.python2_alias, "--version"], capture_output=True, text=True)
+            if result.returncode == 0:
+                self.log_message.emit(f"Python 2 is installed: {result.stdout.strip()}")
+                return True
+            else:
+                self.log_message.emit("Python 2 is not installed.")
+                return False
+        except FileNotFoundError:
+            self.log_message.emit("Python 2 is not installed.")
+            return False
+
+    def add_to_path(self, python_path:str):
+        """
+        Add the specified Python path to the system PATH environment variable.
+        :param python_path: The directory path of the Python installation to be added to PATH.
+        """
+
+        # Use Windows Registry to access and modify the system PATH variable
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE,
+                             r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment",
+                             0, winreg.KEY_ALL_ACCESS)
+
+        try:
+            current_path = winreg.QueryValueEx(key, "Path")[0]
+            if python_path not in current_path:
+                new_path = current_path + ";" + python_path
+                winreg.SetValueEx(key, "Path", 0, winreg.REG_EXPAND_SZ, new_path)
+                self.log_message.emit(f"Successfully added {python_path} to PATH.")
+            else:
+                self.log_message.emit(f"{python_path} is already in PATH.")
+        except Exception as e:
+            self.log_message.emit(f"An error occurred while updating PATH: {e}")
+        finally:
+            winreg.CloseKey(key)
+
+    def create_python2_alias(self):
+        """
+        Create a batch file named 'python2.bat' in the system directory to map 'python2' command
+        to the Python 2 interpreter.
+        """
+        try:
+            # Determine the path for python2.bat
+            local_path = FileManager.get_local_path()
+            batch_file_path = os.path.join(local_path, "Resources\\ExternalScripts\\python2.bat")
+
+            # Create the batch file to invoke Python 2
+            with open(batch_file_path, "w") as f:
+                f.write(f'@echo off\n"C:\\Python27\\python.exe" %*')
+
+            self.config_manager.add_value("general", "python2_alias", batch_file_path)
+            self.log_message.emit(" python2 alias was create successfully")
+        except Exception as e:
+            self.log_message.emit(f"An error occurred while creating python2 alias: {e}")
+
+    def is_admin(self) -> bool:
+        try:
+            return ctypes.windll.shell32.IsUserAnAdmin()
+        except Exception as e:
+            self.log_message.emit(f"an error was throw while trying to check admin permissions: {e}")
+            return False
+
+    def check_for_admin_permissions(self):
+        if not self.is_admin():
+            ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, __file__, None, 1)
+
     @Slot()
     def setup(self):
         self.setup_started.emit()
         self._check_for_maya()
         if not self._check_for_git():
             self.install_git()
+        if not self.is_python2_installed():
+            self.install_python2_on_windows()
+            self.create_python2_alias()
+
         self.setup_finished.emit()
 
     @Slot()
@@ -221,4 +316,3 @@ class SystemController(QObject):
     def select_maya_version(self, maya_bin: str, bat_bin = ""):
         self.maya_bin = maya_bin
         self.bat_bin = bat_bin
-

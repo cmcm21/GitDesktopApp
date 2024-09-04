@@ -323,6 +323,7 @@ class CustomStyleSheetApplier:
                 border: 2px solid black; /* Black border */
                 border-radius: 5px;
                 padding: 5px;
+                margin: 0px;
                 color: {textColour}; /* Set the text color to black */
             }}
 

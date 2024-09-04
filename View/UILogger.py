@@ -35,7 +35,6 @@ class QTextEditLogger(logging.Handler):
         msg = self.format(record)
         QMetaObject.invokeMethod(self.text_edit, "append", Qt.QueuedConnection, Q_ARG(str, msg))
 
-
 class LoggerWidget(QWidget):
     def __init__(self):
         super().__init__()

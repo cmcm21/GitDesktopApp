@@ -133,11 +133,18 @@ class FileManager:
             for file in files:
                 file_path = os.path.join(source_path, file)
                 if os.path.isdir(file):
-                    compileall.compile_dir(file, maxlevels=5, force=True)
-                    print(f"Compiling dir {file}...")
-                else:
-                    compileall.compile_file(file_path, force=True)
-                    print(f"Compiling file {file}...")
+                    files = os.listdir(file_path)
+                    log_signal.emit(f"Compiling dir {file}...")
+                    FileManager.compile_python_files(source_path, files, log_signal)
+
+                elif file.endswith(".py"):
+                    python_version = FileManager.detect_python_version_by_features(file_path)
+                    if python_version == 2:
+                        FileManager.compile_python2_file(file_path, log_signal)
+                    else:
+                        compileall.compile_file(file_path, force=True)
+
+                    log_signal.emit(f"Compiling file {file}...")
         finally:
             # Reset sys.stdout to its original state
             sys.stdout = old_stdout
@@ -146,6 +153,20 @@ class FileManager:
         captured_output = output.getvalue()
         log_signal.emit(captured_output)
         output.close()
+
+    @staticmethod
+    def compile_python2_file(file_path: str, log_signal: SignalInstance):
+        from Utils.ConfigFileManager import ConfigFileManager
+
+        config_manager = ConfigFileManager()
+        python2_alias = config_manager.get_config()['general']['python2_alias']
+
+        result = subprocess.run([python2_alias, "-m", "py_compile", file_path], check=True)
+        if result.returncode == 0:
+            log_signal.emit(f"file: {file_path} compiled successfully")
+        else:
+            log_signal.emit(f"file: {file_path} compiled error")
+
 
     @staticmethod
     def find_files(pattern, extension, directory) -> list:
@@ -211,23 +232,23 @@ class FileManager:
                         log_signal.emit(f"Copied: {file_path} -> {os.path.join(destination_dir, file)}")
 
     @staticmethod
-    def move_files(files: list, src_dir: str, extension: str, dst_dir:str, log_signal: SignalInstance):
+    def move_files(files: list, src_dir: str, ignore: str, dst_dir:str, log_signal: SignalInstance):
         # Ensure the extension starts with a dot
-        if not extension.startswith('.'):
-            extension = '.' + extension
+        if not ignore.startswith('.'):
+            ignore = '.' + ignore
 
         os.makedirs(dst_dir, exist_ok=True, mode=0o777)
 
         for file in files:
             file = file.strip('""')
-            if not file.endswith(extension):
+            if not file.endswith(ignore):
 
                 source_path = os.path.join(src_dir, file)
                 destination_dir = os.path.join(dst_dir, file)
 
                 if os.path.isdir(source_path):
                     in_files = os.listdir(source_path)
-                    FileManager.move_files(in_files, source_path, extension, destination_dir, log_signal)
+                    FileManager.move_files(in_files, source_path, ignore, destination_dir, log_signal)
                 else:
                     try:
                         if file.endswith(".pyc"):
@@ -291,45 +312,52 @@ class FileManager:
                     print(f"Permission error: {e}")
 
     @staticmethod
-    def sync_directories_erase(source_path: str, dest_path: str):
+    def sync_directories(source_path: str, dest_path: str):
         for root, dirs, files in os.walk(dest_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+
+                #ignore all .git related files
+                if ".git" in file_path or file.endswith(".pyc"):
+                    continue
+
+                relative_path = os.path.relpath(root, dest_path)
+                source_file = os.path.join(source_path, relative_path)
+                to_remove_file = os.path.join(source_file,file)
+                if not os.path.exists(to_remove_file):
+                    try:
+                        os.remove(file_path)
+                        print(f"Removing file: {file_path}")
+                    except Exception as e:
+                        print(f"Exception occur while trying to erase file: {file_path} error({e}), source file: {source_file}")
+                        continue
+
             for dir_name in dirs:
-                # Construct full file path
                 dir_path = os.path.join(root, dir_name)
 
-                #ignore all git related files
                 if ".git" in dir_path:
                     continue
 
-                # Determine the relative path from the source directory
                 relative_path = os.path.relpath(root, dest_path)
-
                 source_dir = os.path.join(source_path, relative_path)
                 if not os.path.exists(source_dir):
-                    erase_dir = os.path.join(dest_path, relative_path)
-                    FileManager.erase_dir(erase_dir)
+                    FileManager.erase_dir(dir_path)
 
-                #erase empty directories
                 files = os.listdir(dir_path)
                 if len(files) <= 0:
                     FileManager.erase_dir(dir_path)
 
     @staticmethod
-    def detect_python_version(file_path: str, log_signal:SignalInstance):
-        with open(file_path, "r") as file:
-            try:
-                # Parse the file using Python 3's syntax
-                ast.parse(file.read(), filename=file_path)
-                log_signal.emit(f"{file_path} is compatible with Python 3")
-                return 3
-            except SyntaxError as e:
-                log_signal.emit(f"{file_path} raised a SyntaxError: {e}")
+    def detect_python_version_by_features(file_path):
+        python2_keywords = ["print ", "xrange(", "basestring", "unicode"]
+        python3_keywords = ["print(", "range(", "str", "bytes"]
 
-                try:
-                    # Try parsing again using Python 2's syntax by executing a Python 2 subprocess
-                    subprocess.run(["python2", "-m", "py_compile", file_path], check=True)
-                    log_signal.emit(f"{file_path} is compatible with Python 2")
-                    return 2
-                except subprocess.CalledProcessError:
-                    log_signal.emit(f"{file_path} is not compatible with Python 2 or Python 3.")
-                    return None
+        with open(file_path, "r") as file:
+            content = file.read()
+
+            if any(keyword in content for keyword in python2_keywords):
+                return 2
+            elif any(keyword in content for keyword in python3_keywords):
+                return 3
+
+        return None

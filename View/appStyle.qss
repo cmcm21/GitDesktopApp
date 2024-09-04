@@ -286,7 +286,6 @@ QMenu::item:selected{
 }
 
 QSplitter::handle {
-    background-color: #aaaaaa;  /* Light gray color */
-    border: 0.5px solid #666666;  /* Darker gray border */
-    margin: 0.5px;                /* Some margin for visibility */
+    background-color: #000000;  /* Light gray color */
+    border: px solid #111111;  /* Darker gray border */
 }

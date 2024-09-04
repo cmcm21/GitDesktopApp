@@ -1,10 +1,10 @@
 from PySide6.QtWidgets import (
     QLabel,
     QVBoxLayout,
-    QHBoxLayout,
     QWidget,
-    QToolBar,
-    QMessageBox
+    QMessageBox,
+    QHBoxLayout,
+    QToolBar
 )
 from PySide6.QtGui import QAction, QIcon, QPixmap
 from PySide6.QtCore import Signal
@@ -36,7 +36,6 @@ class UserSessionWidget(QWidget):
         self.switch_account = None
         self.admin_action = None
         self.main_layout = QVBoxLayout(self)
-
         self.connect_user_button()
 
     def connect_user_button(self):
