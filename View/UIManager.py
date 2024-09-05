@@ -209,6 +209,8 @@ class UIManager(QObject):
     @Slot(list)
     def on_get_changes_list(self, changes_modified: list, changes: list):
         self.launcher_window.git_tab.on_get_current_changes(changes_modified, changes)
+        if self.launcher_window.publish_window is not None:
+            self.launcher_window.publish_window.get_changes_list(changes, changes_modified)
 
     @Slot()
     def on_anim_rep_publishing(self):

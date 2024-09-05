@@ -73,3 +73,7 @@ class PublishWindow(QMainWindow):
     def _on_cancel_button(self):
         self.cancel_signal.emit()
 
+    def get_changes_list(self, changes:list, modifications: list):
+       if len(changes) <= 0 and len(modifications) <= 0:
+           self.just_change_list_button.hide()
+

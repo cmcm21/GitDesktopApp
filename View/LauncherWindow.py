@@ -39,7 +39,6 @@ class LauncherWindow(BaseWindow):
     window_closed = Signal()
     admin_window_clicked = Signal()
     public_to_anim = Signal
-    check_changes_list = Signal()
     switch_account = Signal(RoleID)
     log_out = Signal()
     open_maya = Signal()
@@ -191,7 +190,6 @@ class LauncherWindow(BaseWindow):
         self.splitter.addWidget(self.logger_widget)
         self.body_right.addWidget(self.splitter)
 
-
     def _build_main_layout(self):
         self.body_layout.addWidget(self.left_frame, 1)
         self.body_layout.addLayout(self.body_right, 6)
@@ -249,6 +247,8 @@ class LauncherWindow(BaseWindow):
         self.publish_window.compile_just_change_list_signal.connect(
             lambda message: self._on_publish_window_accept(message, False))
 
+        # In order to get the changes and disable/enable publish changes button
+        self.git_tab.changes_list_clicked.emit()
         self.publish_window.cancel_signal.connect(self._on_publish_window_cancel)
         self.publish_window.show()
 

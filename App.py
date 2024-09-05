@@ -152,7 +152,7 @@ class Application(QApplication):
             (self.anim_git_controller.error_message, self.ui_manager.on_err_signal_received),
             (self.anim_git_controller.publishing_anim_rep, self.ui_manager.on_anim_rep_publishing),
             (self.anim_git_controller.publishing_anim_rep_completed, self.ui_manager.on_anim_rep_publishing_completed),
-            (self.anim_git_controller.uploading_anim_files , self.ui_manager.on_anim_upload_files_started),
+            (self.anim_git_controller.uploading_anim_files, self.ui_manager.on_anim_upload_files_started),
             (self.anim_git_controller.uploading_anim_files_completed , self.ui_manager.on_anim_upload_files_completed)
         ])
 
@@ -163,6 +163,7 @@ class Application(QApplication):
 
         SignalManager.connect_signals(self.ui_manager, [
             (self.ui_manager.lw_publish_to_anim, self.anim_git_controller.publish_rep),
+            (self.ui_manager.lw_uploaded_clicked, self.anim_git_controller.update)
         ])
 
     def _connect_git_animator_controller(self):

@@ -143,7 +143,7 @@ class AnimatorGitController(GitController):
 
         FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
         FileManager.sync_directories(self.source_path, self.raw_working_path)
-        # self._commit_and_push_everything(message)
+        self._commit_and_push_everything(message)
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
 
@@ -180,6 +180,27 @@ class AnimatorGitController(GitController):
                 self.config_manager.get_config()["general"]["repository_prefix"],"animator")
             self.config_manager.add_value("general","animator_path", self.raw_working_path)
             self.working_path = Path(self.raw_working_path)
+
+    @Slot()
+    def update(self):
+        user_session = UserSession()
+        if user_session.role_id == RoleID.ANIMATOR.value:
+            self.log_message.emit("Animator user is not allowed to upload files either compile .py -> .pyc")
+
+        self.setup()
+        self.uploading_anim_files.emit()
+
+        if self.fresh_new_rep:
+            self.compile_files()
+        else:
+            modifies, changes = self.get_changes_from_default_rep()
+            files, deleted_files = self.extract_just_file_paths(modifies, changes)
+            self.compile_files(files)
+
+        FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
+        FileManager.sync_directories(self.source_path, self.raw_working_path)
+        self.log_message.emit(f"Animation Local repository {self.repository_name} created/updated successfully.")
+        self.uploading_anim_files_completed.emit()
 
     @Slot(str)
     def on_setup_working_path(self, path: str):
