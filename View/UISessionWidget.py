@@ -57,7 +57,7 @@ class UserSessionWidget(QWidget):
     def set_user(self):
         user_session = UserSession()
         if user_session is not None:
-            self.user_label.setText(user_session.username)
+            self.user_label.setText(f"{user_session.username}: ({user_session.role})")
 
     def get_admin_action(self) -> QAction:
         self.admin_action = QAction(QIcon(QPixmap(FileManager.get_img_path("admin.png"))), "Admin", self)
@@ -65,9 +65,9 @@ class UserSessionWidget(QWidget):
         return self.admin_action
 
     def get_switch_account_action(self) -> QAction:
-        self.switch_account = QAction(QIcon(QPixmap(FileManager.get_img_path("switch_account.png"))),
-                                      "Switch User Role", self)
+        self.switch_account = QAction(QIcon(QPixmap(FileManager.get_img_path("switch_account.png"))), "Switch User Role", self)
         switch_to = RoleID.ADMIN_ANIM if self.user_session.role_id == RoleID.ADMIN.value else RoleID.ADMIN
+
         self.switch_account.setStatusTip(f"Switch to {switch_to}")
         self.switch_account.triggered.connect(lambda: self.switch_account_signal.emit(switch_to))
         return self.switch_account

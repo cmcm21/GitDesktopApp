@@ -260,6 +260,8 @@ class MergeRequestTab(QWidget):
             self.comments_list.clear()
             self.commits_list.clear()
 
+        self.check_merge_requests()
+
     def check_merge_request_state(self, merge_request_data: dict):
         user_session = UserSession()
         if user_session is None:
@@ -314,11 +316,23 @@ class MergeRequestTab(QWidget):
             )
 
         self._on_merge_request_changed(self.merge_request_cb.currentIndex())
+        self.check_merge_requests()
+
+    def check_merge_requests(self):
         if self.merge_request_cb.count() == 0:
             self.merge_request_cb.addItem("NO MERGE REQUESTS")
             self.commits_list.addItem("NO COMMITS IN THIS MERGE REQUESTS")
             self.change_list.addItem("NO CHANGES IN THIS MERGE REQUESTS")
             self.comments_list.addItem("NO DISCUSSION IN THIS MERGE REQUEST")
+
+        if self.commits_list.count() == 0:
+            self.commits_list.addItem("NO COMMITS IN THIS MERGE REQUESTS")
+        if self.change_list.count() == 0:
+            self.change_list.addItem("NO CHANGES IN THIS MERGE REQUESTS")
+        if self.comments_list.count() == 0:
+            self.comments_list.addItem("NO DISCUSSION IN THIS MERGE REQUEST")
+
+
 
     def add_commits(self, commits: list):
         self.commits_list.clear()

@@ -272,7 +272,7 @@ class LauncherWindow(BaseWindow):
         self.user_session = user_session
         self.user_session_widget.set_user()
         self.set_user_buttons()
-        self.user_menu.setTitle(self.user_session.username)
+        self.user_menu.setTitle(f"{self.user_session.username} ( {self.user_session.role} )")
 
     def set_user_buttons(self):
         if (self.user_session.role_id == Env.RoleID.ANIMATOR.value or
@@ -336,11 +336,9 @@ class LauncherWindow(BaseWindow):
         message_box.setText("Are you sure to switch roles?")
         message_box.setStandardButtons(QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel)
         message_box.setDefaultButton(QMessageBox.StandardButton.Ok)
-
         reply = message_box.exec()
 
         if reply == QMessageBox.StandardButton.Ok:
-
             # noinspection PyTypeChecker
             SignalManager.disconnect_signal(self.user_session_widget,
                                             self.user_session_widget.switch_account_signal, self.on_switch_account)

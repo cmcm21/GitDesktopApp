@@ -163,7 +163,8 @@ class Application(QApplication):
 
         SignalManager.connect_signals(self.ui_manager, [
             (self.ui_manager.lw_publish_to_anim, self.anim_git_controller.publish_rep),
-            (self.ui_manager.lw_uploaded_clicked, self.anim_git_controller.update)
+            (self.ui_manager.lw_uploaded_clicked, self.anim_git_controller.update),
+            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.setup)
         ])
 
     def _connect_git_animator_controller(self):
@@ -177,10 +178,6 @@ class Application(QApplication):
         SignalManager.connect_signals(self.ui_manager,[
             (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest),
         ])
-
-    def _disconnect_ui_manager_git_anim_controller(self):
-        SignalManager.disconnect_signal(self.ui_manager,
-                                self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest)
 
     def _disconnect_git_controller(self):
         SignalManager.disconnect_signals(self.git_controller, [
@@ -232,7 +229,9 @@ class Application(QApplication):
         ])
 
         SignalManager.disconnect_signals(self.ui_manager, [
-            (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest)
+            (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest),
+            (self.ui_manager.lw_uploaded_clicked, self.anim_git_controller.update),
+            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.setup)
         ])
 
     def on_git_setup_completed(self, success: bool):
@@ -280,7 +279,6 @@ class Application(QApplication):
 
             self._connect_git_animator_controller()
         else:
-            self._disconnect_ui_manager_git_anim_controller()
             self._disconnect_git_animator_controller()
 
             self._connect_git_controller()
