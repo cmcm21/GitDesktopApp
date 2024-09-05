@@ -8,7 +8,6 @@ import requests
 from pathlib import Path
 import os
 
-
 class AnimatorGitController(GitController):
     config_rep_ssh_key = "repository_url_ssh"
     config_rep_http_key = "repository_url"

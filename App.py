@@ -11,7 +11,6 @@ from Utils.Environment import RoleID
 from Utils.SignalManager import SignalManager
 from Controller.AnimatorGitController import AnimatorGitController
 import os
-import tomli
 
 
 class Application(QApplication):
@@ -91,7 +90,8 @@ class Application(QApplication):
             (self.ui_manager.lw_git_history_tab_clicked, self.git_controller.get_repository_history),
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
             (self.ui_manager.lw_log_out, self.git_controller.on_log_out),
-            (self.ui_manager.lw_rep_viewer_rep_updated, self.git_controller.get_repository_changes)
+            (self.ui_manager.lw_rep_viewer_rep_updated, self.git_controller.get_repository_changes),
+            (self.ui_manager.lw_refresh_clicked, self.git_controller.setup)
         ])
 
     def _connect_ui_manager_login(self):
@@ -220,6 +220,7 @@ class Application(QApplication):
             (self.ui_manager.lw_accept_merge_request_and_merge, self.git_controller.merge_request_accept_and_merge),
             (self.ui_manager.lw_git_history_tab_clicked, self.git_controller.get_repository_history),
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
+            (self.ui_manager.lw_refresh_clicked, self.git_controller.setup)
         ])
 
     def _disconnect_git_animator_controller(self):

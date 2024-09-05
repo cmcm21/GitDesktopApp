@@ -11,7 +11,6 @@ from PySide6.QtWidgets import (
     QFrame,
     QMessageBox,
     QPushButton,
-    QSplitter
 )
 from Utils.ConfigFileManager import ConfigFileManager
 from View.BaseWindow import BaseWindow
@@ -40,6 +39,7 @@ class LauncherWindow(BaseWindow):
     admin_window_clicked = Signal()
     public_to_anim = Signal
     switch_account = Signal(RoleID)
+    refresh = Signal()
     log_out = Signal()
     open_maya = Signal()
 
@@ -90,6 +90,10 @@ class LauncherWindow(BaseWindow):
         self.maya_btn = self._create_button("mayaico.png", "MayaButton", "Open Maya")
         self.maya_btn.clicked.connect(lambda: self.open_maya.emit())
 
+        self.refresh_btn = self._create_button("refresh.png", "RefreshButton", "Refresh")
+        self.refresh_btn.clicked.connect(self.refresh_clicked)
+        self.refresh_btn.setIconSize(QSize(32,32))
+
         self.settings_btn = self._create_button("gear.png", "SettingsButton", "Open Settings")
         self.settings_btn.clicked.connect(self.open_settings)
 
@@ -104,6 +108,10 @@ class LauncherWindow(BaseWindow):
         self.left_frame = self._create_frame("MainWindowLeftFrame", max_width=120)
         self.git_tab_frame = self._create_frame("GitTabFrame")
         self.pv4_tab_frame = self._create_frame("Pv4TabFrame")
+
+    def refresh_clicked(self):
+        if self.throw_message_box("Refresh", "Refresh Window"):
+            self.refresh.emit()
 
     def open_settings(self):
         self.settings_window = SettingWindows(WindowID.SETTINGS, self.logger_widget)
@@ -149,6 +157,7 @@ class LauncherWindow(BaseWindow):
         self._set_button_style(self.maya_btn)
         # self._set_button_style(self.new_workspace_btn)
         self._set_button_style(self.settings_btn)
+        self._set_button_style(self.refresh_btn)
         CustomStyleSheetApplier.set_combo_box_style_and_colour(self.combo_box, "White")
         self.user_menu.setFont(QFont("Courier New", 10))
 
@@ -181,8 +190,9 @@ class LauncherWindow(BaseWindow):
         layout.addWidget(self.combo_box, 0, Qt.AlignmentFlag.AlignTop)
         layout.addWidget(separator)
        # layout.addWidget(self.new_workspace_btn, 0, Qt.AlignmentFlag.AlignTop)
-        layout.addWidget(self.maya_btn, 0, Qt.AlignmentFlag.AlignTop)
-        layout.addWidget(self.settings_btn, 5, Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.maya_btn, 5, Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self.refresh_btn, 0, Qt.AlignmentFlag.AlignBottom)
+        layout.addWidget(self.settings_btn, 0, Qt.AlignmentFlag.AlignBottom)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def _build_body_right(self):
@@ -320,7 +330,6 @@ class LauncherWindow(BaseWindow):
 
     @Slot(RoleID)
     def on_switch_account(self, role: RoleID):
-
         message_box = QMessageBox()
         message_box.setWindowTitle("Switch Roles")
         message_box.setIcon(QMessageBox.Icon.Information)

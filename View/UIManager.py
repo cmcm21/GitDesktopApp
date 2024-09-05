@@ -20,6 +20,7 @@ class UIManager(QObject):
     lw_git_history_tab_clicked = Signal()
     lw_git_changes_list_tab_clicked = Signal()
     lw_git_merge_request_tab_clicked = Signal()
+    lw_refresh_clicked = Signal()
 
     lw_publish_to_anim = Signal(str, bool)
     lw_uploaded_clicked = Signal(str)
@@ -104,7 +105,8 @@ class UIManager(QObject):
             (self.launcher_window.open_maya, self.lw_open_maya_clicked.emit),
             (self.launcher_window.window_closed, self.lw_window_closed.emit),
             (self.launcher_window.application_destroyed, self.lw_destroy_application.emit),
-            (self.launcher_window.log_out, self.lw_log_out.emit)
+            (self.launcher_window.log_out, self.lw_log_out.emit),
+            (self.launcher_window.refresh, self.lw_refresh_clicked)
         ])
 
     def _connect_git_tab(self):
