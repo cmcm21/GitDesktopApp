@@ -61,8 +61,7 @@ class GitController(QObject):
             self.log_message.emit(f"The directory '{self.working_path}' already exists.")
             return CreateDir.ALREADY_EXIST
         else:
-            self.log_message.emit(f"Creating directory : {self.working_path} "
-                                                 f"using protocol: {self.__str__()}")
+            self.log_message.emit(f"Creating directory : {self.working_path} " f"using protocol: {self.__str__()}")
             if not self.working_path.exists():
                 self.working_path.mkdir(parents=True)
                 return CreateDir.DIR_CREATED
@@ -138,7 +137,7 @@ class GitController(QObject):
         try:
             # Execute the git branch command and capture the output
             result = subprocess.run(['git', 'branch', '--list', branch_name], stdout=subprocess.PIPE,
-                                    stderr=subprocess.PIPE, text=True)
+                                    stderr=subprocess.PIPE, text=True,creationflags = subprocess.CREATE_NO_WINDOW)
             # If the branch exists, it will appear in the stdout
             return branch_name in result.stdout
         except subprocess.CalledProcessError as e:
@@ -184,7 +183,8 @@ class GitController(QObject):
             command,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            text=True
+            text=True,
+            creationflags=subprocess.CREATE_NO_WINDOW
         )
 
         if result.returncode != 0:
@@ -282,7 +282,8 @@ class GitController(QObject):
 
     def get_current_branch(self):
         FileManager.move_to(self.raw_working_path)
-        result = subprocess.run('git branch --show-current', capture_output=True, text=True)
+        result = subprocess.run('git branch --show-current', capture_output=True, text=True,
+                                creationflags = subprocess.CREATE_NO_WINDOW)
         if result.returncode == 0:
             return result.stdout.strip()
         else:
@@ -403,7 +404,8 @@ class GitController(QObject):
             result = subprocess.run(
                 ['git', 'symbolic-ref', '--short', 'refs/remotes/origin/HEAD'],
                 capture_output=True,
-                text=True
+                text=True,
+                creationflags = subprocess.CREATE_NO_WINDOW
             )
             if result.returncode == 0:
                 # Extract the branch name from the result
@@ -418,7 +420,8 @@ class GitController(QObject):
     def get_all_branches(self):
         try:
             # Run the git branch command to get all branches
-            result = subprocess.run(['git', 'branch', '-a'], capture_output=True, text=True)
+            result = subprocess.run(['git', 'branch', '-a'], capture_output=True, text=True,
+                                    creationflags = subprocess.CREATE_NO_WINDOW)
             if result.returncode == 0:
                 # Extract the branches from the result
                 branches = result.stdout.strip().split('\n')

@@ -32,7 +32,6 @@ Mr_Status = [
     "Cannot Merge"
 ]
 
-
 class MergeRequestTab(QWidget):
     selected_mr_changed = Signal(int)
     add_comment = Signal(str, int)

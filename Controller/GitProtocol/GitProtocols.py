@@ -94,7 +94,13 @@ class GitProtocolSSH(GitProtocolAbstract):
     def check_ssh_installed(self) -> bool:
         try:
             # Attempt to run the ssh command with the version flag
-            result = subprocess.run(['ssh', '-V'], capture_output=True, text=True)
+            result = subprocess.run(
+                ['ssh', '-V'],
+                capture_output=True,
+                text=True,
+                creationflags = subprocess.CREATE_NO_WINDOW
+            )
+
             if result.returncode == 0:
                 self.git_controller.log_message.emit("SSH is installed.")
                 self.git_controller.log_message.emit(result.stdout or result.stderr)  # ssh -V outputs to stderr
@@ -116,7 +122,7 @@ class GitProtocolSSH(GitProtocolAbstract):
             # Install OpenSSH Client
             self.git_controller.log_message.emit("Installing OpenSSH Client...")
             subprocess.run(['powershell', 'Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0'],
-                           check=True)
+                           check=True, creationflags = subprocess.CREATE_NO_WINDOW)
             self.git_controller.log_message.emit("OpenSSH Client installed successfully.")
             return True
         except subprocess.CalledProcessError as e:
@@ -178,14 +184,20 @@ class GitProtocolSSH(GitProtocolAbstract):
             return False
 
     def add_private_key_to_agent(self, private_key_path: str):
-        result = subprocess.run(["ssh-add" , private_key_path])
+        result = subprocess.run(["ssh-add" , private_key_path], creationflags = subprocess.CREATE_NO_WINDOW)
         self.git_controller.log_message.emit(result.stdout)
         if result.stderr:
             self.git_controller.error_message.emit(result.stderr)
 
     def start_ssh_agent(self) -> bool:
         # Start ssh-agent and set environment variables
-        result = subprocess.run(["ssh-agent", "-s"], capture_output=True, text=True)
+        result = subprocess.run(
+            ["ssh-agent", "-s"],
+            capture_output=True,
+            text=True,
+            creationflags = subprocess.CREATE_NO_WINDOW
+        )
+
         if result.returncode == 0:
             # Extract and set environment variables
             for line in result.stdout.splitlines():
@@ -336,7 +348,13 @@ class GitProtocolSSH(GitProtocolAbstract):
         host = "gitlab.com"
         try:
             # Run ssh-keygen to remove the offending key
-            result = subprocess.run(['ssh-keygen', '-R', host], capture_output=True, text=True)
+            result = subprocess.run(
+                ['ssh-keygen', '-R', host],
+                capture_output=True,
+                text=True,
+                creationflags = subprocess.CREATE_NO_WINDOW
+            )
+
             if result.returncode == 0:
                 self.git_controller.log_message.emit(f"Successfully removed host key for {host} from {known_hosts_file}.")
             else:
@@ -356,7 +374,14 @@ class GitProtocolSSH(GitProtocolAbstract):
             self.git_controller.log_message.emit(f"Executing command: {command}")
 
             # Start the subprocess
-            process = subprocess.Popen(command, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+            process = subprocess.Popen(
+                command,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                creationflags = subprocess.CREATE_NO_WINDOW
+            )
 
             # Send input ("yes\n") to the process to accept the host key
             stdout, stderr = process.communicate("yes\n")
@@ -398,6 +423,7 @@ class GitProtocolHTTPS(GitProtocolAbstract):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
+            creationflags=subprocess.CREATE_NO_WINDOW
         )
 
         stdout, stderr = process.communicate()

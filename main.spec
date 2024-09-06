@@ -43,6 +43,7 @@ a = Analysis(
         'View/UIRepViewer.py',
         'View/UISessionWidget.py',
         'View/UISignupWindow.py',
+        'View/PublishWindow.py',
         'View/WindowID.py',
         'View/__init__.py'
     ],

@@ -3,15 +3,18 @@ from PySide6.QtCore import Qt, QMetaObject, Q_ARG
 from PySide6.QtWidgets import QWidget, QTextEdit, QLabel, QVBoxLayout, QPushButton
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from PySide6.QtGui import QFont
+from Utils.FileManager import FileManager
+import os
 
 
 # Create a custom logger
 logger = logging.getLogger("UILogger")
 logger.setLevel(logging.DEBUG)
 
+file_path = os.path.join(FileManager.get_local_path(), "file.log")
 # Create handlers
 c_handler = logging.StreamHandler()
-f_handler = logging.FileHandler('file.log')
+f_handler = logging.FileHandler(file_path)
 c_handler.setLevel(logging.WARNING)
 f_handler.setLevel(logging.DEBUG)
 
@@ -24,7 +27,6 @@ f_handler.setFormatter(f_format)
 # Add handlers to the logger
 logger.addHandler(c_handler)
 logger.addHandler(f_handler)
-
 
 class QTextEditLogger(logging.Handler):
     def __init__(self, text_edit):
