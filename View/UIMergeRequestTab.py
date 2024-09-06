@@ -332,8 +332,6 @@ class MergeRequestTab(QWidget):
         if self.comments_list.count() == 0:
             self.comments_list.addItem("NO DISCUSSION IN THIS MERGE REQUEST")
 
-
-
     def add_commits(self, commits: list):
         self.commits_list.clear()
         for commit in commits:
@@ -383,11 +381,11 @@ class MergeRequestTab(QWidget):
             self,
             "Add Comment",
             "Are you sure to add comment?",
-            QMessageBox.Yes | QMessageBox.No,  #answer options
-            QMessageBox.No
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,  #answer options
+            QMessageBox.StandardButton.No
         )
 
-        if reply == QMessageBox.Yes:
+        if reply == QMessageBox.StandardButton.Yes:
             comment = self.add_username(comment)
             self.add_comment.emit(comment, self._get_merge_request_id())
             self.add_comment_text.clear()
