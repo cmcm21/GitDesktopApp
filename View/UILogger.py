@@ -11,7 +11,7 @@ import os
 logger = logging.getLogger("UILogger")
 logger.setLevel(logging.DEBUG)
 
-file_path = os.path.join(FileManager.get_local_path(), "file.log")
+file_path = os.path.join(FileManager.get_local_path(), "debug.log")
 # Create handlers
 c_handler = logging.StreamHandler()
 f_handler = logging.FileHandler(file_path)
