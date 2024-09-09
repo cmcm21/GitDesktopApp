@@ -69,6 +69,7 @@ class SettingWindows(BaseWindow):
         self.maya_layout.addWidget(self.maya_combo_box)
 
     def build_bat_dir_combo_box(self):
+        self.bat_dir_combo_box.clear()
         onigiri_bat_dirs = FileManager.find_directories("Onigiri", self.raw_working_directory)
         if len(onigiri_bat_dirs) > 0:
             self.onigiri_bat_files = FileManager.find_files("AdminMaya", "bat", onigiri_bat_dirs[0])
@@ -81,7 +82,11 @@ class SettingWindows(BaseWindow):
             for bat_dir in tempura_bat_dirs:
                 self.bat_dir_combo_box.addItem(f"Tempura ({bat_dir})", userData=bat_dir)
 
-        self.on_bat_dir_change(self.bat_dir_combo_box.currentIndex())
+        if self.bat_dir_combo_box.count() > 0:
+            self.on_bat_dir_change(self.bat_dir_combo_box.currentIndex())
+        else:
+            self.bat_dir_combo_box.addItem("Maya bat files not found")
+
         self.bat_dir_combo_box.currentIndexChanged.connect(self.on_bat_dir_change)
 
     def set_store_values(self):

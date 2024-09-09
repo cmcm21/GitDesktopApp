@@ -6,7 +6,8 @@ from PySide6.QtWidgets import (
     QHBoxLayout,
     QSizePolicy,
     QMenu,
-    QMessageBox
+    QMessageBox,
+    QAbstractItemView
 )
 from PySide6.QtCore import QModelIndex, Qt, Signal, QRect, QPoint, QFileSystemWatcher
 from PySide6.QtGui import QFont, QAction
@@ -33,6 +34,25 @@ class CustomFileSystemModel(QFileSystemModel):
 
         return super().data(index, role)
 
+class CustomTreeView(QTreeView):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        # Set default to single selection mode
+        self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        self.setSelectionBehavior(QAbstractItemView.SelectionBehavior.SelectRows)
+
+    def keyPressEvent(self, event):
+        # Enable multi-selection mode when Shift is pressed
+        if event.key() == Qt.Key.Key_Shift:
+            self.setSelectionMode(QAbstractItemView.SelectionMode.MultiSelection)
+        super().keyPressEvent(event)
+
+    def keyReleaseEvent(self, event):
+        # Revert to single selection mode when Shift is released
+        if event.key() == Qt.Key.Key_Shift:
+            self.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
+        super().keyReleaseEvent(event)
+
 class RepositoryViewerWidget(QWidget):
 
     open_file = Signal(str)
@@ -54,7 +74,7 @@ class RepositoryViewerWidget(QWidget):
         self.repository_path = os.path.join(repository_path, "../")
         self.model.setRootPath(self.repository_path)
         # Create a tree view and set the model
-        self.tree = QTreeView()
+        self.tree = CustomTreeView()
 
         self.setup_tree()
         self.setup_watcher()
@@ -86,6 +106,11 @@ class RepositoryViewerWidget(QWidget):
         self.watcher = QFileSystemWatcher()
         self.watcher.addPath(self.raw_repository_path)
 
+        for root, dirs, files in os.walk(self.raw_repository_path):
+            for dir_name in dirs:
+                full_dir = os.path.join(root, dir_name)
+                self.watcher.addPath(full_dir)
+
         self.watcher.directoryChanged.connect(self.on_repo_updated)
         self.watcher.fileChanged.connect(self.on_repo_updated)
 
@@ -93,15 +118,25 @@ class RepositoryViewerWidget(QWidget):
         self.repo_updated.emit()
 
     def open_menu(self, position: QPoint):
-        index = self.tree.indexAt(position)
-        if not index.isValid():
-            return
+        indexes = self.tree.selectedIndexes()
+        files = []
 
-        file_path = self.model.filePath(index)
-        file_name = self.model.fileName(index)
+        if len(indexes) <= 0:
+            indexes.append(self.tree.indexAt(position))
 
-        # create a context menu
         menu = QMenu()
+        print(indexes)
+
+        for index in indexes:
+            if not index.isValid():
+                return
+
+            file_path = self.model.filePath(index)
+            file_name = self.model.fileName(index)
+            files.append(file_path)
+
+        file_path = files[0]
+        # create a context menu
         type_path = "Directory" if os.path.isdir(file_path) else "File"
 
         open_file = QAction(f"Open {type_path}", self)
@@ -112,19 +147,23 @@ class RepositoryViewerWidget(QWidget):
             menu.addAction(open_explorer)
         else:
             menu.addAction(open_file)
-
         menu.addAction(delete_file)
 
-        open_file.triggered.connect(lambda: self.open_file.emit(file_path))
-        open_explorer.triggered.connect(lambda: self.open_explorer.emit(file_path))
-        delete_file.triggered.connect(lambda: self.on_delete_file(file_path))
+        open_file.triggered.connect(lambda: self.on_open_file(files))
+        open_explorer.triggered.connect(lambda: self.open_explorer.emit(files[0]))
+        delete_file.triggered.connect(lambda: self.on_delete_file(files))
 
+        print(files)
         menu.exec(self.tree.viewport().mapToGlobal(position))
 
-    def on_delete_file(self, file_path):
-        if (BaseWindow.throw_message_box(
-                f"Delete file", f"Are you sure to Delete: {file_path}", QMessageBox.Icon.Warning)):
-            self.delete_file.emit(file_path)
+    def on_open_file(self, files):
+        for file in files:
+            self.open_file.emit(file)
+
+    def on_delete_file(self, files):
+        if BaseWindow.throw_message_box(f"Delete file", f"Are you sure to Delete file(s): {len(files)} file(s)", QMessageBox.Icon.Warning):
+            for file in files:
+                self.delete_file.emit(file)
 
     def on_tree_view_clicked(self, index: QModelIndex):
         # Get the file path from the model

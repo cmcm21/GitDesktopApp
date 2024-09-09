@@ -7,8 +7,8 @@ from Utils.ConfigFileManager import ConfigFileManager
 from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
 import subprocess
 import requests
-import asyncio
 import os
+import asyncio
 
 
 class GitController(QObject):
@@ -101,7 +101,7 @@ class GitController(QObject):
             self.error_message.emit(f"An error occurred executing command: {command_str}, error: {e.stderr}")
             raise subprocess.CalledProcessError(e.returncode, e.stderr)
 
-    def _run_git_command_get_output(self, command) -> str:
+    def _run_git_command_get_output(self, command: str) -> str:
         FileManager.move_to(self.raw_working_path)
         try:
             result = subprocess.run(
@@ -132,7 +132,7 @@ class GitController(QObject):
 
         self.load_merge_requests()
 
-    def check_branch_exists(self, branch_name) -> bool:
+    def check_branch_exists(self, branch_name: str) -> bool:
         FileManager.move_to(self.raw_working_path)
         try:
             # Execute the git branch command and capture the output
@@ -144,7 +144,7 @@ class GitController(QObject):
             self.error_message.emit(f"An error occurred: {e}")
             return False
 
-    def create_local_branch(self, branch_name, source_branch):
+    def create_local_branch(self, branch_name: str, source_branch: str):
         # Fetch latest changes from remote
         if not self.run_command(['git', 'fetch', 'origin']):
             print("git fetch error")
@@ -192,13 +192,13 @@ class GitController(QObject):
             return "main"
         return result.stdout.strip()
 
-    def branch_exists(self, branch_name):
+    def branch_exists(self, branch_name: str):
         url = f"{self.git_api_url}/projects/{self.project_id}/repository/branches/{branch_name}"
         headers = {'PRIVATE-TOKEN': self.personal_access_token}
         response = requests.get(url, headers=headers)
         return response.status_code == 200
 
-    def merge_request_exists(self, branch_name):
+    def merge_request_exists(self, branch_name: str):
         url = f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
         headers = {'PRIVATE-TOKEN': self.personal_access_token}
         params = {'source_branch': branch_name, 'state': 'opened'}
@@ -211,7 +211,7 @@ class GitController(QObject):
                                     f"code: {response.status_code}")
         return False
 
-    def create_branch(self, branch_name, source_branch):
+    def create_branch(self, branch_name: str, source_branch: str):
         url = f"{self.git_api_url}/projects/{self.project_id}/repository/branches"
         headers = {'PRIVATE-TOKEN': self.personal_access_token}
         data = {'branch': branch_name, 'ref': source_branch}
@@ -576,3 +576,13 @@ class GitController(QObject):
     @Slot()
     def on_log_out(self):
         self.attends = 0
+
+    @Slot()
+    def on_refresh(self):
+        modifications, changes = self.get_repository_changes()
+        if len(modifications) > 0 or len(changes) > 0:
+            self.setup()
+        else:
+            self.setup()
+            self.get_latest()
+

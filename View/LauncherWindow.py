@@ -110,7 +110,7 @@ class LauncherWindow(BaseWindow):
         self.pv4_tab_frame = self._create_frame("Pv4TabFrame")
 
     def refresh_clicked(self):
-        if self.throw_message_box("Refresh", "Refresh Window"):
+        if self.throw_message_box("Reload", "Are you sure to Reload window?"):
             self.refresh.emit()
 
     def open_settings(self):

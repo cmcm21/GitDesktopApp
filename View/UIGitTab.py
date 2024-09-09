@@ -78,9 +78,9 @@ class GitSnifferWidget(QWidget):
         self.changes_list.setSpacing(2)
         self.changes_list.setObjectName(object_name)
 
-        self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png", "Upload Git")
+        self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png", "Commit and Push")
         self.upload_btn.clicked.connect(lambda: self.upload_to_git_clicked.emit())
-        self.upload_btn.setFixedSize(QSize(120, 35))
+        self.upload_btn.setFixedSize(QSize(200, 35))
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.upload_btn, "Blue")
 
         changes_list_layout.addWidget(self.changes_list)
@@ -157,7 +157,7 @@ class UIGitTab(QWidget):
         """ Toolbar build """
         self.header = QHBoxLayout()
         self.download_btn: QPushButton = BaseWindow.create_button(self, "arrowDown.png", "Get Latest")
-        self.publish_btn: QPushButton = BaseWindow.create_button(self, "publish.png", "Publish Anim")
+        self.publish_btn: QPushButton = BaseWindow.create_button(self, "publish.png", "Publish to Animators")
         """ Layouts """
         self.main_layout = QVBoxLayout()
         self.body_layout = QHBoxLayout()
@@ -177,7 +177,7 @@ class UIGitTab(QWidget):
     def build(self):
         """Buttons"""
         self.download_btn.setFixedSize(QSize(120, 35))
-        self.publish_btn.setFixedSize(QSize(120, 35))
+        self.publish_btn.setFixedSize(QSize(200, 35))
         """ Header Layout """
         self.repository_viewer.buttons_layout.addWidget(self.download_btn, 0, Qt.AlignmentFlag.AlignLeft)
         self.repository_viewer.buttons_layout.addWidget(self.publish_btn, 0, Qt.AlignmentFlag.AlignLeft)

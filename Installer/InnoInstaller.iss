@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Puppet Launcher"
-#define MyAppVersion "0.0.1.5"
+#define MyAppVersion "0.1.2"
 #define MyAppPublisher "Soleil"
 #define MyAppExeName "Puppet Launcher.exe"
 #define MyAppAssocName MyAppName + " File"
@@ -13,7 +13,7 @@
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{6C05222A-DDAB-4C5C-844D-F9F07627A976}{#MyAppVersion}
-AppName={#MyAppName}
+AppName={#MyAppName}{#MyAppVersion}
 AppVersion={#MyAppVersion}
 ;AppVerName={#MyAppName} {#MyAppVersion}
 AppPublisher={#MyAppPublisher}

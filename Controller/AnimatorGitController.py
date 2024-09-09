@@ -6,7 +6,9 @@ from Controller.GitController import GitController
 from Utils.ConfigFileManager import ConfigFileManager
 import requests
 from pathlib import Path
+from typing import Callable
 import os
+import time
 
 class AnimatorGitController(GitController):
     config_rep_ssh_key = "repository_url_ssh"
@@ -82,25 +84,27 @@ class AnimatorGitController(GitController):
         self.config_manager.add_value(self.config_section, self.config_rep_ssh_key, self.repository_url_ssh)
         self.config_manager.add_value(self.config_section, self.config_rep_http_key, self.repository_url_https)
 
-    def compile_files(self, files=None):
+    def compile_files(self, files=None) -> Callable[[], None]:
         user_session = UserSession()
         if user_session.role_id == RoleID.ANIMATOR.value or user_session.role == RoleID.ADMIN_ANIM.value:
-            return
+            return lambda: print("NO allowed to Compile files")
 
         # compile the files of the origin repository
         self.log_message.emit(f"Compiling python files... in {self.source_path}")
-
         if files is not None:
             FileManager.compile_python_files(self.source_path, files, self.log_message)
+            # Timer to wait that all files compiled Finished
+            time.sleep(2)
+
             modifies, changes = self.get_changes_from_default_rep()
             files, deleted_files = self.extract_just_file_paths(modifies, changes)
             FileManager.move_files(files, self.source_path,'.py', self.raw_working_path, self.log_message)
             FileManager.remove_files(deleted_files, self.raw_working_path, self.log_message)
         else:
             FileManager.compile_python_files_from_source(self.source_path, self.log_message)
-            FileManager.move_all_files_except_extension(
-                self.source_path, self.raw_working_path, '.py', self.log_message)
-        # move files to the anim working path
+            # Timer to wait that all files compiled Finished
+            time.sleep(2)
+            FileManager.move_all_files_except_extension(self.source_path, self.raw_working_path, '.py', self.log_message)
 
     def get_commit_count(self):
         headers = {"Private-Token": self.personal_access_token}
@@ -130,9 +134,7 @@ class AnimatorGitController(GitController):
         if user_session.role_id == RoleID.ANIMATOR.value:
             self.log_message.emit("Animator user is not allowed to upload files either compile .py -> .pyc")
 
-        self.setup()
         self.uploading_anim_files.emit()
-
         if self.fresh_new_rep or compile_all:
             self.compile_files()
         else:
@@ -142,6 +144,7 @@ class AnimatorGitController(GitController):
 
         FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
         FileManager.sync_directories(self.source_path, self.raw_working_path)
+
         self._commit_and_push_everything(message)
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
@@ -179,27 +182,6 @@ class AnimatorGitController(GitController):
                 self.config_manager.get_config()["general"]["repository_prefix"],"animator")
             self.config_manager.add_value("general","animator_path", self.raw_working_path)
             self.working_path = Path(self.raw_working_path)
-
-    @Slot()
-    def update(self):
-        user_session = UserSession()
-        if user_session.role_id == RoleID.ANIMATOR.value:
-            self.log_message.emit("Animator user is not allowed to upload files either compile .py -> .pyc")
-
-        self.setup()
-        self.uploading_anim_files.emit()
-
-        if self.fresh_new_rep:
-            self.compile_files()
-        else:
-            modifies, changes = self.get_changes_from_default_rep()
-            files, deleted_files = self.extract_just_file_paths(modifies, changes)
-            self.compile_files(files)
-
-        FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
-        FileManager.sync_directories(self.source_path, self.raw_working_path)
-        self.log_message.emit(f"Animation Local repository {self.repository_name} created/updated successfully.")
-        self.uploading_anim_files_completed.emit()
 
     @Slot(str)
     def on_setup_working_path(self, path: str):

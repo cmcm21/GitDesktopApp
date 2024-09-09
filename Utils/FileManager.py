@@ -97,21 +97,27 @@ class FileManager:
         return len(os.listdir(path))
 
     @staticmethod
-    def compile_python_files_from_source(source_path: str, log_signal: SignalInstance):
-        # WARNING: if you don't move to the working path before continue all the project files will be deleted
-        FileManager.move_to(source_path)
-        files = os.listdir(source_path)
-        # Create sys.stdout to the StringIO object
+    def compile_python_files_from_source(source_path: str, log_signal:SignalInstance):
         output = io.StringIO()
-
         # Redirect sys.stdout to the StringIO object
         old_stdout = sys.stdout
         sys.stdout = output
+
+        FileManager.move_to(source_path)
         try:
-            for file in files:
-                if os.path.isdir(file):
-                    compileall.compile_dir(file, maxlevels=5, force=True)
-            compileall.compile_dir(source_path, maxlevels=5)
+            for dir_path, dir_names, files in os.walk(source_path):
+                for file in files:
+                    file = fr"{file.strip()}"
+                    file_path = fr"{os.path.join(dir_path, file)}".strip()
+
+                    if file.endswith(".py"):
+                        python_version = FileManager.detect_python_version_by_features(file_path)
+                        if python_version == 2:
+                            FileManager.compile_python2_file(file_path, log_signal)
+                        else:
+                            compileall.compile_file(file_path, force=True)
+
+                        log_signal.emit(f"Compiling file {file}...")
         finally:
             # Reset sys.stdout to its original state
             sys.stdout = old_stdout
@@ -129,15 +135,19 @@ class FileManager:
         # Redirect sys.stdout to the StringIO object
         old_stdout = sys.stdout
         sys.stdout = output
+
         try:
             for file in files:
-                file_path = os.path.join(source_path, file)
-                if os.path.isdir(file):
+                file_path = fr"{os.path.join(source_path, file)}".strip()
+                if not os.path.exists(file_path):
+                    continue
+
+                if os.path.isdir(file_path):
                     files = os.listdir(file_path)
                     log_signal.emit(f"Compiling dir {file}...")
                     FileManager.compile_python_files(source_path, files, log_signal)
 
-                elif file.endswith(".py"):
+                elif file_path.endswith(".py"):
                     python_version = FileManager.detect_python_version_by_features(file_path)
                     if python_version == 2:
                         FileManager.compile_python2_file(file_path, log_signal)
@@ -145,6 +155,7 @@ class FileManager:
                         compileall.compile_file(file_path, force=True)
 
                     log_signal.emit(f"Compiling file {file}...")
+
         finally:
             # Reset sys.stdout to its original state
             sys.stdout = old_stdout
@@ -189,9 +200,11 @@ class FileManager:
         matches = []
         for root, dirs, files in os.walk(directory):
             for file in files:
+                if ".git" in root:
+                    continue
+
                 if file.endswith(extension):
-                    full_path = os.path.join(root, fr"{file}")
-                    matches.append(full_path)
+                    matches.append(file)
 
         return matches
 
@@ -232,7 +245,7 @@ class FileManager:
                         log_signal.emit(f"Copied: {file_path} -> {os.path.join(destination_dir, file)}")
 
     @staticmethod
-    def move_files(files: list, src_dir: str, ignore: str, dst_dir:str, log_signal: SignalInstance):
+    def move_files(files: list, src_dir: str, ignore: str, dst_dir:str, log_signal: SignalInstance, attends=0):
         # Ensure the extension starts with a dot
         if not ignore.startswith('.'):
             ignore = '.' + ignore
@@ -240,7 +253,7 @@ class FileManager:
         os.makedirs(dst_dir, exist_ok=True, mode=0o777)
 
         for file in files:
-            file = file.strip('""')
+            file = file.strip()
             if not file.endswith(ignore):
 
                 source_path = os.path.join(src_dir, file)
@@ -256,13 +269,17 @@ class FileManager:
                             if not os.access(src_dir, os.W_OK):
                                 os.chmod(src_dir, stat.S_IWRITE)
 
-                            shutil.move(source_path, destination_dir)
+                            shutil.move(fr"{source_path.strip()}", fr"{destination_dir.strip()}")
                             log_signal.emit(f"Moved: {source_path} -> {destination_dir}")
                         else:
-                            shutil.copy(source_path, destination_dir)
-                            log_signal.emit(f"Copied: {source_path} -> {destination_dir}")
+                            shutil.copy(fr"{source_path.strip()}", fr"{destination_dir.strip()}")
+                            log_signal.emit(f"Copied: {source_path.strip()} -> {destination_dir.strip()}")
+
                     except Exception as e :
                         log_signal.emit(f"Error Moving file from {source_path} -> to {destination_dir}, exception: {e}")
+                        if attends <= 2:
+                            attends += 1
+                            FileManager.move_files(files, src_dir, ignore, dst_dir, log_signal, attends)
 
     @staticmethod
     def remove_files(files: list, dest_dir: str, log_signal):

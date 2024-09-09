@@ -91,7 +91,7 @@ class Application(QApplication):
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
             (self.ui_manager.lw_log_out, self.git_controller.on_log_out),
             (self.ui_manager.lw_rep_viewer_rep_updated, self.git_controller.get_repository_changes),
-            (self.ui_manager.lw_refresh_clicked, self.git_controller.setup)
+            (self.ui_manager.lw_refresh_clicked, self.git_controller.on_refresh)
         ])
 
     def _connect_ui_manager_login(self):
@@ -163,8 +163,7 @@ class Application(QApplication):
 
         SignalManager.connect_signals(self.ui_manager, [
             (self.ui_manager.lw_publish_to_anim, self.anim_git_controller.publish_rep),
-            (self.ui_manager.lw_uploaded_clicked, self.anim_git_controller.update),
-            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.setup)
+            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.on_refresh)
         ])
 
     def _connect_git_animator_controller(self):
@@ -217,7 +216,7 @@ class Application(QApplication):
             (self.ui_manager.lw_accept_merge_request_and_merge, self.git_controller.merge_request_accept_and_merge),
             (self.ui_manager.lw_git_history_tab_clicked, self.git_controller.get_repository_history),
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
-            (self.ui_manager.lw_refresh_clicked, self.git_controller.setup)
+            (self.ui_manager.lw_refresh_clicked, self.git_controller.on_refresh)
         ])
 
     def _disconnect_git_animator_controller(self):
@@ -230,8 +229,7 @@ class Application(QApplication):
 
         SignalManager.disconnect_signals(self.ui_manager, [
             (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest),
-            (self.ui_manager.lw_uploaded_clicked, self.anim_git_controller.update),
-            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.setup)
+            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.on_refresh)
         ])
 
     def on_git_setup_completed(self, success: bool):
