@@ -155,7 +155,6 @@ class FileManager:
                         compileall.compile_file(file_path, force=True)
 
                     log_signal.emit(f"Compiling file {file}...")
-
         finally:
             # Reset sys.stdout to its original state
             sys.stdout = old_stdout
@@ -332,21 +331,34 @@ class FileManager:
     def sync_directories(source_path: str, dest_path: str):
         for root, dirs, files in os.walk(dest_path):
             for file in files:
-                file_path = os.path.join(root, file)
+                file_path = fr"{os.path.join(root, file)}".strip()
 
                 #ignore all .git related files
-                if ".git" in file_path or file.endswith(".pyc"):
+                if ".git" in file_path:
                     continue
 
                 relative_path = os.path.relpath(root, dest_path)
                 source_file = os.path.join(source_path, relative_path)
-                to_remove_file = os.path.join(source_file,file)
+
+                if file_path.endswith(".pyc"):
+                    separated_by_name = file_path.split(".")
+                    file_name = separated_by_name[0]
+                    file_name_separated = file_name.split("\\")
+                    if "__pycache__" in file_name_separated:
+                        file_name_separated.remove("__pycache__")
+                    file_name = "\\".join(file_name_separated) + ".py"
+
+                    to_remove_file = file_name.replace(r"/animator",r"/default")
+                else:
+                    to_remove_file = os.path.join(source_file,file)
+
                 if not os.path.exists(to_remove_file):
                     try:
                         os.remove(file_path)
                         print(f"Removing file: {file_path}")
                     except Exception as e:
-                        print(f"Exception occur while trying to erase file: {file_path} error({e}), source file: {source_file}")
+                        print(f"Exception occur while trying to erase file: {file_path} error({e}),"
+                              f" source file: {source_file}")
                         continue
 
             for dir_name in dirs:

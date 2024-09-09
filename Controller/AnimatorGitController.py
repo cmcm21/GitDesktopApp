@@ -145,7 +145,7 @@ class AnimatorGitController(GitController):
         FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
         FileManager.sync_directories(self.source_path, self.raw_working_path)
 
-        self._commit_and_push_everything(message)
+        # self._commit_and_push_everything(message)
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
 

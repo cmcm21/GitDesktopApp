@@ -118,27 +118,14 @@ class RepositoryViewerWidget(QWidget):
         self.repo_updated.emit()
 
     def open_menu(self, position: QPoint):
-        indexes = self.tree.selectedIndexes()
-        files = []
-
-        if len(indexes) <= 0:
-            indexes.append(self.tree.indexAt(position))
-
+        index = self.tree.indexAt(position)
         menu = QMenu()
-        print(indexes)
 
-        for index in indexes:
-            if not index.isValid():
-                return
+        file_path = self.model.filePath(index)
+        file_name = self.model.fileName(index)
 
-            file_path = self.model.filePath(index)
-            file_name = self.model.fileName(index)
-            files.append(file_path)
-
-        file_path = files[0]
         # create a context menu
         type_path = "Directory" if os.path.isdir(file_path) else "File"
-
         open_file = QAction(f"Open {type_path}", self)
         open_explorer = QAction("Open In Explorer", self)
         delete_file =  QAction(f"Delete {type_path}", self)
@@ -149,26 +136,44 @@ class RepositoryViewerWidget(QWidget):
             menu.addAction(open_file)
         menu.addAction(delete_file)
 
-        open_file.triggered.connect(lambda: self.on_open_file(files))
-        open_explorer.triggered.connect(lambda: self.open_explorer.emit(files[0]))
-        delete_file.triggered.connect(lambda: self.on_delete_file(files))
+        open_file.triggered.connect(lambda: self.on_open_file(file_path))
+        open_explorer.triggered.connect(lambda: self.open_explorer.emit(file_path))
+        delete_file.triggered.connect(lambda: self.on_delete_file(file_path))
 
-        print(files)
         menu.exec(self.tree.viewport().mapToGlobal(position))
 
-    def on_open_file(self, files):
-        for file in files:
+    def on_open_file(self, file):
+        selected_files = self.get_selected_files()
+        if len(selected_files) > 0:
+            for file in selected_files:
+                self.open_file.emit(file)
+        else:
             self.open_file.emit(file)
 
-    def on_delete_file(self, files):
-        if BaseWindow.throw_message_box(f"Delete file", f"Are you sure to Delete file(s): {len(files)} file(s)", QMessageBox.Icon.Warning):
-            for file in files:
+    def on_delete_file(self, file):
+        selected_files = self.get_selected_files()
+        box_message = \
+            f"Are you sure to Delete file(s) : {len(selected_files)}" \
+                if len(selected_files) > 0 else f"Are you sure to Delete file: {file}"
+
+        if BaseWindow.throw_message_box(f"Delete file", box_message, QMessageBox.Icon.Warning):
+            for file in selected_files:
                 self.delete_file.emit(file)
 
     def on_tree_view_clicked(self, index: QModelIndex):
         # Get the file path from the model
         file_path = self.model.filePath(index)
         self.open_file.emit(file_path)
+
+    def get_selected_files(self) -> list:
+        files = []
+        indexes = self.tree.selectedIndexes()
+        for index in indexes:
+            file_path = self.model.filePath(index)
+            if not file_path in files:
+                files.append(file_path)
+
+        return files
 
     def set_root_directory(self):
         self.model.setRootPath(self.repository_path)
