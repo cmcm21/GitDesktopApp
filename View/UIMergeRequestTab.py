@@ -235,7 +235,7 @@ class MergeRequestTab(QWidget):
         self.refresh_btn.clicked.connect(self._refresh)
         self.merge_request_cb.currentIndexChanged.connect(self._on_merge_request_changed)
         self.commits_list.currentItemChanged.connect(self._on_commit_clicked)
-        self.change_list.itemClicked.connect(self._on_change_file_clicked)
+        self.change_list.doubleClicked.connect(self._on_change_file_clicked)
         self.accept_btn.clicked.connect(self._on_accept_clicked)
 
     def _refresh(self):

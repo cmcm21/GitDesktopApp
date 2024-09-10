@@ -15,8 +15,15 @@ class GitController(QObject):
     """Signals"""
     setup_started = Signal()
     setup_completed = Signal(bool)
+    push_started = Signal()
     push_completed = Signal()
+    get_latest_started = Signal()
     get_latest_completed = Signal()
+    accept_merge_started = Signal()
+    accept_merge_completed = Signal()
+    branching_started = Signal()
+    branching_completed = Signal()
+
     log_message = Signal(str)
     error_message = Signal(str)
     send_main_branch = Signal(str)
@@ -74,6 +81,7 @@ class GitController(QObject):
         FileManager.move_to(self.raw_working_path)
         command_str = " ".join(command)
 
+        self.log_message.emit(f"Running command: {command_str}...")
         try:
             process = subprocess.Popen(
                 command,
@@ -96,7 +104,7 @@ class GitController(QObject):
                     self.error_message.emit(f"An error occurred executing command: {command_str}, {stderr}")
                     return False
                 else:
-                    self.log_message.emit(f"{stderr}")
+                    self.log_message.emit(f"error occurred executing command {command_str}: error{stderr}")
                     return True
 
         except subprocess.CalledProcessError as e:
@@ -105,6 +113,7 @@ class GitController(QObject):
 
     def _run_git_command_get_output(self, command: list) -> str:
         FileManager.move_to(self.raw_working_path)
+        self.log_message.emit(f"Running command: {" ".join(command)}...")
         try:
             result = subprocess.run(
                 command,
@@ -115,7 +124,7 @@ class GitController(QObject):
             )
             return result.stdout
         except subprocess.CalledProcessError as e:
-            self.error_message.emit(f"Git command failed: {e}")
+            self.error_message.emit(f"Git command ({command}) failed: {e}")
             return ""
 
     def arrange_dev_push(self, comment: str):
@@ -225,6 +234,7 @@ class GitController(QObject):
             return False
 
     def create_merge_request(self, branch_name) -> int:
+        self.log_message.emit(f"Creating Merge request...")
         url = f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
         headers = {'PRIVATE-TOKEN': self.personal_access_token}
         data = {
@@ -240,6 +250,7 @@ class GitController(QObject):
             print(response.json())
             if merge_request_id is not None:
                 return merge_request_id
+            self.log_message.emit(f"Merge request created successfully!!")
         else:
             self.error_message.emit(f"error trying to create merge request url: {url}, code: {response.status_code}")
             return -1
@@ -248,22 +259,47 @@ class GitController(QObject):
         self.user_session = UserSession()
         return f"branch_{self.user_session.username}"
 
-    def _commit_and_push_everything(self, comment: str, branch = ""):
-        # Add all changes to the staging area
-        self.run_command(['git', 'add', '.', '-f'])
+    def add_all(self):
+        self.log_message.emit(f"Adding all changes to git...")
+        try:
+            self.run_command(['git', 'add', '.', '-f'])
+            self.log_message.emit(f"All changes added successfully")
+        except Exception as e:
+            self.log_message.emit(f"An exception occur running add command: {e}")
 
-        # Commit changes with a specified message
-        self.run_command(['git', 'commit', '-m', comment])
+    def commit(self, comment:str):
+        self.log_message.emit(f"Commit all changes...")
+        try:
+            self.run_command(['git', 'commit', '-m', comment])
+            self.log_message.emit(f"All changes Commited successfully")
+        except Exception as e:
+            self.log_message.emit(f"An exception occur running commit command: {e}")
 
-        # Ensure that the remote origin is correct
+
+    def push(self, branch=""):
+        self.log_message.emit(f"Setting remote url : {self.git_protocol.repository_url}")
         self.run_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
 
-        # Push changes to the remote repository
         if branch == "":
-            self.run_command(['git', 'push', '--force'])
+            self.log_message.emit(f"Pushing changes to main branch")
+            try:
+                self.run_command(['git', 'push', '--force'])
+                self.log_message.emit(f"Pushing changes successfully!!!")
+            except Exception as e:
+                self.log_message.emit(f"Pushing command failed error: {e}")
         else:
-            self.run_command(['git', 'push', '-u', 'origin', branch])
+            self.log_message.emit(f"Pushing changes to branch: {branch}")
+            try:
+                self.run_command(['git', 'push', '-u', 'origin', branch])
+                self.log_message.emit(f"Pushing from origin to branch Successfully!!")
+            except Exception as e:
+                self.log_message.emit(f"Pushing changes to branch ({branch} failed, error: {e})")
 
+    def _commit_and_push_everything(self, comment: str, branch = ""):
+        self.add_all()
+        self.commit(comment)
+        self.get_latest()
+        self.push(branch)
         # Check the status of the repository
         self.run_command(['git', 'status'])
 
@@ -284,8 +320,9 @@ class GitController(QObject):
 
     def get_current_branch(self):
         FileManager.move_to(self.raw_working_path)
-        result = subprocess.run('git branch --show-current', capture_output=True, text=True,
-                                creationflags = subprocess.CREATE_NO_WINDOW)
+        result = subprocess.run('git branch --show-current',
+                                capture_output=True, text=True,
+                                creationflags = subprocess.CREATE_NO_WINDOW )
         if result.returncode == 0:
             return result.stdout.strip()
         else:
@@ -333,9 +370,9 @@ class GitController(QObject):
 
     @Slot()
     def setup(self):
+        self.setup_started.emit()
         self.check_working_path()
 
-        self.setup_started.emit()
         no_errors = True
         try:
             if not self.git_protocol.setup():
@@ -352,14 +389,10 @@ class GitController(QObject):
             os.chdir(self.working_path)
             self.check_and_add_origin(self.git_protocol.repository_url)
             # Set or update the remote URL (if needed)
-            set_remote_command = f'git remote set-url origin {self.git_protocol.repository_url}'
-            self.log_message.emit(f"Running command: {set_remote_command}")
             self.run_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
             # Verify remote repository
             self.run_command(['git', 'ls-remote', '--get-url', 'origin'])
             # Fetch updates from the remote repository
-            fetch_command = 'git fetch origin'
-            self.log_message.emit(f"Running command: {fetch_command}")
             self.run_command(['git', 'fetch', 'origin'])
             # Send setup signal
             self.log_message.emit(f" Setup Completed ")
@@ -374,6 +407,7 @@ class GitController(QObject):
 
     @Slot(str)
     def push_changes(self, message: str):
+        self.push_started.emit()
         self.check_user_session()
         self.log_message.emit("pushing changes...")
         if self.user_session.role_id == RoleID.DEV.value:
@@ -381,7 +415,7 @@ class GitController(QObject):
         else:
             self._commit_and_push_everything(message)
 
-        self.get_repository_changes()
+        self.get_latest()
         self.push_completed.emit()
 
     @Slot()
@@ -480,12 +514,13 @@ class GitController(QObject):
         response = requests.post(url, headers=headers, data=data)
         if response.status_code == 201:
             self.get_merge_requests_comments(merge_request_id)
-            self.log_message.emit("Comment , alignment=Qt.AlignmentFlag.AlignCenterupload correctly")
+            self.log_message.emit("Comment upload correctly")
         else:
             self.error_message.emit(f"Failed to add comment to : {url}")
 
     @Slot()
     def merge_request_accept_and_merge(self, merge_request_id: int, commit_message: str):
+        self.accept_merge_started.emit()
         url = f"{self._get_merge_request_url()}/{merge_request_id}/merge"
         payload = {
             "merge_commit_message": commit_message,
@@ -502,11 +537,15 @@ class GitController(QObject):
         if response.status_code == 200:
             self.log_message.emit("Merge request accepted and merged successfully")
             self.load_merge_requests()
+            self.get_latest()
         else:
             self.error_message.emit(f"Failed to accept and merge MR: {response.status_code}, url: {url}")
 
+        self.accept_merge_completed.emit()
+
     @Slot()
     def verify_user_branch(self):
+        self.branching_started.emit()
         self.check_user_session()
         current_branch = self.get_current_branch()
         if self.user_session.role_id == RoleID.DEV.value:
@@ -515,6 +554,7 @@ class GitController(QObject):
         else:
             if current_branch != self._get_main_branch_name():
                 self.run_command(['git', 'checkout', self._get_main_branch_name()])
+        self.branching_completed.emit()
 
     @Slot()
     def get_repository_history(self):
@@ -550,6 +590,7 @@ class GitController(QObject):
 
     @Slot()
     def get_latest(self):
+        self.get_latest_started.emit()
         # restore all the modified files before get latest
         self.restore_git_repository()
 

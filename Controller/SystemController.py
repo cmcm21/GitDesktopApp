@@ -232,6 +232,8 @@ class SystemController(QObject):
             # Determine the path for python2.bat
             local_path = FileManager.get_local_path()
             batch_file_path = os.path.join(local_path, "Resources\\ExternalScripts\\python2.bat")
+            if os.path.exists(batch_file_path):
+                return
 
             # Create the batch file to invoke Python 2
             with open(batch_file_path, "w") as f:
@@ -261,8 +263,8 @@ class SystemController(QObject):
             self.install_git()
         if not self.is_python2_installed():
             self.install_python2_on_windows()
-            self.create_python2_alias()
 
+        self.create_python2_alias()
         self.setup_finished.emit()
 
     @Slot()

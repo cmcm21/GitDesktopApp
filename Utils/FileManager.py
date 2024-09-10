@@ -1,6 +1,6 @@
 import io
-import os
 import sys
+import os
 import stat
 import fnmatch
 from PySide6.QtCore import SignalInstance, QObject, Signal

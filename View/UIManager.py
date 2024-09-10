@@ -50,7 +50,6 @@ class UIManager(QObject):
         }
         self._connect_launcher_windows()
         self._connect_login_window()
-        self._connect_launcher_windows_to_loading_screen()
 
     def open_window(self, window_id: WindowID):
         if window_id not in self.windows:
@@ -123,13 +122,6 @@ class UIManager(QObject):
     def _connect_login_window(self):
         self.login_window.login_signal.connect(lambda username: self.lg_login_accepted.emit(username))
 
-    def _connect_launcher_windows_to_loading_screen(self):
-        self.lw_get_merge_request_changed.connect(lambda: self.launcher_window.loading.show_anim_screen())
-        self.lw_merge_request_add_comment.connect(lambda: self.launcher_window.loading.show_anim_screen())
-        self.lw_accept_merge_request_and_merge.connect(lambda: self.launcher_window.loading.show_anim_screen())
-        self.lw_uploaded_clicked.connect(lambda: self.launcher_window.loading.show_anim_screen())
-        self.lw_get_latest_clicked.connect(lambda: self.launcher_window.loading.show_anim_screen())
-
     @Slot()
     def on_git_setup_started(self):
         self.launcher_window.loading.show_anim_screen()
@@ -184,26 +176,6 @@ class UIManager(QObject):
         self.launcher_window.git_tab.set_merge_requests_comments(comments)
         self.launcher_window.loading.stop_anim_screen()
 
-    @Slot()
-    def on_get_latest_completed(self):
-        self.launcher_window.loading.stop_anim_screen()
-
-    @Slot()
-    def on_upload_completed(self):
-        self.launcher_window.loading.stop_anim_screen()
-
-    @Slot()
-    def on_system_controller_setup_started(self):
-        self.launcher_window.loading.show_anim_screen()
-
-    @Slot()
-    def on_db_setup_done(self):
-        self.login_window.loading.stop_anim_screen()
-
-    @Slot()
-    def on_db_setup_start(self):
-        self.login_window.loading.show_anim_screen()
-
     @Slot(list)
     def on_get_repository_history(self, commits: list):
         self.launcher_window.git_tab.on_get_repository_history(commits)
@@ -215,24 +187,8 @@ class UIManager(QObject):
             self.launcher_window.publish_window.get_changes_list(changes, changes_modified)
 
     @Slot()
-    def on_anim_rep_publishing(self):
-        self.launcher_window.loading.show_anim_screen()
-
-    @Slot()
-    def on_anim_rep_publishing_completed(self):
-        self.launcher_window.loading.stop_anim_screen()
-
-    @Slot()
     def on_login(self):
         self.launcher_window.logger_widget.clear_log()
-
-    @Slot()
-    def on_anim_upload_files_started(self):
-        self.launcher_window.loading.show_anim_screen()
-
-    @Slot()
-    def on_anim_upload_files_completed(self):
-        self.launcher_window.loading.stop_anim_screen()
 
     @Slot()
     def on_setup_no_directory(self):
@@ -245,9 +201,9 @@ class UIManager(QObject):
         self.sdw_select_directory.emit(path)
 
     @Slot()
-    def on_refreshing(self):
+    def loading_process_started(self):
         self.launcher_window.loading.show_anim_screen()
 
     @Slot()
-    def on_refreshing_completed(self):
+    def loading_process_completed(self):
         self.launcher_window.loading.stop_anim_screen()
