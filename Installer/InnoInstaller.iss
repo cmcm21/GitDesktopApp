@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Puppet Launcher"
-#define MyAppVersion "0.1.2"
+#define MyAppVersion "0.1.2.3"
 #define MyAppPublisher "Soleil"
 #define MyAppExeName "Puppet Launcher.exe"
 #define MyAppAssocName MyAppName + " File"
@@ -41,7 +41,7 @@ Name: "japanese"; MessagesFile: "compiler:Languages\Japanese.isl"
 Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}";
 
 [Files]
 Source: "C:\Users\m-correa\PycharmProjects\pythonProject\dist\puppet_launcher_v_0.0.1\{#MyAppExeName}"; DestDir: "{app}"; Flags: ignoreversion

@@ -143,9 +143,9 @@ class AnimatorGitController(GitController):
             self.compile_files(files)
 
         FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
-        FileManager.sync_directories(self.source_path, self.raw_working_path)
+        FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
 
-        # self._commit_and_push_everything(message)
+        self._commit_and_push_everything(message)
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
 
@@ -182,6 +182,7 @@ class AnimatorGitController(GitController):
                 self.config_manager.get_config()["general"]["repository_prefix"],"animator")
             self.config_manager.add_value("general","animator_path", self.raw_working_path)
             self.working_path = Path(self.raw_working_path)
+            self.source_path = self.config_manager.get_config()["general"]["working_path"]
 
     @Slot(str)
     def on_setup_working_path(self, path: str):
@@ -229,3 +230,8 @@ class AnimatorGitController(GitController):
 
         finally:
             self.publishing_anim_rep_completed.emit()
+
+    @Slot()
+    def on_refresh(self):
+        print("Animator controller refresh")
+        super().on_refresh()

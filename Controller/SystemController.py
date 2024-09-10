@@ -160,24 +160,25 @@ class SystemController(QObject):
             raise subprocess.CalledProcessError(e.returncode, e.stderr)
 
     def install_python2_on_windows(self):
-        installer = "python-2.7.18.amd64.msi"
+        installer = "Resources\\Installers\\python-2.7.18.amd64.msi"
         python_install_dir = "C:\\Python27"
+        # No need to ask for admin permissions in the installer the permissions are added
+        #self.check_for_admin_permissions()
 
         try:
             # Download the installer
-            self.log_message.emit("Downloading Python 2 installer...")
-            subprocess.run(["curl", "-o", installer, self.python2_installer_url], check=True, shell=True)
+            #self.log_message.emit("Downloading Python 2 installer...")
+            #subprocess.run(["curl", "-o", installer,
+            #                    self.python2_installer_url], check=True,
+            #                    shell=False, creationflags=subprocess.CREATE_NO_WINDOW)
 
             # Run the installer
             self.log_message.emit("Running Python 2 installer...")
-            subprocess.run(["msiexec", "/i", installer, "/quiet", "/norestart"], check=True)
+            subprocess.run(
+                ["msiexec", "/i", installer, "/quiet", "/norestart"], check=True, creationflags=subprocess.CREATE_NO_WINDOW)
 
             self.log_message.emit("Python 2 installed successfully.")
 
-            self.add_to_path(python_install_dir)
-            self.add_to_path(os.path.join(python_install_dir, "Scripts"))
-
-            os.remove(installer)  # Clean up the installer file
         except Exception as e:
             self.error_message.emit(f"An error occurred during installation: {e}")
 

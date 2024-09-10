@@ -111,8 +111,8 @@ class RepositoryViewerWidget(QWidget):
                 full_dir = os.path.join(root, dir_name)
                 self.watcher.addPath(full_dir)
 
-        self.watcher.directoryChanged.connect(self.on_repo_updated)
-        self.watcher.fileChanged.connect(self.on_repo_updated)
+        self.watcher.fileChanged.connect(self.repo_updated, Qt.ConnectionType.QueuedConnection)
+        #self.watcher.directoryChanged.connect(self.repo_updated, Qt.ConnectionType.QueuedConnection)
 
     def on_repo_updated(self):
         self.repo_updated.emit()
@@ -160,6 +160,8 @@ class RepositoryViewerWidget(QWidget):
             for file in selected_files:
                 self.delete_file.emit(file)
 
+            self.on_repo_updated()
+
     def on_tree_view_clicked(self, index: QModelIndex):
         # Get the file path from the model
         file_path = self.model.filePath(index)
@@ -173,6 +175,7 @@ class RepositoryViewerWidget(QWidget):
             if not file_path in files:
                 files.append(file_path)
 
+        self.on_repo_updated()
         return files
 
     def set_root_directory(self):

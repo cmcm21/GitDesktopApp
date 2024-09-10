@@ -6,8 +6,7 @@ import fnmatch
 from PySide6.QtCore import SignalInstance, QObject, Signal
 from pathlib import Path
 import shutil
-import compileall
-import ast
+import py_compile
 import subprocess
 from Utils.Environment import FILE_CHANGE_DIC
 
@@ -61,7 +60,10 @@ class FileManager:
     @staticmethod
     def move_to(path: str):
         if not FileManager.in_path(path):
-            os.chdir(path)
+            try:
+                os.chdir(path)
+            except Exception as e:
+                print(f"Error trying to execute os.chdir : {e}")
 
     @staticmethod
     def move_to_local_dir():
@@ -98,71 +100,65 @@ class FileManager:
 
     @staticmethod
     def compile_python_files_from_source(source_path: str, log_signal:SignalInstance):
-        output = io.StringIO()
-        # Redirect sys.stdout to the StringIO object
-        old_stdout = sys.stdout
-        sys.stdout = output
-
         FileManager.move_to(source_path)
-        try:
-            for dir_path, dir_names, files in os.walk(source_path):
-                for file in files:
-                    file = fr"{file.strip()}"
-                    file_path = fr"{os.path.join(dir_path, file)}".strip()
 
-                    if file.endswith(".py"):
-                        python_version = FileManager.detect_python_version_by_features(file_path)
-                        if python_version == 2:
-                            FileManager.compile_python2_file(file_path, log_signal)
-                        else:
-                            compileall.compile_file(file_path, force=True)
+        log_signal.emit(f"Compiling files in {source_path}")
+        for dir_path, dir_names, files in os.walk(source_path):
+            for file in files:
+                log_signal.emit(f"Listing file {file}")
+                file = fr"{file.strip()}"
+                file_path = fr"{os.path.join(dir_path, file)}".strip()
+                if file.endswith(".py"):
+                    FileManager.compile_python_file(file_path, log_signal)
 
-                        log_signal.emit(f"Compiling file {file}...")
-        finally:
-            # Reset sys.stdout to its original state
-            sys.stdout = old_stdout
-
-        # Get the output from the StringIO object
-        captured_output = output.getvalue()
-        log_signal.emit(captured_output)
-        output.close()
+        log_signal.emit(f"Compilation finished")
 
     @staticmethod
     def compile_python_files(source_path: str, files: list, log_signal: SignalInstance):
         FileManager.move_to(source_path)
-        print(f"files to compile: {files}")
-        output = io.StringIO()
-        # Redirect sys.stdout to the StringIO object
-        old_stdout = sys.stdout
-        sys.stdout = output
+        log_signal.emit(f"Compiling files: {files}")
 
+        for file in files:
+            file_path = fr"{os.path.join(source_path, file)}".strip()
+            if not os.path.exists(file_path):
+                continue
+
+            if os.path.isdir(file_path):
+                files = os.listdir(file_path)
+                log_signal.emit(f"Compiling dir {file}...")
+                FileManager.compile_python_files(source_path, files, log_signal)
+
+            elif file_path.endswith(".py"):
+                FileManager.compile_python_file(file_path, log_signal)
+
+        log_signal.emit(f"Compiling files finished")
+
+    @staticmethod
+    def compile_python_file(file_path: str, log_signal: SignalInstance):
         try:
-            for file in files:
-                file_path = fr"{os.path.join(source_path, file)}".strip()
-                if not os.path.exists(file_path):
-                    continue
+            if os.path.exists(file_path):
+               python_version = FileManager.detect_python_version_by_features(file_path)
+               log_signal.emit(f"Compiling file {file_path}...")
 
-                if os.path.isdir(file_path):
-                    files = os.listdir(file_path)
-                    log_signal.emit(f"Compiling dir {file}...")
-                    FileManager.compile_python_files(source_path, files, log_signal)
+               if python_version == 2:
+                   FileManager.compile_python2_file(file_path, log_signal)
+               else:
+                   # Get the directory and file name separately
+                   dir_name, file_name = os.path.split(file_path)
+                   # Construct the compiled file name (same name but with .pyc extension)
+                   compiled_file_name = os.path.splitext(file_name)[0] + ".pyc"
+                   # Create the full path for the compiled file
+                   compiled_file_path = os.path.join(dir_name, compiled_file_name)
+                   py_compile.compile(file_path, cfile=compiled_file_path, doraise=True)
 
-                elif file_path.endswith(".py"):
-                    python_version = FileManager.detect_python_version_by_features(file_path)
-                    if python_version == 2:
-                        FileManager.compile_python2_file(file_path, log_signal)
-                    else:
-                        compileall.compile_file(file_path, force=True)
+               log_signal.emit(f"Compile file {file_path} successfully")
+            else:
+               log_signal.emit(f"file: {file_path} doesn't found")
+        except py_compile.PyCompileError as e:
+            log_signal.emit(f"Error compiling {file_path} : {e}")
 
-                    log_signal.emit(f"Compiling file {file}...")
-        finally:
-            # Reset sys.stdout to its original state
-            sys.stdout = old_stdout
-
-        # Get the output from the StringIO object
-        captured_output = output.getvalue()
-        log_signal.emit(captured_output)
-        output.close()
+        except Exception as e:
+            log_signal.emit(f"Unexpected error: {e}")
 
     @staticmethod
     def compile_python2_file(file_path: str, log_signal: SignalInstance):
@@ -283,12 +279,15 @@ class FileManager:
     @staticmethod
     def remove_files(files: list, dest_dir: str, log_signal):
         for file in files:
+            if file.endswith(".py"):
+                file = file.replace(".py",".pyc")
+
             file_path = os.path.join(dest_dir, file)
             if os.path.exists(file_path):
                 try:
                     os.remove(file_path)
                 except Exception as e:
-                    log_signal.emit(f"Error trying to move file: {file_path}, error: {e}")
+                    log_signal.emit(f"Error trying to remove file: {file_path}, error: {e}")
 
     @staticmethod
     def delete_empty_sub_dirs_with_name(root_dir, target_name, log_signal: SignalInstance):
@@ -328,36 +327,25 @@ class FileManager:
                     print(f"Permission error: {e}")
 
     @staticmethod
-    def sync_directories(source_path: str, dest_path: str):
+    def sync_directories(source_path: str, dest_path: str, log_signal: SignalInstance):
         for root, dirs, files in os.walk(dest_path):
             for file in files:
                 file_path = fr"{os.path.join(root, file)}".strip()
 
                 #ignore all .git related files
-                if ".git" in file_path:
+                if ".git" in file_path or file_path.endswith(".pyc"):
                     continue
 
                 relative_path = os.path.relpath(root, dest_path)
                 source_file = os.path.join(source_path, relative_path)
-
-                if file_path.endswith(".pyc"):
-                    separated_by_name = file_path.split(".")
-                    file_name = separated_by_name[0]
-                    file_name_separated = file_name.split("\\")
-                    if "__pycache__" in file_name_separated:
-                        file_name_separated.remove("__pycache__")
-                    file_name = "\\".join(file_name_separated) + ".py"
-
-                    to_remove_file = file_name.replace(r"/animator",r"/default")
-                else:
-                    to_remove_file = os.path.join(source_file,file)
+                to_remove_file = os.path.join(source_file,file)
 
                 if not os.path.exists(to_remove_file):
                     try:
+                        log_signal.emit(f"Removing file: {file_path}")
                         os.remove(file_path)
-                        print(f"Removing file: {file_path}")
                     except Exception as e:
-                        print(f"Exception occur while trying to erase file: {file_path} error({e}),"
+                        log_signal.emit(f"Exception occur while trying to erase file: {file_path} error({e}),"
                               f" source file: {source_file}")
                         continue
 
@@ -370,10 +358,12 @@ class FileManager:
                 relative_path = os.path.relpath(root, dest_path)
                 source_dir = os.path.join(source_path, relative_path)
                 if not os.path.exists(source_dir):
+                    log_signal.emit(f"Removing empty directory {dir_path}")
                     FileManager.erase_dir(dir_path)
 
                 files = os.listdir(dir_path)
                 if len(files) <= 0:
+                    log_signal.emit(f"Removing empty directory {dir_path}")
                     FileManager.erase_dir(dir_path)
 
     @staticmethod

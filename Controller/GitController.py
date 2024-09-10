@@ -27,6 +27,8 @@ class GitController(QObject):
     send_merge_requests_comments = Signal(list)
     send_repository_history = Signal(list)
     send_current_changes = Signal(list, list)
+    refreshing = Signal()
+    refreshing_completed = Signal()
 
     def __init__(self):
         super(GitController, self).__init__()
@@ -101,7 +103,7 @@ class GitController(QObject):
             self.error_message.emit(f"An error occurred executing command: {command_str}, error: {e.stderr}")
             raise subprocess.CalledProcessError(e.returncode, e.stderr)
 
-    def _run_git_command_get_output(self, command: str) -> str:
+    def _run_git_command_get_output(self, command: list) -> str:
         FileManager.move_to(self.raw_working_path)
         try:
             result = subprocess.run(
@@ -525,12 +527,14 @@ class GitController(QObject):
     def get_repository_changes(self) -> tuple:
         changes_modified = []
         other_changes = []
+        self.log_message.emit("Getting Changes in repository...")
         changed_files_out = self._run_git_command_get_output(['git', 'status', '--porcelain'])
         if changed_files_out:
             changed_files = [(line[:3].replace(" ", ""), line[3:]) for line in changed_files_out.splitlines() if line]
             for change, changed_file in changed_files:
                 changed_file = changed_file.strip('""')
                 if change == "M":
+                    self.log_message.emit(f"Getting differences in file: {changed_file}")
                     diff = self._run_git_command_get_output(['git', 'diff', changed_file])
                     if diff:
                         changes_modified.append((fr"{changed_file}", diff))
@@ -541,6 +545,7 @@ class GitController(QObject):
                         other_changes.append((fr"{changed_file}", change))
 
         self.send_current_changes.emit(changes_modified, other_changes)
+        self.log_message.emit("Getting changes in repository finished")
         return changes_modified, other_changes
 
     @Slot()
@@ -579,10 +584,14 @@ class GitController(QObject):
 
     @Slot()
     def on_refresh(self):
+        self.refreshing.emit()
+        self.log_message.emit("Refreshing windows")
         modifications, changes = self.get_repository_changes()
         if len(modifications) > 0 or len(changes) > 0:
             self.setup()
         else:
             self.setup()
             self.get_latest()
+        self.refreshing_completed.emit()
+        self.log_message.emit("Refreshing windows completed")
 

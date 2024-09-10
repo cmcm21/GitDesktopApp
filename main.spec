@@ -57,6 +57,8 @@ a = Analysis(
         ('Exceptions/', 'Exceptions/'),
         ('Resources/', 'Resources/'),
         ('Resources/Img', 'Resources/Img'),
+        ('Resources/ExternalScripts, 'Resources/ExternalScripts'),
+        ('Resources/Installers, 'Resources/Installers'),
         ('Resources/Img/arrowDown.png', 'Resources/Img/'),
         ('Resources/Img/arrowUp.png', 'Resources/Img/'),
         ('Resources/Img/checkmark.png', 'Resources/Img/'),

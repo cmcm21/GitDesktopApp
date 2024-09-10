@@ -106,7 +106,7 @@ class UIManager(QObject):
             (self.launcher_window.window_closed, self.lw_window_closed.emit),
             (self.launcher_window.application_destroyed, self.lw_destroy_application.emit),
             (self.launcher_window.log_out, self.lw_log_out.emit),
-            (self.launcher_window.refresh, self.lw_refresh_clicked)
+            (self.launcher_window.refresh_signal, self.lw_refresh_clicked)
         ])
 
     def _connect_git_tab(self):
@@ -243,3 +243,11 @@ class UIManager(QObject):
     @Slot(str)
     def test_select_dir(self, path):
         self.sdw_select_directory.emit(path)
+
+    @Slot()
+    def on_refreshing(self):
+        self.launcher_window.loading.show_anim_screen()
+
+    @Slot()
+    def on_refreshing_completed(self):
+        self.launcher_window.loading.stop_anim_screen()

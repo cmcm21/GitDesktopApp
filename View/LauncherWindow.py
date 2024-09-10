@@ -39,7 +39,7 @@ class LauncherWindow(BaseWindow):
     admin_window_clicked = Signal()
     public_to_anim = Signal
     switch_account = Signal(RoleID)
-    refresh = Signal()
+    refresh_signal = Signal()
     log_out = Signal()
     open_maya = Signal()
 
@@ -111,7 +111,7 @@ class LauncherWindow(BaseWindow):
 
     def refresh_clicked(self):
         if self.throw_message_box("Reload", "Are you sure to Reload window?"):
-            self.refresh.emit()
+            self.refresh_signal.emit()
 
     def open_settings(self):
         self.settings_window = SettingWindows(WindowID.SETTINGS, self.logger_widget)

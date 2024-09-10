@@ -117,6 +117,8 @@ class Application(QApplication):
             (self.git_controller.send_merge_requests_comments, self.ui_manager.on_get_merge_requests_comments),
             (self.git_controller.send_repository_history, self.ui_manager.on_get_repository_history),
             (self.git_controller.send_current_changes, self.ui_manager.on_get_changes_list),
+            (self.git_controller.refreshing, self.ui_manager.on_refreshing),
+            (self.git_controller.refreshing_completed, self.ui_manager.on_refreshing_completed)
         ])
 
         SignalManager.connect_signals(self, [
@@ -163,7 +165,6 @@ class Application(QApplication):
 
         SignalManager.connect_signals(self.ui_manager, [
             (self.ui_manager.lw_publish_to_anim, self.anim_git_controller.publish_rep),
-            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.on_refresh)
         ])
 
     def _connect_git_animator_controller(self):
@@ -172,10 +173,13 @@ class Application(QApplication):
             (self.anim_git_controller.setup_completed, self.on_git_setup_completed),
             (self.anim_git_controller.setup_completed, self.ui_manager.on_setup_completed),
             (self.anim_git_controller.get_latest_completed, self.ui_manager.on_get_latest_completed),
+            (self.anim_git_controller.refreshing, self.ui_manager.on_refreshing),
+            (self.anim_git_controller.refreshing_completed, self.ui_manager.on_refreshing_completed)
         ])
 
         SignalManager.connect_signals(self.ui_manager,[
             (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest),
+            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.on_refresh)
         ])
 
     def _disconnect_git_controller(self):
@@ -194,7 +198,9 @@ class Application(QApplication):
             (self.git_controller.send_merge_requests_comments, self.ui_manager.on_get_merge_requests_comments),
             (self.git_controller.send_repository_history, self.ui_manager.on_get_repository_history),
             (self.git_controller.send_current_changes, self.ui_manager.on_get_changes_list),
-            (self.ui_manager.lw_log_out, self.git_controller.on_log_out)
+            (self.ui_manager.lw_log_out, self.git_controller.on_log_out),
+            (self.git_controller.refreshing, self.ui_manager.on_refreshing),
+            (self.git_controller.refreshing_completed, self.ui_manager.on_refreshing_completed)
         ])
 
         SignalManager.disconnect_signals(self, [
@@ -225,6 +231,8 @@ class Application(QApplication):
             (self.anim_git_controller.setup_completed, self.ui_manager.on_setup_completed),
             (self.anim_git_controller.setup_completed, self.on_git_setup_completed),
             (self.anim_git_controller.get_latest_completed, self.ui_manager.on_get_latest_completed),
+            (self.anim_git_controller.refreshing, self.ui_manager.on_refreshing),
+            (self.anim_git_controller.refreshing_completed, self.ui_manager.on_refreshing_completed)
         ])
 
         SignalManager.disconnect_signals(self.ui_manager, [
