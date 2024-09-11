@@ -331,14 +331,16 @@ class FileManager:
         for root, dirs, files in os.walk(dest_path):
             for file in files:
                 file_path = fr"{os.path.join(root, file)}".strip()
-
                 #ignore all .git related files
-                if ".git" in file_path or file_path.endswith(".pyc"):
+                if ".git" in file_path:
                     continue
 
                 relative_path = os.path.relpath(root, dest_path)
                 source_file = os.path.join(source_path, relative_path)
                 to_remove_file = os.path.join(source_file,file)
+
+                if to_remove_file.endswith(".pyc"):
+                    to_remove_file = to_remove_file.replace(".pyc", ".py")
 
                 if not os.path.exists(to_remove_file):
                     try:

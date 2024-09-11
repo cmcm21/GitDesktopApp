@@ -23,6 +23,16 @@ class GitController(QObject):
     accept_merge_completed = Signal()
     branching_started = Signal()
     branching_completed = Signal()
+    load_mr_started = Signal()
+    load_mr_completed = Signal()
+    add_comment_started = Signal()
+    add_comment_completed = Signal()
+    get_mr_changes_started = Signal()
+    get_mr_changes_completed = Signal()
+    get_mr_comments_started = Signal()
+    get_mr_comments_completed = Signal()
+    get_mr_commits_started = Signal()
+    get_mr_commits_completed = Signal()
 
     log_message = Signal(str)
     error_message = Signal(str)
@@ -141,7 +151,7 @@ class GitController(QObject):
                 self.log_message.emit(f"merge request for branch : {branch_name} created successfully!!")
                 self.add_commits_to_merge_request(merge_request_id, branch_name)
 
-        self.load_merge_requests()
+        self.load_merge_requests(False)
 
     def check_branch_exists(self, branch_name: str) -> bool:
         FileManager.move_to(self.raw_working_path)
@@ -298,7 +308,7 @@ class GitController(QObject):
     def _commit_and_push_everything(self, comment: str, branch = ""):
         self.add_all()
         self.commit(comment)
-        self.get_latest()
+        self.get_latest(False)
         self.push(branch)
         # Check the status of the repository
         self.run_command(['git', 'status'])
@@ -369,7 +379,7 @@ class GitController(QObject):
             self.setup()
 
     @Slot()
-    def setup(self):
+    def setup(self, send_end_process_signal=True):
         self.setup_started.emit()
         self.check_working_path()
 
@@ -396,12 +406,17 @@ class GitController(QObject):
             self.run_command(['git', 'fetch', 'origin'])
             # Send setup signal
             self.log_message.emit(f" Setup Completed ")
-            self.setup_completed.emit(self.repo_exist())
 
             if self.reset_ssh:
                 self.reset_ssh = False
                 return self.catch_ssh_connection_error()
 
+            changes, modifications = self.get_repository_changes()
+            if len(changes) <= 0 and len(modifications) <= 0:
+                self.get_latest(False)
+
+            if send_end_process_signal:
+                self.setup_completed.emit(self.repo_exist())
         except Exception as e:
             self.log_message.emit(f"An error occurred : {e}")
 
@@ -415,11 +430,13 @@ class GitController(QObject):
         else:
             self._commit_and_push_everything(message)
 
-        self.get_latest()
+        self.get_latest(False)
         self.push_completed.emit()
 
     @Slot()
-    def load_merge_requests(self):
+    def load_merge_requests(self, send_end_process_signal=True):
+        self.load_mr_started.emit()
+
         url = self._get_merge_request_url()
         headers = {"PRIVATE-TOKEN": self.personal_access_token}
         response = requests.get(url, headers=headers)
@@ -432,6 +449,9 @@ class GitController(QObject):
             self.send_merge_requests.emit(merge_requests)
         else:
             self.error_message.emit(f"Error trying to get merge requests url: {url}")
+
+        if send_end_process_signal:
+            self.load_mr_completed.emit()
 
     @Slot()
     def get_main_branch(self):
@@ -471,6 +491,8 @@ class GitController(QObject):
 
     @Slot(int)
     def get_merge_request_commits(self, merge_request_id: int):
+        self.get_mr_commits_started.emit()
+
         url = f"{self._get_merge_request_url()}/{merge_request_id}/commits"
         headers = {"PRIVATE-TOKEN": self.personal_access_token}
         response = requests.get(url, headers=headers)
@@ -480,8 +502,12 @@ class GitController(QObject):
         else:
             self.error_message.emit(f"Failed to load commits from : {url}")
 
+        self.get_mr_commits_completed.emit()
+
     @Slot()
     def get_merge_requests_comments(self, merge_request_id: int):
+        self.get_mr_comments_started.emit()
+
         url = f"{self._get_merge_request_url()}/{merge_request_id}/notes"
         headers = {"PRIVATE-TOKEN": self.personal_access_token}
         response = requests.get(url, headers=headers)
@@ -490,10 +516,13 @@ class GitController(QObject):
             self.send_merge_requests_comments.emit(comments)
         else:
             self.error_message.emit(f"Error handling request to get comments from : {url}")
-        return
+
+        self.get_mr_comments_completed.emit()
 
     @Slot(int)
     def get_merge_request_changes(self, merge_request_id: int):
+        self.get_mr_changes_started.emit()
+
         url = f'{self._get_merge_request_url()}/{merge_request_id}/changes'
         headers = {
             'Private-Token': self.personal_access_token
@@ -506,8 +535,12 @@ class GitController(QObject):
         else:
             self.error_message.emit(f"Failed to get merge request changes, response: {response.json()}")
 
+        self.get_mr_changes_completed.emit()
+
     @Slot(str, int)
     def merge_request_add_comment(self, comment: str, merge_request_id: int):
+        self.add_comment_started.emit()
+
         url = f"{self._get_merge_request_url()}/{merge_request_id}/notes"
         headers = {"PRIVATE-TOKEN": self.personal_access_token}
         data = {"body": comment}
@@ -517,6 +550,8 @@ class GitController(QObject):
             self.log_message.emit("Comment upload correctly")
         else:
             self.error_message.emit(f"Failed to add comment to : {url}")
+
+        self.add_comment_completed.emit()
 
     @Slot()
     def merge_request_accept_and_merge(self, merge_request_id: int, commit_message: str):
@@ -536,8 +571,8 @@ class GitController(QObject):
 
         if response.status_code == 200:
             self.log_message.emit("Merge request accepted and merged successfully")
-            self.load_merge_requests()
-            self.get_latest()
+            self.load_merge_requests(False)
+            self.get_latest(False)
         else:
             self.error_message.emit(f"Failed to accept and merge MR: {response.status_code}, url: {url}")
 
@@ -564,7 +599,7 @@ class GitController(QObject):
             self.send_repository_history.emit(commits)
 
     @Slot()
-    def get_repository_changes(self) -> tuple:
+    def get_repository_changes(self, send_end_process_signal=True) -> tuple:
         changes_modified = []
         other_changes = []
         self.log_message.emit("Getting Changes in repository...")
@@ -589,7 +624,7 @@ class GitController(QObject):
         return changes_modified, other_changes
 
     @Slot()
-    def get_latest(self):
+    def get_latest(self, send_end_process_signal=True):
         self.get_latest_started.emit()
         # restore all the modified files before get latest
         self.restore_git_repository()
@@ -606,7 +641,8 @@ class GitController(QObject):
 
         # Check the status of the repository
         self.run_command(['git', 'status'])
-        self.get_latest_completed.emit()
+        if send_end_process_signal:
+            self.get_latest_completed.emit()
 
     @Slot(str)
     def on_setup_working_path(self, path: str):
@@ -632,7 +668,7 @@ class GitController(QObject):
             self.setup()
         else:
             self.setup()
-            self.get_latest()
+            self.get_latest(False)
         self.refreshing_completed.emit()
         self.log_message.emit("Refreshing windows completed")
 

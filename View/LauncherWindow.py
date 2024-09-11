@@ -293,7 +293,7 @@ class LauncherWindow(BaseWindow):
     def set_dev_user(self):
         self.git_tab.git_sniffer.merge_request.accept_btn.hide()
         self.git_tab.hide_anim_tab()
-        self.git_tab.publish_btn.show()
+        self.git_tab.publish_btn.hide()
         self.build_session_menu()
 
     def set_admin_user(self):

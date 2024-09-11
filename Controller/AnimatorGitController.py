@@ -84,14 +84,14 @@ class AnimatorGitController(GitController):
         self.config_manager.add_value(self.config_section, self.config_rep_ssh_key, self.repository_url_ssh)
         self.config_manager.add_value(self.config_section, self.config_rep_http_key, self.repository_url_https)
 
-    def compile_files(self, files=None) -> Callable[[], None]:
+    def compile_files(self, files=[]) -> Callable[[], None]:
         user_session = UserSession()
-        if user_session.role_id == RoleID.ANIMATOR.value or user_session.role == RoleID.ADMIN_ANIM.value:
-            return lambda: print("NO allowed to Compile files")
+        if user_session.role_id != RoleID.ADMIN.value:
+            return lambda: print("No allowed to Compile files")
 
         # compile the files of the origin repository
         self.log_message.emit(f"Compiling python files... in {self.source_path}")
-        if files is not None:
+        if len(files) > 0:
             FileManager.compile_python_files(self.source_path, files, self.log_message)
             # Timer to wait that all files compiled Finished
             time.sleep(2)
@@ -99,7 +99,6 @@ class AnimatorGitController(GitController):
             modifies, changes = self.get_changes_from_default_rep()
             files, deleted_files = self.extract_just_file_paths(modifies, changes)
             FileManager.move_files(files, self.source_path,'.py', self.raw_working_path, self.log_message)
-            FileManager.remove_files(deleted_files, self.raw_working_path, self.log_message)
         else:
             FileManager.compile_python_files_from_source(self.source_path, self.log_message)
             # Timer to wait that all files compiled Finished
@@ -129,9 +128,18 @@ class AnimatorGitController(GitController):
 
         return commit_count
 
+    def _commit_and_push_everything(self, comment: str, branch = ""):
+        self.add_all()
+        self.commit(comment)
+        # When the animator repo is pushed we don't want to get latests
+        # self.get_latest()
+        self.push(branch)
+        # Check the status of the repository
+        self.run_command(['git', 'status'])
+
     def upload_files(self, message: str, compile_all: bool):
         user_session = UserSession()
-        if user_session.role_id == RoleID.ANIMATOR.value:
+        if user_session.role_id != RoleID.ADMIN.value:
             self.log_message.emit("Animator user is not allowed to upload files either compile .py -> .pyc")
 
         self.uploading_anim_files.emit()
@@ -144,7 +152,6 @@ class AnimatorGitController(GitController):
 
         FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
         FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
-
         self._commit_and_push_everything(message)
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
@@ -157,8 +164,16 @@ class AnimatorGitController(GitController):
 
         return modifies, changes
 
-    def extract_just_file_paths(self, modifies, changes) -> tuple:
-        default_working_path = self.config_manager.get_config()["general"]["working_path"]
+    def check_working_path(self):
+        if self.raw_working_path == "":
+            self.raw_working_path = FileManager.get_working_path(
+                self.config_manager.get_config()["general"]["repository_prefix"],"animator")
+            self.config_manager.add_value("general","animator_path", self.raw_working_path)
+            self.working_path = Path(self.raw_working_path)
+            self.source_path = self.config_manager.get_config()["general"]["working_path"]
+
+    @staticmethod
+    def extract_just_file_paths(modifies, changes) -> tuple:
         file_paths = []
         deleted_files = []
 
@@ -175,14 +190,6 @@ class AnimatorGitController(GitController):
                 deleted_files.append(file)
 
         return file_paths, deleted_files
-
-    def check_working_path(self):
-        if self.raw_working_path == "":
-            self.raw_working_path = FileManager.get_working_path(
-                self.config_manager.get_config()["general"]["repository_prefix"],"animator")
-            self.config_manager.add_value("general","animator_path", self.raw_working_path)
-            self.working_path = Path(self.raw_working_path)
-            self.source_path = self.config_manager.get_config()["general"]["working_path"]
 
     @Slot(str)
     def on_setup_working_path(self, path: str):
@@ -230,8 +237,3 @@ class AnimatorGitController(GitController):
 
         finally:
             self.publishing_anim_rep_completed.emit()
-
-    @Slot()
-    def on_refresh(self):
-        print("Animator controller refresh")
-        super().on_refresh()
