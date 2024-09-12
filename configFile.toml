@@ -49,7 +49,7 @@ user_names = [
     "m-correa",
     "s-shenoy",
 ]
-default_password = "1234"
+default_password = "XXXX"
 emails = [
     "m-correa@soleilgamestudios.com",
     "s-shenoy@soleilgamestudios.com",
