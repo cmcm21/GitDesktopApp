@@ -1,4 +1,6 @@
 from PySide6.QtCore import Signal, Slot
+from pyparsing import Empty
+
 from Utils.FileManager import FileManager
 from Utils.UserSession import UserSession
 from Utils.Environment import RoleID, FILE_CHANGE_DIC
@@ -84,7 +86,7 @@ class AnimatorGitController(GitController):
         self.config_manager.add_value(self.config_section, self.config_rep_ssh_key, self.repository_url_ssh)
         self.config_manager.add_value(self.config_section, self.config_rep_http_key, self.repository_url_https)
 
-    def compile_files(self, files=[]) -> Callable[[], None]:
+    def compile_files(self, files:[str]=[]):
         user_session = UserSession()
         if user_session.role_id != RoleID.ADMIN.value:
             return lambda: print("No allowed to Compile files")
@@ -131,7 +133,7 @@ class AnimatorGitController(GitController):
     def _commit_and_push_everything(self, comment: str, branch = ""):
         self.add_all()
         self.commit(comment)
-        # When the animator repo is pushed we don't want to get latests
+        # When the animator repo is pushed we don't want to get latest
         # self.get_latest()
         self.push(branch)
         # Check the status of the repository

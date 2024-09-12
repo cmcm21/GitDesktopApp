@@ -114,7 +114,7 @@ class FileManager:
         log_signal.emit(f"Compilation finished")
 
     @staticmethod
-    def compile_python_files(source_path: str, files: list, log_signal: SignalInstance):
+    def compile_python_files(source_path: str, files: list[str], log_signal: SignalInstance):
         FileManager.move_to(source_path)
         log_signal.emit(f"Compiling files: {files}")
 
@@ -138,18 +138,12 @@ class FileManager:
         try:
             if os.path.exists(file_path):
                python_version = FileManager.detect_python_version_by_features(file_path)
-               log_signal.emit(f"Compiling file {file_path}...")
+               log_signal.emit(f"Compiling file {file_path}... using python {python_version}")
 
                if python_version == 2:
                    FileManager.compile_python2_file(file_path, log_signal)
                else:
-                   # Get the directory and file name separately
-                   dir_name, file_name = os.path.split(file_path)
-                   # Construct the compiled file name (same name but with .pyc extension)
-                   compiled_file_name = os.path.splitext(file_name)[0] + ".pyc"
-                   # Create the full path for the compiled file
-                   compiled_file_path = os.path.join(dir_name, compiled_file_name)
-                   py_compile.compile(file_path, cfile=compiled_file_path, doraise=True)
+                   py_compile.compile(file_path, cfile=file_path+"c", doraise=True)
 
                log_signal.emit(f"Compile file {file_path} successfully")
             else:
@@ -240,7 +234,7 @@ class FileManager:
                         log_signal.emit(f"Copied: {file_path} -> {os.path.join(destination_dir, file)}")
 
     @staticmethod
-    def move_files(files: list, src_dir: str, ignore: str, dst_dir:str, log_signal: SignalInstance, attends=0):
+    def move_files(files: list[str], src_dir: str, ignore: str, dst_dir:str, log_signal: SignalInstance, attends=0):
         # Ensure the extension starts with a dot
         if not ignore.startswith('.'):
             ignore = '.' + ignore
@@ -277,7 +271,7 @@ class FileManager:
                             FileManager.move_files(files, src_dir, ignore, dst_dir, log_signal, attends)
 
     @staticmethod
-    def remove_files(files: list, dest_dir: str, log_signal):
+    def remove_files(files: list[str], dest_dir: str, log_signal):
         for file in files:
             if file.endswith(".py"):
                 file = file.replace(".py",".pyc")
