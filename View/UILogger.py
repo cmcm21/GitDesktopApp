@@ -57,6 +57,7 @@ class LoggerWidget(QWidget):
 
         """Layout"""
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(self.text_edit)
 
     def clear_log(self):

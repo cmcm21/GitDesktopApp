@@ -8,11 +8,7 @@ from PySide6.QtWidgets import (
     QLabel,
     QPushButton,
     QSizePolicy,
-    QSplitter,
-    QSpacerItem,
-    QFrame
 )
-
 from PySide6.QtGui import QPixmap, QIcon, QAction, QFont
 from PySide6.QtCore import Signal, Qt, QSize
 from Utils.Environment import FILE_CHANGE_DIC
@@ -21,7 +17,8 @@ from View.BaseWindow import BaseWindow
 from View.UIMergeRequestTab import MergeRequestTab
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UIDiffsWidget import DiffsWidget
-from View.UIChangesList import ChangesList
+from View.UIChangesWidget import ChangesWidget
+from View.UICommitsHistoryTable import HistoryWidget
 from View.CustomSplitter import CustomSplitter
 import os
 
@@ -49,9 +46,9 @@ class GitSnifferWidget(QWidget):
         self.changes = []
 
         # Initialize Widgets
-        self.history = self._create_list_widget("HistoryTab")
+        self.history = self._create_history_widget("HistoryTab")
         self.changes_list_widget = self._create_changes_list_widget("ChangesListTab")
-        self.merge_request = self._create_merge_request_widget("MergeRequestTab")
+        self.merge_request_widget = self._create_merge_request_widget("MergeRequestTab")
 
         # Initialize Tabs
         self.tabs = QTabWidget()
@@ -62,41 +59,44 @@ class GitSnifferWidget(QWidget):
         self.connect_signals()
 
     @staticmethod
-    def _create_list_widget(object_name):
+    def _create_history_widget(object_name):
         """Helper method to create a QListWidget with a specified object name."""
-        list_widget = QListWidget()
-        list_widget.setFont(QFont("Courier New", 10))
-        list_widget.setSpacing(2)
-        list_widget.setObjectName(object_name)
-        return list_widget
+        history_widget = HistoryWidget()
+        history_widget.setObjectName(object_name)
+        return history_widget
 
     def _create_changes_list_widget(self, object_name: str):
         """Helper method to create a ChangesList widget with a specified object name."""
         changes_list_layout = QVBoxLayout()
-        self.changes_list = ChangesList()
-        self.changes_list.setFont(QFont("Courier New", 10))
-        self.changes_list.setSpacing(2)
-        self.changes_list.setObjectName(object_name)
-
-        self.upload_btn: QPushButton = BaseWindow.create_button(
-            self, "arrowUp.png", "Commit and Push")
-        self.upload_btn.clicked.connect(lambda: self.upload_to_git_clicked.emit())
-        self.upload_btn.setFixedSize(QSize(200, 35))
-        CustomStyleSheetApplier.set_buttons_style_and_colour(self.upload_btn, "Blue")
+        self.changes_list = ChangesWidget()
+        self.changes_list.push_and_commit_clicked.connect(self.on_push_and_commit_clicked)
 
         changes_list_layout.addWidget(self.changes_list)
-        changes_list_layout.addWidget(self.upload_btn, alignment=Qt.AlignmentFlag.AlignCenter)
+        changes_list_layout.setContentsMargins(0, 0, 0, 0)
 
         widget = QWidget()
+        widget.setObjectName(object_name)
         widget.setLayout(changes_list_layout)
         return widget
 
-    @staticmethod
-    def _create_merge_request_widget(object_name):
+    def on_push_and_commit_clicked(self, message, files):
+        #TODO: send signal with message and list of files
+        print(message)
+        print(files)
+
+    def _create_merge_request_widget(self, object_name):
         """Helper method to create a MergeRequestTab widget with a specified object name."""
-        merge_request_tab = MergeRequestTab()
-        merge_request_tab.setObjectName(object_name)
-        return merge_request_tab
+        self.merge_request = MergeRequestTab()
+        self.merge_request_layout = QVBoxLayout()
+
+        self.merge_request_layout.addWidget(self.merge_request)
+        self.merge_request_layout.setContentsMargins(0, 0, 0, 0)
+
+        widget = QWidget()
+        widget.setObjectName(object_name)
+        widget.setLayout(self.merge_request_layout)
+        return widget
+
 
     @staticmethod
     def _create_tab(widget, label_text):
@@ -117,17 +117,18 @@ class GitSnifferWidget(QWidget):
         # Create and add tabs
         self.tabs.setFont(QFont("Courier New", 10))
         self.tabs.addTab(self._create_tab(self.history, "Commits History"), "History")
-        self.tabs.addTab(self._create_tab(self.merge_request, ""), "Merge Request")
         self.tabs.addTab(self._create_tab(
             self.changes_list_widget, "Changes List"), "Change list")
+        self.tabs.addTab(self._create_tab(self.merge_request_widget, ""), "Merge Request")
 
         # Set the main layout
         self.layout.addWidget(self.tabs)
+        self.layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.layout)
 
     def connect_signals(self):
-        self.changes_list.doubleClicked.connect(self.on_change_list_clicked)
-        self.history.doubleClicked.connect(self.on_commit_clicked)
+        self.changes_list.item_double_clicked.connect(self.on_change_list_clicked)
+        #self.history.doubleClicked.connect(self.on_commit_clicked)
 
     def on_change_list_clicked(self, item: QListWidgetItem):
         if not item:
@@ -147,6 +148,10 @@ class GitSnifferWidget(QWidget):
     @staticmethod
     def on_commit_clicked(commit):
         print(commit)
+
+    def push_and_commit_clicked(self):
+        selected_changes = self.changes_list.get_selected_items()
+        print(f"Changes selected: {selected_changes}")
 
 
 class UIGitTab(QWidget):
@@ -192,9 +197,11 @@ class UIGitTab(QWidget):
         self.splitter.addWidget(self.repository_viewer)
         self.splitter.addWidget(self.git_sniffer)
         self.body_layout.addWidget(self.splitter)
+        self.body_layout.setContentsMargins(0, 0, 0, 0)
         """ Main layout """
         self.main_layout.addLayout(self.header)
         self.main_layout.addLayout(self.body_layout)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.main_layout)
 
     def apply_styles(self):
@@ -232,34 +239,34 @@ class UIGitTab(QWidget):
     def on_get_repository_history(self, commits: list):
         self.git_sniffer.history.clear()
         for commit in commits:
-            commit_item = QListWidgetItem(commit)
-            commit_id = commit.split(" ")[0]
-            commit_item.setData(Qt.ItemDataRole.UserRole, commit_id)
-            self.git_sniffer.history.addItem(commit_item)
-
-        if self.git_sniffer.history.count() == 0:
-            self.git_sniffer.history.addItem("No Commits yet")
+            #commit_item = QListWidgetItem(commit)
+            #commit_id = commit.split(" ")[0]
+            #commit_item.setData(Qt.ItemDataRole.UserRole, commit_id)
+            self.git_sniffer.history.add_commit(commit)
 
     def on_get_current_changes(self, modified: list, changes: list):
         self.git_sniffer.changes.clear()
         self.git_sniffer.changes_list.clear()
+        if len(modified) + len(changes) > 1:
+            self.git_sniffer.changes_list.add_check_all()
 
         for change_file, diff in modified:
             change_item = QListWidgetItem(change_file)
             change_item.setToolTip(diff)
             change_item.setData(Qt.ItemDataRole.UserRole, (change_file, diff))
-            self.git_sniffer.changes_list.addItem(change_item)
+            self.git_sniffer.changes_list.add_item(change_item)
             self.git_sniffer.changes.append(change_file)
 
         for change_file, change in changes:
             change_item = QListWidgetItem()
-            change_item.setText(f"{change_file}: -> ({FILE_CHANGE_DIC[change]})")
+            change_item.setText(change_file)
+            change_item.setToolTip(f"change_file -> {FILE_CHANGE_DIC[change]}")
             change_item.setData(Qt.ItemDataRole.UserRole, (change_file, change))
-            self.git_sniffer.changes_list.addItem(change_item)
+            self.git_sniffer.changes_list.add_item(change_item)
             self.git_sniffer.changes.append(change_file)
 
         if self.git_sniffer.changes_list.count() == 0:
-            self.git_sniffer.changes_list.addItem("No changes yet")
+            self.git_sniffer.changes_list.list_widget.addItem("No changes yet")
 
     def show_anim_tab(self):
         self.splitter.setSizes([1, 0])

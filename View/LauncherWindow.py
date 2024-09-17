@@ -199,6 +199,7 @@ class LauncherWindow(BaseWindow):
         self.splitter.addWidget(self.body_tap)
         self.splitter.addWidget(self.logger_widget)
         self.body_right.addWidget(self.splitter)
+        self.body_right.setContentsMargins(0, 0, 0, 0)
 
     def _build_main_layout(self):
         self.body_layout.addWidget(self.left_frame, 1)
@@ -233,7 +234,7 @@ class LauncherWindow(BaseWindow):
         return
 
     def _connect_signals(self):
-        self.git_tab.git_sniffer.upload_btn.clicked.connect(self.create_commit_windows)
+        self.git_tab.git_sniffer.upload_to_git_clicked.connect(self.create_commit_windows)
         self.git_tab.download_btn.clicked.connect(self.on_get_latest_clicked)
         self.git_tab.publish_btn.clicked.connect(self.create_publish_window)
         self.user_session_widget.logout_signal.connect(self._log_out)

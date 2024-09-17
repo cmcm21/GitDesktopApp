@@ -104,7 +104,6 @@ class MergeRequestTab(QWidget):
         self.tabs = QTabWidget()
         self.tabs.setObjectName("MergeRequestInsideTabs")
         self.tabs.setStyleSheet("background: transparent;")
-        self.main_layout = QVBoxLayout()
 
     @staticmethod
     def _create_combobox(min_height: int) -> QComboBox:
@@ -188,13 +187,16 @@ class MergeRequestTab(QWidget):
         self.buttons_layout.setSpacing(0)
 
     def _build_interface(self):
+        self.main_layout = QVBoxLayout()
         """Build the main interface layout."""
         self.tabs.addTab(self.discussion_tab, "Discussion")
         self.tabs.addTab(self.change_list_tab, "Change List")
         self.tabs.addTab(self.commits_tab, "Commits")
+
         self.main_layout.addLayout(self.header_layout)
         self.main_layout.addWidget(self.tabs)
         self.main_layout.addLayout(self.buttons_layout)
+        self.main_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(self.main_layout)
 
     def build_mr_filter(self):

@@ -6,15 +6,13 @@ from PySide6.QtWidgets import (
     QTableView,
     QMessageBox,
     QMenu,
-    QListWidget,
-    QVBoxLayout,
-    QMainWindow
 )
 from Model.UserModel import UserModel
 from Model.UserRolesModel import UserRolesModel
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
+from View.UICustomTable import TableModel
 from Utils.Environment import RoleID
 from enum import Enum
 
@@ -76,10 +74,10 @@ class UserTableView(QTableView):
                 self,
                 "Quit",
                 "Are you sure you want to delete user?",
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
             )
-            if reply == QMessageBox.Yes:
+            if reply == QMessageBox.StandardButton.Yes:
                 self.delete_user(row_data)
 
     def delete_user(self, row_data):
@@ -97,38 +95,11 @@ class UserTableView(QTableView):
     def show_info_message(self, message: str):
         # Create a QMessageBox instance
         msg_box = QMessageBox(self)
-        msg_box.setIcon(QMessageBox.Information)
+        msg_box.setIcon(QMessageBox.Icon.Information)
         msg_box.setWindowTitle("Information")
         msg_box.setText(message)
-        msg_box.setStandardButtons(QMessageBox.Ok)
+        msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
         msg_box.exec()
-
-
-class TableModel(QAbstractTableModel):
-    def __init__(self, data, headers):
-        super().__init__()
-        self._data = data
-        self._headers = headers
-
-    def rowCount(self, index=None):
-        return len(self._data)
-
-    def columnCount(self, index=None):
-        return len(self._data[0]) if len(self._data) > 0 else 0
-
-    def data(self, index, role=Qt.ItemDataRole.DisplayRole):
-        if role == Qt.ItemDataRole.DisplayRole:
-            return self._data[index.row()][index.column()]
-
-    def headerData(self, section, orientation, role=Qt.ItemDataRole.DisplayRole):
-        if role == Qt.ItemDataRole.DisplayRole and orientation == Qt.Orientation.Horizontal:
-            return self._headers[section]
-        return super().headerData(section, orientation, role)
-
-    def clear(self):
-        self.beginResetModel()
-        self._data = []
-        self.endResetModel()
 
 
 class AdminWindow(BaseWindow):

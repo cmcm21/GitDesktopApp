@@ -30,7 +30,7 @@ a = Analysis(
         'View/LauncherWindow.py',
         'View/UIAdminUserList.py',
         'View/UIAdminWidget.py',
-        'View/UIChangesList.py',
+        'View/UIChangesWidget.py',
         'View/PublishWindow.py',
         'View/UICommitWindow.py',
         'View/UIDiffsWidget.py',
@@ -44,6 +44,7 @@ a = Analysis(
         'View/UISessionWidget.py',
         'View/UISignupWindow.py',
         'View/PublishWindow.py',
+        'View/UICustomTable.py',
         'View/WindowID.py',
         'View/__init__.py'
     ],
