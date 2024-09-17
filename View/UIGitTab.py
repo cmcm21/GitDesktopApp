@@ -1,5 +1,3 @@
-from idlelib.configdialog import changes
-
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -9,10 +7,12 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QLabel,
     QPushButton,
-    QSplitter,
     QSizePolicy,
-    QSpacerItem, QFrame
+    QSplitter,
+    QSpacerItem,
+    QFrame
 )
+
 from PySide6.QtGui import QPixmap, QIcon, QAction, QFont
 from PySide6.QtCore import Signal, Qt, QSize
 from Utils.Environment import FILE_CHANGE_DIC
@@ -78,7 +78,8 @@ class GitSnifferWidget(QWidget):
         self.changes_list.setSpacing(2)
         self.changes_list.setObjectName(object_name)
 
-        self.upload_btn: QPushButton = BaseWindow.create_button(self, "arrowUp.png", "Commit and Push")
+        self.upload_btn: QPushButton = BaseWindow.create_button(
+            self, "arrowUp.png", "Commit and Push")
         self.upload_btn.clicked.connect(lambda: self.upload_to_git_clicked.emit())
         self.upload_btn.setFixedSize(QSize(200, 35))
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.upload_btn, "Blue")
@@ -103,7 +104,8 @@ class GitSnifferWidget(QWidget):
         layout = QVBoxLayout()
         label = QLabel(label_text)
         label.setFont(QFont("Courier New", 10))
-        label.setStyleSheet("background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, stop: 1 #333333);")
+        label.setStyleSheet(
+            "background: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 1, stop: 0 #000000, stop: 1 #333333);")
         layout.addWidget(label)
         layout.addWidget(widget)
         tab_widget = QWidget()
@@ -115,8 +117,9 @@ class GitSnifferWidget(QWidget):
         # Create and add tabs
         self.tabs.setFont(QFont("Courier New", 10))
         self.tabs.addTab(self._create_tab(self.history, "Commits History"), "History")
-        self.tabs.addTab(self._create_tab(self.changes_list_widget, "Changes List"), "Change list")
         self.tabs.addTab(self._create_tab(self.merge_request, ""), "Merge Request")
+        self.tabs.addTab(self._create_tab(
+            self.changes_list_widget, "Changes List"), "Change list")
 
         # Set the main layout
         self.layout.addWidget(self.tabs)
@@ -135,7 +138,8 @@ class GitSnifferWidget(QWidget):
             if change_file and diff:
                 diff_widget = DiffsWidget(diff, change_file)
                 diff_widget.show()
-                diff_widget.widget_closed.connect(lambda widget: self.changes_list_files_open.remove(widget))
+                diff_widget.widget_closed.connect(
+                    lambda widget: self.changes_list_files_open.remove(widget))
                 self.changes_list_files_open.append(diff_widget)
         except TypeError:
             return
@@ -156,8 +160,10 @@ class UIGitTab(QWidget):
         self.repository_path = working_path
         """ Toolbar build """
         self.header = QHBoxLayout()
-        self.download_btn: QPushButton = BaseWindow.create_button(self, "arrowDown.png", "Get Latest")
-        self.publish_btn: QPushButton = BaseWindow.create_button(self, "publish.png", "Publish to Animators")
+        self.download_btn: QPushButton = BaseWindow.create_button(
+            self, "arrowDown.png", "Get Latest")
+        self.publish_btn: QPushButton = BaseWindow.create_button(
+            self, "publish.png", "Publish to Animators")
         """ Layouts """
         self.main_layout = QVBoxLayout()
         self.body_layout = QHBoxLayout()
@@ -166,6 +172,7 @@ class UIGitTab(QWidget):
         self.repository_viewer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.git_sniffer = GitSnifferWidget()
         self.git_sniffer.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         """ Other widgets """
         self.splitter = CustomSplitter(Qt.Orientation.Horizontal)
 
