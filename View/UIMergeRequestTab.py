@@ -196,7 +196,7 @@ class MergeRequestTab(QWidget):
         self.main_layout.addLayout(self.header_layout)
         self.main_layout.addWidget(self.tabs)
         self.main_layout.addLayout(self.buttons_layout)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
+        self.main_layout.setContentsMargins(10, 10, 10, 10)
         self.setLayout(self.main_layout)
 
     def build_mr_filter(self):

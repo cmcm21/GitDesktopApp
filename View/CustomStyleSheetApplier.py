@@ -442,6 +442,7 @@ class CustomStyleSheetApplier:
                 selection-background-color: {style_data['pressed_bg']};
                 selection-color: {style_data['label_color']};
                 border: 1px solid {style_data['border_color']};
+                border-radius: 10px;
             }}
 
             QTableView::item:hover {{

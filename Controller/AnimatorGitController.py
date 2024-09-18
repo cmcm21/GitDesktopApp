@@ -86,7 +86,7 @@ class AnimatorGitController(GitController):
         self.config_manager.add_value(self.config_section, self.config_rep_ssh_key, self.repository_url_ssh)
         self.config_manager.add_value(self.config_section, self.config_rep_http_key, self.repository_url_https)
 
-    def compile_files(self, files:[str]=[]):
+    def compile_files(self, files:list[str]):
         user_session = UserSession()
         if user_session.role_id != RoleID.ADMIN.value:
             return lambda: print("No allowed to Compile files")
@@ -98,8 +98,6 @@ class AnimatorGitController(GitController):
             # Timer to wait that all files compiled Finished
             time.sleep(2)
 
-            modifies, changes = self.get_changes_from_default_rep()
-            files, deleted_files = self.extract_just_file_paths(modifies, changes)
             FileManager.move_files(files, self.source_path,'.py', self.raw_working_path, self.log_message)
         else:
             FileManager.compile_python_files_from_source(self.source_path, self.log_message)
@@ -130,8 +128,8 @@ class AnimatorGitController(GitController):
 
         return commit_count
 
-    def _commit_and_push_everything(self, comment: str, branch = ""):
-        self.add_all()
+    def _commit_and_push(self, comment: str, changes: list[str] ,branch =""):
+        self.add_all(changes)
         self.commit(comment)
         # When the animator repo is pushed we don't want to get latest
         # self.get_latest()
@@ -139,22 +137,19 @@ class AnimatorGitController(GitController):
         # Check the status of the repository
         self.run_command(['git', 'status'])
 
-    def upload_files(self, message: str, compile_all: bool):
+    def upload_files(self, message: str, changes: list[str]):
         user_session = UserSession()
         if user_session.role_id != RoleID.ADMIN.value:
             self.log_message.emit("Animator user is not allowed to upload files either compile .py -> .pyc")
 
         self.uploading_anim_files.emit()
-        if self.fresh_new_rep or compile_all:
-            self.compile_files()
-        else:
-            modifies, changes = self.get_changes_from_default_rep()
-            files, deleted_files = self.extract_just_file_paths(modifies, changes)
-            self.compile_files(files)
+        self.compile_files(changes)
 
         FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
-        FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
-        self._commit_and_push_everything(message)
+        deleted_files = FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
+        changes += deleted_files
+        self._commit_and_push(message, changes)
+
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
 
@@ -206,10 +201,10 @@ class AnimatorGitController(GitController):
     def verify_user_branch(self):
         return
 
-    @Slot(str, bool)
-    def publish_rep(self, message: str, compile_all: bool):
+    @Slot(str, list)
+    def publish_rep(self, message: str, changes: list[str]):
         if self.setup():
-            self.upload_files(message, compile_all)
+            self.upload_files(message, changes)
         else:
             self.error_message.emit("An error occur while trying to publish repository")
 

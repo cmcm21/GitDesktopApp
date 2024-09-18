@@ -22,8 +22,8 @@ class UIManager(QObject):
     lw_git_merge_request_tab_clicked = Signal()
     lw_refresh_clicked = Signal()
 
-    lw_publish_to_anim = Signal(str, bool)
-    lw_uploaded_clicked = Signal(str)
+    lw_publish_to_anim = Signal(str, list)
+    lw_commit_and_push_clicked = Signal(str, list)
     lw_get_merge_request_changed = Signal(int)
     lw_merge_request_add_comment = Signal(str, int)
     lw_accept_merge_request_and_merge = Signal(int, str)
@@ -100,7 +100,7 @@ class UIManager(QObject):
             (self.launcher_window.publish_to_anim_rep, self.lw_publish_to_anim.emit),
             (self.launcher_window.get_latest, self.lw_get_latest_clicked),
             (self.launcher_window.switch_account, self.lw_switch_account.emit),
-            (self.launcher_window.upload_repository, self.lw_uploaded_clicked.emit),
+            (self.launcher_window.push_and_commit, self.lw_commit_and_push_clicked.emit),
             (self.launcher_window.open_maya, self.lw_open_maya_clicked.emit),
             (self.launcher_window.window_closed, self.lw_window_closed.emit),
             (self.launcher_window.application_destroyed, self.lw_destroy_application.emit),
@@ -133,6 +133,10 @@ class UIManager(QObject):
         self.launcher_window.on_setup_completed(success)
         self.launcher_window.loading.stop_anim_screen()
         self.launcher_window.git_tab.send_starting_signals()
+
+    @Slot(str, list)
+    def on_push_and_commit_completed(self, message: str, changes: list[str]):
+        self.launcher_window.on_push_and_commit_completed(message, changes)
 
     @Slot(str)
     def on_log_signal_received(self, log_message: str):
@@ -183,8 +187,6 @@ class UIManager(QObject):
     @Slot(list)
     def on_get_changes_list(self, changes_modified: list, changes: list):
         self.launcher_window.git_tab.on_get_current_changes(changes_modified, changes)
-        if self.launcher_window.publish_window is not None:
-            self.launcher_window.publish_window.get_changes_list(changes, changes_modified)
 
     @Slot()
     def on_login(self):
@@ -207,3 +209,4 @@ class UIManager(QObject):
     @Slot()
     def loading_process_completed(self):
         self.launcher_window.loading.stop_anim_screen()
+

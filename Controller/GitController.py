@@ -15,8 +15,8 @@ class GitController(QObject):
     """Signals"""
     setup_started = Signal()
     setup_completed = Signal(bool)
-    push_started = Signal()
-    push_completed = Signal()
+    push_and_commit_started = Signal()
+    push_and_commit_completed = Signal(str, list)
     get_latest_started = Signal()
     get_latest_completed = Signal()
     accept_merge_started = Signal()
@@ -137,12 +137,12 @@ class GitController(QObject):
             self.error_message.emit(f"Git command ({command}) failed: {e}")
             return ""
 
-    def arrange_dev_push(self, comment: str):
+    def arrange_dev_push(self, comment: str, changes: list[str]):
         branch_name = self.get_dev_branch_name()
         if not self.branch_exists(branch_name):
             self.create_branch(branch_name, self._get_main_branch_name())
 
-        self._commit_and_push_everything(comment, branch_name)
+        self._commit_and_push(comment, changes, branch_name)
         if not self.merge_request_exists(branch_name):
             merge_request_id = self.create_merge_request(branch_name)
             if merge_request_id == -1:
@@ -269,13 +269,22 @@ class GitController(QObject):
         self.user_session = UserSession()
         return f"branch_{self.user_session.username}"
 
-    def add_all(self):
+    def add_all(self, changes: list[str]):
         self.log_message.emit(f"Adding all changes to git...")
-        try:
-            self.run_command(['git', 'add', '.', '-f'])
-            self.log_message.emit(f"All changes added successfully")
-        except Exception as e:
-            self.log_message.emit(f"An exception occur running add command: {e}")
+        if len(changes) > 0:
+            for change in changes:
+                change = change.strip()
+                try:
+                    self.run_command(['git', 'add', f'{change}', '-f'])
+                    self.log_message.emit(f"{change} file added successfully")
+                except Exception as e:
+                    self.log_message.emit(f"An exception occur trying to add {change} file: {e}")
+        else:
+            try:
+                self.run_command(['git', 'add', '.', '-f'])
+                self.log_message.emit(f"added all changes successfully")
+            except Exception as e:
+                self.log_message.emit(f"An exception occur trying to add all changes: {e}")
 
     def commit(self, comment:str):
         self.log_message.emit(f"Commit all changes...")
@@ -284,7 +293,6 @@ class GitController(QObject):
             self.log_message.emit(f"All changes Commited successfully")
         except Exception as e:
             self.log_message.emit(f"An exception occur running commit command: {e}")
-
 
     def push(self, branch=""):
         self.log_message.emit(f"Setting remote url : {self.git_protocol.repository_url}")
@@ -305,8 +313,8 @@ class GitController(QObject):
             except Exception as e:
                 self.log_message.emit(f"Pushing changes to branch ({branch} failed, error: {e})")
 
-    def _commit_and_push_everything(self, comment: str, branch = ""):
-        self.add_all()
+    def _commit_and_push(self, comment: str, changes: list[str] ,branch =""):
+        self.add_all(changes)
         self.commit(comment)
         self.get_latest(False)
         self.push(branch)
@@ -420,18 +428,19 @@ class GitController(QObject):
         except Exception as e:
             self.log_message.emit(f"An error occurred : {e}")
 
-    @Slot(str)
-    def push_changes(self, message: str):
-        self.push_started.emit()
+    @Slot(str, list)
+    def commit_and_push_changes(self, message: str, changes: list[str]):
+        self.push_and_commit_started.emit()
         self.check_user_session()
         self.log_message.emit("pushing changes...")
         if self.user_session.role_id == RoleID.DEV.value:
-            self.arrange_dev_push(message)
+            self.arrange_dev_push(message, changes)
         else:
-            self._commit_and_push_everything(message)
+            self._commit_and_push(message, changes)
 
         self.get_latest(False)
-        self.push_completed.emit()
+        self.get_repository_changes()
+        self.push_and_commit_completed.emit(message, changes)
 
     @Slot()
     def load_merge_requests(self, send_end_process_signal=True):
@@ -627,7 +636,7 @@ class GitController(QObject):
     def get_latest(self, send_end_process_signal=True):
         self.get_latest_started.emit()
         # restore all the modified files before get latest
-        self.restore_git_repository()
+        # self.restore_git_repository()
 
         self.log_message.emit("getting latest...")
         # Change to the repository directory
@@ -670,5 +679,5 @@ class GitController(QObject):
             self.setup()
             self.get_latest(False)
         self.refreshing_completed.emit()
-        self.log_message.emit("Refreshing windows completed")
 
+        self.log_message.emit("Refreshing windows completed")

@@ -86,7 +86,7 @@ class Application(QApplication):
             (self.ui_manager.lw_merge_request_add_comment, self.git_controller.merge_request_add_comment),
             (self.ui_manager.lw_accept_merge_request_and_merge, self.git_controller.merge_request_accept_and_merge),
             (self.ui_manager.lw_get_latest_clicked, self.git_controller.get_latest),
-            (self.ui_manager.lw_uploaded_clicked, self.git_controller.push_changes),
+            (self.ui_manager.lw_commit_and_push_clicked, self.git_controller.commit_and_push_changes),
             (self.ui_manager.lw_git_history_tab_clicked, self.git_controller.get_repository_history),
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
             (self.ui_manager.lw_log_out, self.git_controller.on_log_out),
@@ -105,8 +105,9 @@ class Application(QApplication):
             (self.git_controller.setup_completed, self.on_git_setup_completed),
             (self.git_controller.setup_started, self.ui_manager.on_git_setup_started),
             (self.git_controller.setup_completed, self.ui_manager.on_setup_completed),
-            (self.git_controller.push_started, self.ui_manager.loading_process_started),
-            (self.git_controller.push_completed, self.ui_manager.loading_process_completed),
+            (self.git_controller.push_and_commit_started, self.ui_manager.loading_process_started),
+            (self.git_controller.push_and_commit_completed, self.ui_manager.loading_process_completed),
+            (self.git_controller.push_and_commit_completed, self.ui_manager.on_push_and_commit_completed),
             (self.git_controller.get_latest_started, self.ui_manager.loading_process_started),
             (self.git_controller.get_latest_completed, self.ui_manager.loading_process_completed),
             (self.git_controller.accept_merge_started, self.ui_manager.loading_process_started),
@@ -212,8 +213,9 @@ class Application(QApplication):
         SignalManager.disconnect_signals(self.git_controller, [
             (self.git_controller.setup_started, self.ui_manager.on_git_setup_started),
             (self.git_controller.setup_completed, self.on_git_setup_completed),
-            (self.git_controller.push_started, self.ui_manager.loading_process_started),
-            (self.git_controller.push_completed, self.ui_manager.loading_process_completed),
+            (self.git_controller.push_and_commit_started, self.ui_manager.loading_process_started),
+            (self.git_controller.push_and_commit_completed, self.ui_manager.loading_process_completed),
+            (self.git_controller.push_and_commit_completed, self.ui_manager.on_push_and_commit_completed),
             (self.git_controller.get_latest_started, self.ui_manager.loading_process_started),
             (self.git_controller.get_latest_completed, self.ui_manager.loading_process_completed),
             (self.git_controller.accept_merge_started, self.ui_manager.loading_process_started),
@@ -255,7 +257,7 @@ class Application(QApplication):
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.get_all_branches),
             (self.ui_manager.lw_git_merge_request_tab_clicked, self.git_controller.load_merge_requests),
             (self.ui_manager.lw_get_latest_clicked, self.git_controller.get_latest),
-            (self.ui_manager.lw_uploaded_clicked, self.git_controller.push_changes),
+            (self.ui_manager.lw_commit_and_push_clicked, self.git_controller.commit_and_push_changes),
             (self.ui_manager.lw_get_merge_request_changed, self.git_controller.get_merge_request_commits),
             (self.ui_manager.lw_get_merge_request_changed, self.git_controller.get_merge_request_changes),
             (self.ui_manager.lw_get_merge_request_changed, self.git_controller.get_merge_requests_comments),
@@ -353,7 +355,6 @@ class Application(QApplication):
             else:
                 print("User is not animator")
                 self.git_setup.emit()
-
 
     @Slot(bool)
     def on_git_checked(self, success: bool):

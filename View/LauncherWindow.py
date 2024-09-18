@@ -16,7 +16,6 @@ from Utils.ConfigFileManager import ConfigFileManager
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
 from View.UILogger import LoggerWidget
-from View.UICommitWindow import CommitWindow
 from View.UIGitTab import UIGitTab
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UISessionWidget import UserSessionWidget
@@ -31,9 +30,9 @@ from Utils.SignalManager import SignalManager
 
 
 class LauncherWindow(BaseWindow):
-    upload_repository = Signal(str)
+    push_and_commit = Signal(str, list)
     get_latest = Signal()
-    publish_to_anim_rep = Signal(str, bool)
+    publish_to_anim_rep = Signal(str, list)
     project_changed = Signal(str)
     window_closed = Signal()
     admin_window_clicked = Signal()
@@ -47,7 +46,6 @@ class LauncherWindow(BaseWindow):
         super().__init__("Puppet Launcher", window_id, width, height)
         self.admin_window = None
         self.user_session = None
-        self.commit_window = None
         self.publish_window = None
         self.settings_window = None
 
@@ -234,7 +232,7 @@ class LauncherWindow(BaseWindow):
         return
 
     def _connect_signals(self):
-        self.git_tab.git_sniffer.upload_to_git_clicked.connect(self.create_commit_windows)
+        self.git_tab.git_sniffer.push_and_commit_clicked.connect(self.on_git_commit_and_push)
         self.git_tab.download_btn.clicked.connect(self.on_get_latest_clicked)
         self.git_tab.publish_btn.clicked.connect(self.create_publish_window)
         self.user_session_widget.logout_signal.connect(self._log_out)
@@ -254,20 +252,16 @@ class LauncherWindow(BaseWindow):
     def create_publish_window(self):
         self.publish_window = PublishWindow(" Publish to animator repository ", "Add a publish comment")
         self.publish_window.compile_all_signal.connect(
-            lambda message: self._on_publish_window_accept(message, True))
-        self.publish_window.compile_just_change_list_signal.connect(
-            lambda message: self._on_publish_window_accept(message, False))
+            lambda message: self._on_publish_window_accept(message, []))
 
         # In order to get the changes and disable/enable publish changes button
         self.git_tab.changes_list_clicked.emit()
         self.publish_window.cancel_signal.connect(self._on_publish_window_cancel)
         self.publish_window.show()
 
-    def create_commit_windows(self):
-        self.commit_window = CommitWindow(" Commit Windows")
-        self.commit_window.accept_signal.connect(self._on_commit_window_accept)
-        self.commit_window.cancel_signal.connect(self._on_commit_window_cancel)
-        self.commit_window.show()
+    def on_git_commit_and_push(self, message, changes):
+        if self.throw_message_box("Commit and Push", "Are you sure to commit and push changes?"):
+            self.push_and_commit.emit(self.add_username(message), changes)
 
     def set_user_session(self, user_session: UserSession):
         self.user_session = user_session
@@ -358,9 +352,14 @@ class LauncherWindow(BaseWindow):
     def on_setup_completed(self, success: bool):
         self.git_tab.on_repository_path_updated()
 
+    def on_push_and_commit_completed(self, message, changes):
+        if self.user_session.role_id == RoleID.ADMIN.value:
+            if self.throw_message_box("Animator repository", "Would you like to publish to animators"):
+                self.publish_to_anim_rep.emit(message, changes)
+
     @Slot(str)
     def _on_commit_window_accept(self, message):
-        self.upload_repository.emit(self.add_username(message))
+        self.push_and_commit.emit(self.add_username(message))
         self._close_commit_window()
 
     @Slot()

@@ -22,10 +22,8 @@ class PublishWindow(QMainWindow):
         self.buttons_layout = QVBoxLayout(self)
         """Buttons"""
         self.compile_all_button = BaseWindow.create_button(self, button_text="Compile and publish all")
-        self.just_change_list_button = BaseWindow.create_button(self, button_text="Compile and publish just change list")
         self.cancel_button = BaseWindow.create_button(self, button_text="Cancel")
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.compile_all_button, "Blue")
-        CustomStyleSheetApplier.set_buttons_style_and_colour(self.just_change_list_button, "Blue")
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.cancel_button, "Brown")
         "Others"
         self.input_message = QLineEdit()
@@ -39,7 +37,6 @@ class PublishWindow(QMainWindow):
     def _build(self):
         """Build Buttons Layout"""
         self.publish_buttons_layout.addWidget(self.compile_all_button, 0, Qt.AlignmentFlag.AlignCenter)
-        self.publish_buttons_layout.addWidget(self.just_change_list_button, 0, Qt.AlignmentFlag.AlignCenter)
         self.buttons_layout.addLayout(self.publish_buttons_layout)
         self.buttons_layout.addWidget(self.cancel_button)
         """Build Main Layout"""
@@ -53,7 +50,6 @@ class PublishWindow(QMainWindow):
 
     def _connect_buttons(self):
         self.compile_all_button.clicked.connect(self._on_compile_all_button_clicked)
-        self.just_change_list_button.clicked.connect(self._on_compile_just_change_list)
         self.cancel_button.clicked.connect(self._on_cancel_button)
 
     def _on_compile_all_button_clicked(self):
@@ -72,8 +68,4 @@ class PublishWindow(QMainWindow):
 
     def _on_cancel_button(self):
         self.cancel_signal.emit()
-
-    def get_changes_list(self, changes:list, modifications: list):
-       if len(changes) <= 0 and len(modifications) <= 0:
-           self.just_change_list_button.hide()
 

@@ -7,7 +7,6 @@ from PySide6.QtWidgets import (
     QListWidgetItem,
     QWidget,
     QPushButton,
-    QApplication,
     QTextEdit
 )
 from PySide6.QtGui import QAction, QFont, QColor
@@ -18,8 +17,7 @@ from View.BaseWindow import BaseWindow
 
 
 class ChangesWidget(QWidget):
-    restore_file_clicked = Signal()
-    upload_file_clicked = Signal()
+    restore_file_clicked = Signal(str)
     item_double_clicked = Signal(QListWidgetItem)
     push_and_commit_clicked = Signal(str, list)
 
@@ -52,10 +50,6 @@ class ChangesWidget(QWidget):
             restore_file_action = QAction("Restore file", self)
             restore_file_action.triggered.connect(lambda: self.restore_file_clicked.emit(checkbox.text()))
             context_menu.addAction(restore_file_action)
-
-            upload_action = QAction("Upload file", self)
-            upload_action.triggered.connect(lambda: self.upload_file_clicked.emit(checkbox.text()))
-            context_menu.addAction(upload_action)
 
             context_menu.exec_(self.mapToGlobal(pos))
 
@@ -155,3 +149,10 @@ class ChangesWidget(QWidget):
 
     def count(self) -> int:
         return self.list_widget.count()
+
+    def check_if_emtpy(self):
+        if self.list_widget.count() == 0:
+            self.list_widget.addItem("No Changes yet")
+            self.upload_btn.setText("Push local commits")
+        else:
+            self.upload_btn.setText("Commit and Push")

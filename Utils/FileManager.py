@@ -121,20 +121,24 @@ class FileManager:
         for file in files:
             file_path = fr"{os.path.join(source_path, file)}".strip()
             if not os.path.exists(file_path):
+                log_signal.emit(f"file: {file_path} doesn't exist")
                 continue
 
             if os.path.isdir(file_path):
                 files = os.listdir(file_path)
                 log_signal.emit(f"Compiling dir {file}...")
-                FileManager.compile_python_files(source_path, files, log_signal)
+                FileManager.compile_python_files(file_path, files, log_signal)
 
             elif file_path.endswith(".py"):
-                FileManager.compile_python_file(file_path, log_signal)
+                if FileManager.compile_python_file(file_path, log_signal):
+                    file_path = file_path.replace(".py",".pyc")
+                    files.append(file_path)
 
         log_signal.emit(f"Compiling files finished")
 
     @staticmethod
-    def compile_python_file(file_path: str, log_signal: SignalInstance):
+    def compile_python_file(file_path: str, log_signal: SignalInstance) -> bool:
+        return_value = True
         try:
             if os.path.exists(file_path):
                python_version = FileManager.detect_python_version_by_features(file_path)
@@ -146,13 +150,19 @@ class FileManager:
                    py_compile.compile(file_path, cfile=file_path+"c", doraise=True)
 
                log_signal.emit(f"Compile file {file_path} successfully")
+               return_value = True
             else:
-               log_signal.emit(f"file: {file_path} doesn't found")
+                return_value = False
+                log_signal.emit(f"file: {file_path} doesn't found")
+
         except py_compile.PyCompileError as e:
             log_signal.emit(f"Error compiling {file_path} : {e}")
-
+            return_value = False
         except Exception as e:
             log_signal.emit(f"Unexpected error: {e}")
+            return_value = False
+        finally:
+            return return_value
 
     @staticmethod
     def compile_python2_file(file_path: str, log_signal: SignalInstance):
@@ -166,7 +176,6 @@ class FileManager:
             log_signal.emit(f"file: {file_path} compiled successfully")
         else:
             log_signal.emit(f"file: {file_path} compiled error")
-
 
     @staticmethod
     def find_files(pattern, extension, directory) -> list:
@@ -321,7 +330,8 @@ class FileManager:
                     print(f"Permission error: {e}")
 
     @staticmethod
-    def sync_directories(source_path: str, dest_path: str, log_signal: SignalInstance):
+    def sync_directories(source_path: str, dest_path: str, log_signal: SignalInstance) -> list:
+        deleted_files = []
         for root, dirs, files in os.walk(dest_path):
             for file in files:
                 file_path = fr"{os.path.join(root, file)}".strip()
@@ -340,6 +350,7 @@ class FileManager:
                     try:
                         log_signal.emit(f"Removing file: {file_path}")
                         os.remove(file_path)
+                        deleted_files.append(file_path)
                     except Exception as e:
                         log_signal.emit(f"Exception occur while trying to erase file: {file_path} error({e}),"
                               f" source file: {source_file}")
@@ -356,11 +367,15 @@ class FileManager:
                 if not os.path.exists(source_dir):
                     log_signal.emit(f"Removing empty directory {dir_path}")
                     FileManager.erase_dir(dir_path)
+                    deleted_files.append(dir_path)
+                else:
+                    files = os.listdir(dir_path)
+                    if len(files) <= 0:
+                        log_signal.emit(f"Removing empty directory {dir_path}")
+                        FileManager.erase_dir(dir_path)
+                        deleted_files.append(dir_path)
 
-                files = os.listdir(dir_path)
-                if len(files) <= 0:
-                    log_signal.emit(f"Removing empty directory {dir_path}")
-                    FileManager.erase_dir(dir_path)
+        return deleted_files
 
     @staticmethod
     def detect_python_version_by_features(file_path):
