@@ -14,10 +14,15 @@ from Utils.Environment import FILE_CHANGE_DIC
 class FileManager:
 
     @staticmethod
-    def get_working_path(default_path: str, user: str) -> str:
+    def get_working_path(default_path: str, username: str) -> str:
+        """
+        :param default_path: the default workspace name (dev/admin)
+        :param username: the username of the user
+        :return: the complete workspace path
+        """
         current_script = Path(__file__).resolve()
         project_path = current_script.parents[2]
-        work_path = os.path.join(project_path, default_path, user)
+        work_path = os.path.join(project_path, default_path, username)
         return work_path
 
     @staticmethod
@@ -26,17 +31,28 @@ class FileManager:
 
     @staticmethod
     def get_local_path() -> str:
+        """
+        :return: the absolute path of the application
+        """
         this_file_path = os.path.dirname(os.path.abspath(__file__))
         return os.path.join(this_file_path, "../")
 
     @staticmethod
     def get_img_path(img_path: str) -> str:
+        """
+        :param img_path: image (.jpg/.png) file name
+        :return: the absolute path of the image
+        """
         local_path = FileManager.get_local_path()
         icon_path = os.path.join(local_path, "Resources/Img/", img_path)
         return icon_path
 
     @staticmethod
     def file_exist(file: str) -> bool:
+        """
+        :param file: the file to check if exist or not
+        :return: true if the file exist false otherwise
+        """
         local_path = FileManager.get_local_path()
         file_path = os.path.join(local_path, file)
         return Path(file_path).exists()
@@ -50,7 +66,7 @@ class FileManager:
         return os.path.join(FileManager.get_local_path(), "Data/")
 
     @staticmethod
-    def create_dir(path:str):
+    def create_dir(path:str) -> None:
         os.mkdir(path)
 
     @staticmethod
@@ -58,7 +74,12 @@ class FileManager:
         return os.path.exists(path)
 
     @staticmethod
-    def move_to(path: str):
+    def move_to(path: str) -> None:
+        """
+        move the current system cursor path to the path passed
+        :param path: absolute path to move the os cursor
+        :return: None
+        """
         if not FileManager.in_path(path):
             try:
                 os.chdir(path)
@@ -66,12 +87,21 @@ class FileManager:
                 print(f"Error trying to execute os.chdir : {e}")
 
     @staticmethod
-    def move_to_local_dir():
+    def move_to_local_dir() -> None:
+        """
+        move the os cursor to the application absolute path
+        :return:
+        """
         if not FileManager.in_path(FileManager.get_local_path()):
             FileManager.move_to(FileManager.get_local_path())
 
     @staticmethod
     def move_dir(source_path: str, dist_path: str):
+        """
+        :param source_path: absolute path of the dir to move
+        :param dist_path: absolute path of the destination dir
+        :return:
+        """
         if not os.path.exists(dist_path):
             os.mkdir(dist_path)
         if os.path.exists(source_path) and os.path.isdir(source_path):
@@ -82,11 +112,20 @@ class FileManager:
 
     @staticmethod
     def erase_dir(source_path: str):
+        """
+        :param source_path:  absolute path to erase
+        :return:
+        """
         if os.path.exists(source_path) and os.path.isdir(source_path):
             shutil.rmtree(source_path)
 
     @staticmethod
     def ensure_all_files_extension(directory, extension) -> bool:
+        """
+        :param directory: the absolute path where we are going to look in
+        :param extension: the type of file to look for in directory
+        :return: true if all files are the same type false otherwise
+        """
         files = os.listdir(directory)
         return all(file.endswith(extension) for file in files)
 
@@ -99,7 +138,12 @@ class FileManager:
         return len(os.listdir(path))
 
     @staticmethod
-    def compile_python_files_from_source(source_path: str, log_signal:SignalInstance):
+    def compile_python_files_from_source(source_path: str, log_signal:SignalInstance) -> None:
+        """
+        :param source_path: the source file where the python file are located
+        :param log_signal: signal to show messages in the UI
+        :return: None
+        """
         FileManager.move_to(source_path)
 
         log_signal.emit(f"Compiling files in {source_path}")
@@ -114,7 +158,13 @@ class FileManager:
         log_signal.emit(f"Compilation finished")
 
     @staticmethod
-    def compile_python_files(source_path: str, files: list[str], log_signal: SignalInstance):
+    def compile_python_files(source_path: str, files: list[str], log_signal: SignalInstance) -> None:
+        """
+        :param source_path: The default workspace path (admin/dev working path)
+        :param files: The files that are going to be compiled (you can pass not .py files as well)
+                        the compiled files are added in the files list if the .py was compiled successfully
+        :param log_signal: signal that show log messages in the ui
+        """
         FileManager.move_to(source_path)
         log_signal.emit(f"Compiling files: {files}")
 
@@ -131,13 +181,19 @@ class FileManager:
 
             elif file_path.endswith(".py"):
                 if FileManager.compile_python_file(file_path, log_signal):
-                    file_path = file_path.replace(".py",".pyc")
-                    files.append(file_path)
+                    # we add the compiled file to the files list
+                    file = file.replace(".py",".pyc")
+                    files.append(file)
 
         log_signal.emit(f"Compiling files finished")
 
     @staticmethod
     def compile_python_file(file_path: str, log_signal: SignalInstance) -> bool:
+        """
+        :param file_path: full path of the file to compile
+        :param log_signal: signal to show messages in the UI
+        :return: true if compile was successfully and false otherwise
+        """
         return_value = True
         try:
             if os.path.exists(file_path):
@@ -165,7 +221,13 @@ class FileManager:
             return return_value
 
     @staticmethod
-    def compile_python2_file(file_path: str, log_signal: SignalInstance):
+    def compile_python2_file(file_path: str, log_signal: SignalInstance) -> None:
+        """
+        This function compiles a file using python 2 version
+        :param file_path:  the full path (absolute path) of the file
+        :param log_signal: log signal to show messages in the UI
+        :return: None
+        """
         from Utils.ConfigFileManager import ConfigFileManager
 
         config_manager = ConfigFileManager()
@@ -179,6 +241,13 @@ class FileManager:
 
     @staticmethod
     def find_files(pattern, extension, directory) -> list:
+        """
+        Look up for a pattern in a specific type of file inside the directory
+        :param pattern: the pattern that we are looking for inside the directory
+        :param extension: the type of file where we are searching the pattern
+        :param directory: the directory where we are going to look for the pattern
+        :return: a list that contains all the files .extension that contains the pattern
+        """
         matches = []
         # Traverse the directory tree
         for root, dirs, files in os.walk(directory):
@@ -191,6 +260,11 @@ class FileManager:
 
     @staticmethod
     def get_files_extension(extension, directory) -> list:
+        """
+        :param extension: the extension we're looking for
+        :param directory: the directory path where we are looking for
+        :return: a list with all the matches
+        """
         # Ensure the extension starts with a dot
         if not extension.startswith('.'):
             extension = '.' + extension
@@ -208,6 +282,11 @@ class FileManager:
 
     @staticmethod
     def find_directories(pattern: str, root_directory: str):
+        """
+        :param pattern: the pattern that we are looking for
+        :param root_directory: the directory where we will be looking for
+        :return:
+        """
         directories = []
 
         for root, dirs, files in os.walk(root_directory):
@@ -218,6 +297,14 @@ class FileManager:
 
     @staticmethod
     def move_all_files_except_extension(src_dir: str, dst_dir: str, extension: str, log_signal: SignalInstance):
+        """
+        move all the files from src_dir to dst_dir except for those of type extension
+        :param src_dir: the absolute path of the where the files are located originally
+        :param dst_dir: the absolute path where the files are going to be moved to
+        :param extension: the type of files that are going to be ignored
+        :param log_signal: a signal to show messages in the UI
+        :return: None
+        """
         for root, dirs, files in os.walk(src_dir):
             for file in files:
                 if not file.endswith(extension):
@@ -244,6 +331,15 @@ class FileManager:
 
     @staticmethod
     def move_files(files: list[str], src_dir: str, ignore: str, dst_dir:str, log_signal: SignalInstance, attends=0):
+        """
+        :param files: a list of all the files that are going to be moved
+        :param src_dir: the source absolute path where all the files are located
+        :param ignore: the type of files that are going to be ignored (extension)
+        :param dst_dir: the destination path where all the files are going to be moved
+        :param log_signal: a signal to show messages to the UI
+        :param attends: the number of attend that you have try to move the files
+        :return: None
+        """
         # Ensure the extension starts with a dot
         if not ignore.startswith('.'):
             ignore = '.' + ignore
@@ -281,6 +377,12 @@ class FileManager:
 
     @staticmethod
     def remove_files(files: list[str], dest_dir: str, log_signal):
+        """
+        :param files: list of files to remove
+        :param dest_dir: the destination directory where we are looking for files list
+        :param log_signal: a signal to show messages to the UI
+        :return:
+        """
         for file in files:
             if file.endswith(".py"):
                 file = file.replace(".py",".pyc")
@@ -294,6 +396,12 @@ class FileManager:
 
     @staticmethod
     def delete_empty_sub_dirs_with_name(root_dir, target_name, log_signal: SignalInstance):
+        """
+        :param root_dir: the root directory where we are going to
+        :param target_name: the sub_directory name that we are looking for
+        :param log_signal: a signal to show messages in the UI
+        :return:
+        """
         for dir_path, dir_names, filenames in os.walk(root_dir, topdown=False):
             # Look for directories with the target name
             for dir_name in dir_names:
@@ -318,6 +426,10 @@ class FileManager:
 
     @staticmethod
     def erase_dir_files(path: str):
+        """
+        :param path: the path were we are going to erase the files
+        :return: None
+        """
         files = os.listdir(path)
         for file in files:
             full_path = os.path.join(path, file)
@@ -331,6 +443,13 @@ class FileManager:
 
     @staticmethod
     def sync_directories(source_path: str, dest_path: str, log_signal: SignalInstance) -> list:
+        """
+        erase all the files that exist in the dest_path and don't in the source_path
+        :param source_path: the source absolute path where we are going to sync the directories
+        :param dest_path: the destination absolute path to sync with
+        :param log_signal: signal to show messages in the UI
+        :return: a list with all absolute path of the files deleted
+        """
         deleted_files = []
         for root, dirs, files in os.walk(dest_path):
             for file in files:
@@ -379,6 +498,10 @@ class FileManager:
 
     @staticmethod
     def detect_python_version_by_features(file_path):
+        """
+        :param file_path: the absolute path of the python file
+        :return: the python version of the file_path python file
+        """
         python2_keywords = ["print ", "xrange(", "basestring", "unicode"]
         python3_keywords = ["print(", "range(", "str", "bytes"]
 

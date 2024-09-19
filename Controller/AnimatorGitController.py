@@ -89,7 +89,7 @@ class AnimatorGitController(GitController):
     def compile_files(self, files:list[str]):
         user_session = UserSession()
         if user_session.role_id != RoleID.ADMIN.value:
-            return lambda: print("No allowed to Compile files")
+            self.log_message.emit(f"Not allowed to compile files")
 
         # compile the files of the origin repository
         self.log_message.emit(f"Compiling python files... in {self.source_path}")
@@ -148,6 +148,7 @@ class AnimatorGitController(GitController):
         FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
         deleted_files = FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
         changes += deleted_files
+        print(changes)
         self._commit_and_push(message, changes)
 
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
