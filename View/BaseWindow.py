@@ -21,8 +21,8 @@ class BaseWindow(QMainWindow):
         self.loading.hide()
 
         self.setWindowTitle(title)
-        self.setMinimumWidth(width)
-        self.setMinimumHeight(height)
+        self.setFixedWidth(width)
+        self.setFixedHeight(height)
         self._set_window_icon()
         self.automatic_close = False
 

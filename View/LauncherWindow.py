@@ -135,7 +135,7 @@ class LauncherWindow(BaseWindow):
         self.git_tab.setObjectName("GitTab")
         self._add_tab(self.git_tab_frame, self.git_tab, "Git")
 
-        self.pv4_tab = UIGitTab(self.config["general"]["working_path"])
+        self.pv4_tab = QWidget()
         self.pv4_tab.setObjectName("PV4Tab")
         self._add_tab(self.pv4_tab_frame, self.pv4_tab, "PV4")
 

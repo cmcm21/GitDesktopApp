@@ -47,7 +47,11 @@ class GitProtocolSSH(GitProtocolAbstract):
         if return_code == return_code.ALREADY_EXIST:
             return True
 
+        if not os.path.exists(self.git_controller.raw_working_path):
+            os.mkdir(self.git_controller.raw_working_path)
+
         self.git_controller.log_message.emit(f"Running git clone command...")
+        return_code = self.git_controller._run_git_command_get_output()
         return_code = self.git_controller.run_command(
             ['git', 'clone', self.repository_url, self.git_controller.raw_working_path])
 
