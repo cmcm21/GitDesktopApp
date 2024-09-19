@@ -32,7 +32,7 @@ class ChangesWidget(QWidget):
         self.build_upload_button()
 
         self.layout.addWidget(self.list_widget)
-        self.layout.addWidget(self.text_edit)
+        self.layout.addWidget(self.commit_txt_edit)
         self.layout.addWidget(self.upload_btn, alignment=Qt.AlignmentFlag.AlignCenter)
         self.setLayout(self.layout)
 
@@ -60,11 +60,11 @@ class ChangesWidget(QWidget):
         self.list_widget.doubleClicked.connect(lambda item: self.item_double_clicked.emit(item))
 
     def build_text_edit(self):
-        self.text_edit = QTextEdit()
-        self.text_edit.setPlaceholderText("Add a commit message")
-        self.text_edit.setFixedHeight(80)
-        CustomStyleSheetApplier.set_q_text_edit_style_and_colour(self.text_edit, "White")
-        self.text_edit.setTextColor(QColor("Black"))
+        self.commit_txt_edit = QTextEdit()
+        self.commit_txt_edit.setPlaceholderText("Add a commit message")
+        self.commit_txt_edit.setFixedHeight(80)
+        CustomStyleSheetApplier.set_q_text_edit_style_and_colour(self.commit_txt_edit, "White")
+        self.commit_txt_edit.setTextColor(QColor("Black"))
 
     def build_upload_button(self):
         self.upload_btn: QPushButton = BaseWindow.create_button(
@@ -75,11 +75,11 @@ class ChangesWidget(QWidget):
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.upload_btn, "Blue")
 
     def on_push_and_commit_clicked(self):
-        commit_message = self.text_edit.toPlainText()
+        commit_message = self.commit_txt_edit.toPlainText()
         selected_files = self.get_selected_items()
 
         if commit_message == "":
-            self.text_edit.setPlaceholderText("Add a commit message to commit and push!!!")
+            self.commit_txt_edit.setPlaceholderText("Add a commit message to commit and push!!!")
         else:
             self.push_and_commit_clicked.emit(commit_message, selected_files)
 

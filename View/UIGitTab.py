@@ -84,8 +84,8 @@ class GitSnifferWidget(QWidget):
         return widget
 
     def on_push_and_commit_clicked(self, message, files):
-        #TODO: send signal with message and list of files
         self.push_and_commit_clicked.emit(message, files)
+        self.changes_list.commit_txt_edit.clear()
 
     def _create_merge_request_widget(self, object_name):
         """Helper method to create a MergeRequestTab widget with a specified object name."""

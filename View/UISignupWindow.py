@@ -1,3 +1,5 @@
+from webbrowser import Error
+
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,
@@ -127,8 +129,17 @@ class SignUpForm(QMainWindow):
         if username == "" or password == "" or email == "" or re_password == "":
             self.input_error(ErrorInputCode.EMPTY_FIELDS)
             return False
+        if " " in email:
+            self.input_error(ErrorInputCode.INVALID_EMAIL)
+            return False
+        if len(username) > 10:
+            self.input_error(ErrorInputCode.LONG_USERNAME)
+            return False
+        if password != re_password:
+            self.input_error(ErrorInputCode.INVALID_PASSWD)
+            return False
 
-        return password == re_password
+        return True
 
     def input_error(self, error_code):
         if error_code == ErrorInputCode.EMPTY_FIELDS:
@@ -137,6 +148,9 @@ class SignUpForm(QMainWindow):
             self.error_message.emit("The email is invalid")
         elif error_code == ErrorInputCode.LONG_USERNAME:
             self.error_message.emit("Username limit is 10 characters")
+        elif error_code == ErrorInputCode.INVALID_PASSWD:
+            self.error_message.emit("Error in the password/re-enter password, confirm before continue")
+
 
     def apply_styles(self):
         CustomStyleSheetApplier.set_line_edit_style_and_colour(self.username_input)
