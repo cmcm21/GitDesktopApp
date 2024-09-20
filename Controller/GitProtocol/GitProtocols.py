@@ -51,8 +51,7 @@ class GitProtocolSSH(GitProtocolAbstract):
             os.mkdir(self.git_controller.raw_working_path)
 
         self.git_controller.log_message.emit(f"Running git clone command...")
-        return_code = self.git_controller._run_git_command_get_output()
-        return_code = self.git_controller.run_command(
+        return_code = self.git_controller._run_git_command_get_output(
             ['git', 'clone', self.repository_url, self.git_controller.raw_working_path])
 
         if not return_code:

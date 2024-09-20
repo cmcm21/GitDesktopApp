@@ -66,7 +66,6 @@ class MergeRequestTab(QWidget):
     def _create_header_widgets(self):
         """Create header-related widgets."""
         self.header_layout = QVBoxLayout()
-        self.merge_request_label = self._create_label("Merge request", "background: transparent;")
         self.merge_request_cb = self._create_combobox(40)
         self.merge_request_filter = self._create_combobox(25)
 
@@ -131,14 +130,6 @@ class MergeRequestTab(QWidget):
         tab_widget.setStyleSheet("background: transparent;"
                                  "border: 1px solid white;"
                                  "border-radius: 10px;")
-
-    @staticmethod
-    def _create_label(text: str, style: str) -> QLabel:
-        """Create a QLabel with text and style."""
-        label = QLabel(text)
-        label.adjustSize()
-        label.setStyleSheet(style)
-        return label
 
     @staticmethod
     def _create_button(text: str, size: QSize) -> QPushButton:

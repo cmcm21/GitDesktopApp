@@ -122,7 +122,7 @@ class GitSnifferWidget(QWidget):
         self.tabs.addTab(self._create_tab(self.history_widget, "Commits History"), "History")
         self.tabs.addTab(self._create_tab(
             self.changes_list_widget, "Changes List"), "Change list")
-        self.tabs.addTab(self._create_tab(self.merge_request_widget, ""), "Merge Request")
+        self.tabs.addTab(self._create_tab(self.merge_request_widget, "Merge Request"), "Merge Request")
 
         # Set the main layout
         self.layout.addWidget(self.tabs)

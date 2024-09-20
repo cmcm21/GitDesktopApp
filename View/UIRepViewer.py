@@ -71,7 +71,7 @@ class RepositoryViewerWidget(QWidget):
         # Create a file system model
         self.model = CustomFileSystemModel()
         self.raw_repository_path = repository_path
-        self.repository_path = os.path.join(repository_path, "../")
+        self.repository_path = os.path.join(self.raw_repository_path, "./")
         self.model.setRootPath(self.repository_path)
         # Create a tree view and set the model
         self.tree = CustomTreeView()
@@ -112,7 +112,7 @@ class RepositoryViewerWidget(QWidget):
                 self.watcher.addPath(full_dir)
 
         self.watcher.fileChanged.connect(self.repo_updated, Qt.ConnectionType.QueuedConnection)
-        #self.watcher.directoryChanged.connect(self.repo_updated, Qt.ConnectionType.QueuedConnection)
+        # self.watcher.directoryChanged.connect(self.repo_updated, Qt.ConnectionType.QueuedConnection)
 
     def on_repo_updated(self):
         self.repo_updated.emit()

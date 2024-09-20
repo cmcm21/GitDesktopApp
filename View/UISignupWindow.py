@@ -106,6 +106,11 @@ class SignUpForm(QMainWindow):
         self.user_controller.error_message.connect(lambda message: self.error_message.emit(message))
         self.user_controller.log_message.connect(lambda message: self.log_message.emit(message))
 
+        self.username_input.returnPressed.connect(self.signup)
+        self.email_input.returnPressed.connect(self.signup)
+        self.reenter_password_input.returnPressed.connect(self.signup)
+        self.password_input.returnPressed.connect(self.signup)
+
     def signup(self):
         username = self.username_input.text()
         password = self.password_input.text()

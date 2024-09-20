@@ -51,8 +51,8 @@ class LoginWindow(BaseWindow):
         self.password_input = QLineEdit()
         self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
 
-        self.login_button = EnterButton('Login',self)
-        self.signup_button = QPushButton('Sign Up')
+        self.login_button: QPushButton = EnterButton('Login',self)
+        self.signup_button = EnterButton('Sign Up', self)
 
         self.error_label = QLabel()
         self.icon_frame = self.create_default_frame("IconFrame")
@@ -120,13 +120,14 @@ class LoginWindow(BaseWindow):
         self.main_layout.addWidget(self.loading)
 
     def connect_signals(self):
+        self.username_input.returnPressed.connect(self.on_check_login)
+        self.password_input.returnPressed.connect(self.on_check_login)
         self.signup_button.clicked.connect(self.on_signup_clicked)
         self.login_button.clicked.connect(self.on_check_login)
         self.user_controller.log_message.connect(self.log)
         self.user_controller.error_message.connect(self.log_error)
 
     def on_check_login(self):
-        print("Login pressed")
         self.loading.show_anim_screen()
         username = self.username_input.text()
         password = self.password_input.text()
