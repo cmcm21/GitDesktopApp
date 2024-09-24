@@ -8,21 +8,20 @@ from pathlib import Path
 import shutil
 import py_compile
 import subprocess
-from Utils.Environment import FILE_CHANGE_DIC
 
 
 class FileManager:
 
     @staticmethod
-    def get_working_path(default_path: str, username: str) -> str:
+    def get_working_path(default_path: str, user_role: str) -> str:
         """
         :param default_path: the default workspace name (dev/admin)
-        :param username: the username of the user
+        :param user_role: the role of the user
         :return: the complete workspace path
         """
         current_script = Path(__file__).resolve()
         project_path = current_script.parents[2]
-        work_path = os.path.join(project_path, default_path, username)
+        work_path = os.path.join(project_path, default_path, user_role)
         return work_path
 
     @staticmethod
@@ -201,7 +200,8 @@ class FileManager:
                log_signal.emit(f"Compiling file {file_path}... using python {python_version}")
 
                if python_version == 2:
-                   FileManager.compile_python2_file(file_path, log_signal)
+                   if not FileManager.compile_python2_file(file_path, log_signal):
+                       py_compile.compile(file_path, cfile=file_path+"c", doraise=True)
                else:
                    py_compile.compile(file_path, cfile=file_path+"c", doraise=True)
 
@@ -221,7 +221,7 @@ class FileManager:
             return return_value
 
     @staticmethod
-    def compile_python2_file(file_path: str, log_signal: SignalInstance) -> None:
+    def compile_python2_file(file_path: str, log_signal: SignalInstance) -> bool:
         """
         This function compiles a file using python 2 version
         :param file_path:  the full path (absolute path) of the file
@@ -232,12 +232,13 @@ class FileManager:
 
         config_manager = ConfigFileManager()
         python2_alias = config_manager.get_config()['general']['python2_alias']
-
-        result = subprocess.run([python2_alias, "-m", "py_compile", file_path], check=True)
-        if result.returncode == 0:
+        try:
+            result = subprocess.run([python2_alias, "-m", "py_compile", file_path], check=True)
             log_signal.emit(f"file: {file_path} compiled successfully")
-        else:
+            return True
+        except subprocess.CalledProcessError:
             log_signal.emit(f"file: {file_path} compiled error")
+            return False
 
     @staticmethod
     def find_files(pattern, extension, directory) -> list:
@@ -363,13 +364,16 @@ class FileManager:
                             if not os.access(src_dir, os.W_OK):
                                 os.chmod(src_dir, stat.S_IWRITE)
 
+                            if not os.path.exists(file):
+                                return
+
                             shutil.move(fr"{source_path.strip()}", fr"{destination_dir.strip()}")
                             log_signal.emit(f"Moved: {source_path} -> {destination_dir}")
                         else:
                             shutil.copy(fr"{source_path.strip()}", fr"{destination_dir.strip()}")
                             log_signal.emit(f"Copied: {source_path.strip()} -> {destination_dir.strip()}")
 
-                    except Exception as e :
+                    except Exception as e:
                         log_signal.emit(f"Error Moving file from {source_path} -> to {destination_dir}, exception: {e}")
                         if attends <= 2:
                             attends += 1
@@ -513,4 +517,4 @@ class FileManager:
             elif any(keyword in content for keyword in python3_keywords):
                 return 3
 
-        return None
+        return 3

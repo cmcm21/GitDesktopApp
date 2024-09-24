@@ -175,7 +175,9 @@ class SystemController(QObject):
             # Run the installer
             self.log_message.emit("Running Python 2 installer...")
             subprocess.run(
-                ["msiexec", "/i", installer, "/quiet", "/norestart"], check=True, creationflags=subprocess.CREATE_NO_WINDOW)
+                ["msiexec", "/i", installer, "/quiet", "/norestart", f"TargetDir={python_install_dir}"],
+                check=True, creationflags=subprocess.CREATE_NO_WINDOW
+            )
 
             self.log_message.emit("Python 2 installed successfully.")
 
@@ -188,7 +190,7 @@ class SystemController(QObject):
                 self.log_message.emit("Python 2 is not installed.")
                 return False
 
-            result = subprocess.run([self.python2_alias, "--version"], capture_output=True, text=True)
+            result = subprocess.run([self.python2_alias, "--version"], capture_output=True, text=True )
             if result.returncode == 0:
                 self.log_message.emit(f"Python 2 is installed: {result.stdout.strip()}")
                 return True
@@ -233,6 +235,9 @@ class SystemController(QObject):
             local_path = FileManager.get_local_path()
             batch_file_path = os.path.join(local_path, "Resources\\ExternalScripts\\python2.bat")
             if os.path.exists(batch_file_path):
+                if not os.path.exists(self.python2_alias):
+                    self.config_manager.add_value("general", "python2_alias", batch_file_path)
+                    self.python2_alias = self.config_manager.get_value("general","python2_alias")
                 return
 
             # Create the batch file to invoke Python 2

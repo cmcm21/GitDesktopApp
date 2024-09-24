@@ -2,8 +2,8 @@
 username = "m-correa"
 repository_name = "Puppet"
 project_id = "60942723"
-personal_access_token = "XXXXXXXXXXXXX"
-repository_url = "https://m-correa:@gitlab.com/m-correa/Puppet.git"
+personal_access_token = "glpat-7jNzAfWqokoiPuTjuKEh"
+repository_url = "https://m-correa:glpat-7jNzAfWqokoiPuTjuKEh@gitlab.com/m-correa/Puppet.git"
 repository_url_ssh = "git@gitlab.com:m-correa/Puppet.git"
 gitlab_api_url = "https://gitlab.com/api/v4"
 git_hosts = [
@@ -14,7 +14,7 @@ git_hosts = [
 username = "m-correa"
 repository_name = "Puppet_anim"
 project_id = "60945745"
-personal_access_token = "XXXXXXXXXXXXX"
+personal_access_token = "glpat-7jNzAfWqokoiPuTjuKEh"
 repository_url = "https://gitlab.com/m-correa/Puppet_anim.git"
 repository_url_ssh = "git@gitlab.com:m-correa/Puppet_anim.git"
 gitlab_api_url = "https://gitlab.com/api/v4"
@@ -23,8 +23,8 @@ git_hosts = [
 ]
 
 [general]
-working_path = "C:\\Users\\m-correa\\PycharmProjects\\PuppetLauncher/workspaces/default"
-animator_path = "C:\\Users\\m-correa\\PycharmProjects\\PuppetLauncher/workspaces/animator"
+working_path = ""
+animator_path = ""
 repository_prefix = "PuppetLauncher/workspaces/"
 maya25_path = "C://Program Files/Autodesk/Maya2025/bin/maya.exe"
 maya24_path = "C://Program Files/Autodesk/Maya2024/bin/maya.exe"
@@ -34,7 +34,7 @@ git_installer_url = "https://github.com/git-for-windows/git/releases/download/v2
 python2_installer_url = "https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi"
 selected_maya_bat = "C:\\Users\\m-correa\\PycharmProjects\\PuppetLauncher/workspaces/default\\Tempura\\AdminMaya2023.bat"
 selected_bat = "C:\\Users\\m-correa\\PycharmProjects\\PuppetLauncher/workspaces/default\\Tempura"
-python2_alias = "C:\\Users\\m-correa\\PycharmProjects\\pythonProject\\Utils\\../Resources\\ExternalScripts\\python2.bat"
+python2_alias = ""
 
 [db.roles]
 names = [
@@ -49,7 +49,7 @@ user_names = [
     "m-correa",
     "s-shenoy",
 ]
-default_password = "XXXX"
+default_password = "1234"
 emails = [
     "m-correa@soleilgamestudios.com",
     "s-shenoy@soleilgamestudios.com",

@@ -148,13 +148,12 @@ class AnimatorGitController(GitController):
         FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
         deleted_files = FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
         changes += deleted_files
-        print(changes)
         self._commit_and_push(message, changes)
 
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
 
-    def get_changes_from_default_rep(self) -> tuple:
+    def get_changes_from_default_rep(self) -> tuple[list, list]:
         temp_url = self.raw_working_path
         self.raw_working_path = self.config_manager.get_config()["general"]["working_path"]
         modifies, changes = self.get_repository_changes()
@@ -163,7 +162,7 @@ class AnimatorGitController(GitController):
         return modifies, changes
 
     def check_working_path(self):
-        if self.raw_working_path == "":
+        if not os.path.exists(self.raw_working_path):
             self.raw_working_path = FileManager.get_working_path(
                 self.config_manager.get_config()["general"]["repository_prefix"],"animator")
             self.config_manager.add_value("general","animator_path", self.raw_working_path)
@@ -171,7 +170,7 @@ class AnimatorGitController(GitController):
             self.source_path = self.config_manager.get_config()["general"]["working_path"]
 
     @staticmethod
-    def extract_just_file_paths(modifies, changes) -> tuple:
+    def extract_just_file_paths(modifies, changes) -> tuple[list, list]:
         file_paths = []
         deleted_files = []
 

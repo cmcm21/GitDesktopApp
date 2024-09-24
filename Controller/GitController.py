@@ -110,7 +110,10 @@ class GitController(QObject):
             elif stderr:
                 if "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!" in stderr:
                     self.reset_ssh = True
-                if "fatal" in stderr:
+                if "dubious ownership"  in stderr:
+                    self.run_command(["git", "config", "--global", "--add", "safe.directory", self.raw_working_path])
+                    return self.run_command(command)
+                elif "fatal" in stderr:
                     self.error_message.emit(f"An error occurred executing command: {command_str}, {stderr}")
                     return False
                 else:
@@ -371,10 +374,9 @@ class GitController(QObject):
             self.run_command(['git', 'remote', 'add', 'origin', url])
 
     def check_working_path(self):
-        if self.raw_working_path == "":
+        if not os.path.exists(self.raw_working_path):
             self.raw_working_path = FileManager.get_working_path(
                 self.config_manager.get_config()["general"]["repository_prefix"],"default")
-            print(self.raw_working_path)
             self.config_manager.add_value("general","working_path", self.raw_working_path)
             self.working_path = Path(self.raw_working_path)
 
@@ -608,7 +610,7 @@ class GitController(QObject):
             self.send_repository_history.emit(commits)
 
     @Slot()
-    def get_repository_changes(self, send_end_process_signal=True) -> tuple:
+    def get_repository_changes(self, send_end_process_signal=True) -> tuple[list, list]:
         changes_modified = []
         other_changes = []
         self.log_message.emit("Getting Changes in repository...")
