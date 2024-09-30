@@ -115,8 +115,12 @@ class FileManager:
         :param source_path:  absolute path to erase
         :return:
         """
-        if os.path.exists(source_path) and os.path.isdir(source_path):
-            shutil.rmtree(source_path)
+        try:
+            if os.path.exists(source_path) and os.path.isdir(source_path):
+                shutil.rmtree(source_path)
+        except PermissionError as pr:
+            print("Error trying to remove path")
+
 
     @staticmethod
     def ensure_all_files_extension(directory, extension) -> bool:
@@ -137,11 +141,10 @@ class FileManager:
         return len(os.listdir(path))
 
     @staticmethod
-    def compile_python_files_from_source(source_path: str, log_signal:SignalInstance) -> None:
+    def compile_all_python_files(source_path: str, log_signal:SignalInstance) -> None:
         """
         :param source_path: the source file where the python file are located
         :param log_signal: signal to show messages in the UI
-        :return: None
         """
         FileManager.move_to(source_path)
 
@@ -297,18 +300,84 @@ class FileManager:
         return directories
 
     @staticmethod
-    def move_all_files_except_extension(src_dir: str, dst_dir: str, extension: str, log_signal: SignalInstance):
+    def copy_all_files(src_dir: str, dst_dir: str, log_signal: SignalInstance):
         """
         move all the files from src_dir to dst_dir except for those of type extension
         :param src_dir: the absolute path of the where the files are located originally
         :param dst_dir: the absolute path where the files are going to be moved to
-        :param extension: the type of files that are going to be ignored
         :param log_signal: a signal to show messages in the UI
         :return: None
         """
         for root, dirs, files in os.walk(src_dir):
             for file in files:
-                if not file.endswith(extension):
+                # Construct full file path
+                file_path = os.path.join(root, file)
+
+                #ignore all git related files
+                if ".git" in file_path:
+                    continue
+
+                # Determine the relative path from the source directory
+                relative_path = os.path.relpath(root, src_dir)
+                # Create the corresponding directory in the destination if it doesn't exist
+                destination_dir = os.path.join(dst_dir, relative_path)
+                os.makedirs(destination_dir, exist_ok=True)
+
+                try:
+                    shutil.copy(file_path, os.path.join(destination_dir, file))
+                    log_signal.emit(f"Copied: {file_path} -> {os.path.join(destination_dir, file)}")
+
+                except Exception as e:
+                    log_signal.emit(f"Exception trying to copy file: {file_path} -> error: {e}")
+
+    @staticmethod
+    def copy_files(files: list[str], src_dir: str, dst_dir:str, log_signal: SignalInstance, attends=0):
+        """
+        :param files: a list of all the files that are going to be moved
+        :param src_dir: the source absolute path where all the files are located
+        :param dst_dir: the destination path where all the files are going to be moved
+        :param log_signal: a signal to show messages to the UI
+        :param attends: the number of attend that you have try to move the files
+        """
+
+        # Ensure the extension starts with a dot
+        log_signal.emit(f"Moving files : {files}")
+        os.makedirs(dst_dir, exist_ok=True, mode=0o777)
+
+        for file in files:
+            file = file.strip()
+
+            source_path = os.path.join(src_dir, file)
+            destination_dir = os.path.join(dst_dir, file)
+
+            if os.path.isdir(source_path):
+                in_files = os.listdir(source_path)
+                FileManager.copy_files(in_files, source_path, destination_dir, log_signal)
+            else:
+                try:
+                    shutil.copy(fr"{source_path.strip()}", fr"{destination_dir.strip()}")
+                    log_signal.emit(f"Copied: {source_path.strip()} -> {destination_dir.strip()}")
+
+                except Exception as e:
+                    log_signal.emit(f"Error Moving file from {source_path} -> to {destination_dir}, exception: {e}")
+                    if attends <= 2:
+                        attends += 1
+                        FileManager.copy_files(files, src_dir, dst_dir, log_signal, attends)
+
+    @staticmethod
+    def remove_files_in_path(path: str, file_extension: str, log_signal:SignalInstance):
+        """
+        :param path: the absolute path where we have to erase the files
+        :param file_extension: the type of file to erase
+        :param log_signal: a help signal so show log messages in the UI
+        :return:
+        """
+        if not file_extension.startswith("."):
+            file_extension = "." + file_extension
+
+        for root, dirs, files in os.walk(path):
+            for file in files:
+                if file.endswith(file_extension):
                     # Construct full file path
                     file_path = os.path.join(root, file)
 
@@ -316,68 +385,13 @@ class FileManager:
                     if ".git" in file_path:
                         continue
 
-                    # Determine the relative path from the source directory
-                    relative_path = os.path.relpath(root, src_dir)
-                    # Create the corresponding directory in the destination if it doesn't exist
-                    destination_dir = os.path.join(dst_dir, relative_path)
-                    os.makedirs(destination_dir, exist_ok=True)
-
-                    # Move the file
-                    if file.endswith(".pyc"):
-                        shutil.move(file_path, os.path.join(destination_dir, file))
-                        log_signal.emit(f"Moved: {file_path} -> {os.path.join(destination_dir, file)}")
-                    else:
-                        shutil.copy(file_path, os.path.join(destination_dir, file))
-                        log_signal.emit(f"Copied: {file_path} -> {os.path.join(destination_dir, file)}")
-
-    @staticmethod
-    def move_files(files: list[str], src_dir: str, ignore: str, dst_dir:str, log_signal: SignalInstance, attends=0):
-        """
-        :param files: a list of all the files that are going to be moved
-        :param src_dir: the source absolute path where all the files are located
-        :param ignore: the type of files that are going to be ignored (extension)
-        :param dst_dir: the destination path where all the files are going to be moved
-        :param log_signal: a signal to show messages to the UI
-        :param attends: the number of attend that you have try to move the files
-        :return: None
-        """
-        # Ensure the extension starts with a dot
-        if not ignore.startswith('.'):
-            ignore = '.' + ignore
-
-        os.makedirs(dst_dir, exist_ok=True, mode=0o777)
-
-        for file in files:
-            file = file.strip()
-            if not file.endswith(ignore):
-
-                source_path = os.path.join(src_dir, file)
-                destination_dir = os.path.join(dst_dir, file)
-
-                if os.path.isdir(source_path):
-                    in_files = os.listdir(source_path)
-                    FileManager.move_files(in_files, source_path, ignore, destination_dir, log_signal)
-                else:
                     try:
-                        if file.endswith(".pyc"):
-                            # Check if the file is read-only and change it
-                            if not os.access(src_dir, os.W_OK):
-                                os.chmod(src_dir, stat.S_IWRITE)
-
-                            if not os.path.exists(file):
-                                return
-
-                            shutil.move(fr"{source_path.strip()}", fr"{destination_dir.strip()}")
-                            log_signal.emit(f"Moved: {source_path} -> {destination_dir}")
-                        else:
-                            shutil.copy(fr"{source_path.strip()}", fr"{destination_dir.strip()}")
-                            log_signal.emit(f"Copied: {source_path.strip()} -> {destination_dir.strip()}")
+                        os.remove(file_path)
+                        log_signal.emit(f"file deleted: {file_path} -> {file_path}")
 
                     except Exception as e:
-                        log_signal.emit(f"Error Moving file from {source_path} -> to {destination_dir}, exception: {e}")
-                        if attends <= 2:
-                            attends += 1
-                            FileManager.move_files(files, src_dir, ignore, dst_dir, log_signal, attends)
+                        log_signal.emit(f"Exception trying to delete file: {file_path} -> error: {e}")
+
 
     @staticmethod
     def remove_files(files: list[str], dest_dir: str, log_signal):
@@ -385,40 +399,37 @@ class FileManager:
         :param files: list of files to remove
         :param dest_dir: the destination directory where we are looking for files list
         :param log_signal: a signal to show messages to the UI
-        :return:
         """
         for file in files:
             if file.endswith(".py"):
-                file = file.replace(".py",".pyc")
+                file = file.replace(".py", ".pyc")
 
             file_path = os.path.join(dest_dir, file)
             if os.path.exists(file_path):
                 try:
                     os.remove(file_path)
+                    log_signal.emit(f"remove file: {file_path} successfully!!")
                 except Exception as e:
                     log_signal.emit(f"Error trying to remove file: {file_path}, error: {e}")
 
     @staticmethod
-    def delete_empty_sub_dirs_with_name(root_dir, target_name, log_signal: SignalInstance):
+    def delete_empty_sub_dirs(root_dir, log_signal: SignalInstance):
         """
         :param root_dir: the root directory where we are going to
-        :param target_name: the sub_directory name that we are looking for
         :param log_signal: a signal to show messages in the UI
-        :return:
         """
         for dir_path, dir_names, filenames in os.walk(root_dir, topdown=False):
             # Look for directories with the target name
             for dir_name in dir_names:
-                if dir_name == target_name:
-                    full_dir_path = os.path.join(dir_path, dir_name)
-                    list_of_files = os.listdir(str(full_dir_path))
-                    # Check if the directory is empty
-                    if len(list_of_files) <= 0:
-                        try:
-                            os.rmdir(full_dir_path)
-                            log_signal.emit(f"Deleted empty directory: {full_dir_path}")
-                        except Exception as e:
-                            log_signal.emit(f"Failed to delete directory {full_dir_path}: {e}")
+                full_dir_path = os.path.join(dir_path, dir_name)
+                list_of_files = os.listdir(str(full_dir_path))
+                # Check if the directory is empty
+                if len(list_of_files) <= 0:
+                    try:
+                        os.rmdir(full_dir_path)
+                        log_signal.emit(f"Deleted empty directory: {full_dir_path}")
+                    except Exception as e:
+                        log_signal.emit(f"Failed to delete directory {full_dir_path}: {e}")
 
     @staticmethod
     def get_os_root_dir():
@@ -432,7 +443,6 @@ class FileManager:
     def erase_dir_files(path: str):
         """
         :param path: the path were we are going to erase the files
-        :return: None
         """
         files = os.listdir(path)
         for file in files:
@@ -466,10 +476,13 @@ class FileManager:
                 source_file = os.path.join(source_path, relative_path)
                 to_remove_file = os.path.join(source_file,file)
 
-                if to_remove_file.endswith(".pyc"):
-                    to_remove_file = to_remove_file.replace(".pyc", ".py")
-
                 if not os.path.exists(to_remove_file):
+                    # if it is a .pyc file we check if the .py file or the .pyc file exist in the default repo
+                    # if it exists, then we don't remove this file
+                    if file_path.endswith(".pyc"):
+                        py_file = to_remove_file.replace(".pyc", ".py")
+                        if os.path.exists(py_file):
+                            continue
                     try:
                         log_signal.emit(f"Removing file: {file_path}")
                         os.remove(file_path)
@@ -492,11 +505,17 @@ class FileManager:
                     FileManager.erase_dir(dir_path)
                     deleted_files.append(dir_path)
                 else:
-                    files = os.listdir(dir_path)
-                    if len(files) <= 0:
+                    dir_files = os.listdir(dir_path)
+                    if len(dir_files) <= 0:
                         log_signal.emit(f"Removing empty directory {dir_path}")
                         FileManager.erase_dir(dir_path)
                         deleted_files.append(dir_path)
+
+                    src_path = dir_path.replace("animator", "default")
+                    if os.path.exists(src_path):
+                        src_files = os.listdir(src_path)
+                        if len(src_files) <= 0:
+                            FileManager.erase_dir(src_path)
 
         return deleted_files
 

@@ -127,12 +127,13 @@ class ChangesWidget(QWidget):
             if checkbox is not None:
                 checkbox.setCheckState(state)
 
-    def get_selected_items(self) -> list[str]:
+    def get_selected_items(self) -> list[tuple[str,str]]:
         files = []
 
         for i in range(self.list_widget.count()):
             # Get the widget at each QListWidgetItem
             item = self.list_widget.item(i)
+            item_data: tuple[str,str] = self.list_widget.item(i).data(Qt.ItemDataRole.UserRole)
             if item is None:
                 continue
 
@@ -140,7 +141,7 @@ class ChangesWidget(QWidget):
             if checkbox is None:
                 print("Error trying to get checkbox from list widget")
             elif checkbox.isChecked() and checkbox.text() != "Check all":
-                files.append(checkbox.text())
+                files.append(item_data)
 
         return files
 

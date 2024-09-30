@@ -39,6 +39,7 @@ class TabIndex:
 class GitSnifferWidget(QWidget):
     merge_request_selected = Signal()
     push_and_commit_clicked = Signal(str, list)
+    deleted_files_in_changes = Signal(str)
 
     def __init__(self):
         super().__init__()
@@ -238,9 +239,9 @@ class UIGitTab(QWidget):
     def on_get_repository_history(self, commits: list):
         self.git_sniffer.history.clear()
         for commit in commits:
-            #commit_item = QListWidgetItem(commit)
-            #commit_id = commit.split(" ")[0]
-            #commit_item.setData(Qt.ItemDataRole.UserRole, commit_id)
+            # commit_item = QListWidgetItem(commit)
+            # commit_id = commit.split(" ")[0]
+            # commit_item.setData(Qt.ItemDataRole.UserRole, commit_id)
             self.git_sniffer.history.add_commit(commit)
 
         self.git_sniffer.history.invert_row_labels()
@@ -278,8 +279,8 @@ class UIGitTab(QWidget):
         self.splitter.handle.setDisabled(False)
         self.git_sniffer.setDisabled(False)
 
-    def on_repository_path_updated(self):
-        self.repository_viewer.set_root_directory()
+    def on_repository_path_updated(self, path: str):
+        self.repository_viewer.set_root_directory(path)
 
     def set_main_branch_in_merge_request_tab(self, main_branch: str):
         self.git_sniffer.merge_request.set_main_branch(main_branch)

@@ -17,7 +17,7 @@ import os
 
 
 class CustomFileSystemModel(QFileSystemModel):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, *args, **kwargs):
         super().__init__(parent)
 
     def data(self, index: QModelIndex, role: Qt.DisplayRole):
@@ -124,6 +124,9 @@ class RepositoryViewerWidget(QWidget):
         file_path = self.model.filePath(index)
         file_name = self.model.fileName(index)
 
+        if ".gitignore" in file_name:
+            return
+
         # create a context menu
         type_path = "Directory" if os.path.isdir(file_path) else "File"
         open_file = QAction(f"Open {type_path}", self)
@@ -178,9 +181,9 @@ class RepositoryViewerWidget(QWidget):
         self.on_repo_updated()
         return files
 
-    def set_root_directory(self):
-        self.model.setRootPath(self.repository_path)
-        self.tree.setRootIndex(self.model.index(self.repository_path))
+    def set_root_directory(self, path: str):
+        self.model.setRootPath(path)
+        self.tree.setRootIndex(self.model.index(path))
 
     def resizeEvent(self, event):
         self.buttons_layout.setGeometry(

@@ -1,7 +1,6 @@
 from App import Application
 from PySide6.QtGui import QIcon
 from Utils.FileManager import FileManager
-import os
 
 if __name__ == "__main__":
     application = Application()

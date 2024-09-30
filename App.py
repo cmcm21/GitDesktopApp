@@ -122,6 +122,8 @@ class Application(QApplication):
             (self.git_controller.get_mr_comments_completed, self.ui_manager.loading_process_completed),
             (self.git_controller.get_mr_commits_started, self.ui_manager.loading_process_started),
             (self.git_controller.get_mr_commits_completed, self.ui_manager.loading_process_completed),
+            (self.git_controller.auto_publish_started, self.ui_manager.loading_process_started),
+            (self.git_controller.auto_publish_completed, self.ui_manager.loading_process_completed),
 
             (self.git_controller.log_message, self.ui_manager.on_log_signal_received),
             (self.git_controller.error_message, self.ui_manager.on_err_signal_received),
@@ -230,6 +232,8 @@ class Application(QApplication):
             (self.git_controller.get_mr_comments_completed, self.ui_manager.loading_process_completed),
             (self.git_controller.get_mr_commits_started, self.ui_manager.loading_process_started),
             (self.git_controller.get_mr_commits_completed, self.ui_manager.loading_process_completed),
+            (self.git_controller.auto_publish_started, self.ui_manager.loading_process_started),
+            (self.git_controller.auto_publish_completed, self.ui_manager.loading_process_completed),
 
             (self.git_controller.log_message, self.ui_manager.on_log_signal_received),
             (self.git_controller.error_message, self.ui_manager.on_err_signal_received),

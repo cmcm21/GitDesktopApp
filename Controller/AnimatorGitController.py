@@ -1,5 +1,5 @@
 from PySide6.QtCore import Signal, Slot
-from pyparsing import Empty
+from bottle import delete
 
 from Utils.FileManager import FileManager
 from Utils.UserSession import UserSession
@@ -8,7 +8,6 @@ from Controller.GitController import GitController
 from Utils.ConfigFileManager import ConfigFileManager
 import requests
 from pathlib import Path
-from typing import Callable
 import os
 import time
 
@@ -94,16 +93,11 @@ class AnimatorGitController(GitController):
         # compile the files of the origin repository
         self.log_message.emit(f"Compiling python files... in {self.source_path}")
         if len(files) > 0:
-            FileManager.compile_python_files(self.source_path, files, self.log_message)
-            # Timer to wait that all files compiled Finished
-            time.sleep(2)
-
-            FileManager.move_files(files, self.source_path,'.py', self.raw_working_path, self.log_message)
+            FileManager.copy_files(files, self.source_path, self.raw_working_path, self.log_message)
+            FileManager.compile_python_files(self.raw_working_path, files, self.log_message)
         else:
-            FileManager.compile_python_files_from_source(self.source_path, self.log_message)
-            # Timer to wait that all files compiled Finished
-            time.sleep(2)
-            FileManager.move_all_files_except_extension(self.source_path, self.raw_working_path, '.py', self.log_message)
+            FileManager.copy_all_files(self.source_path, self.raw_working_path, self.log_message)
+            FileManager.compile_all_python_files(self.raw_working_path, self.log_message)
 
     def get_commit_count(self):
         headers = {"Private-Token": self.personal_access_token}
@@ -137,18 +131,26 @@ class AnimatorGitController(GitController):
         # Check the status of the repository
         self.run_command(['git', 'status'])
 
-    def upload_files(self, message: str, changes: list[str]):
+    def upload_files(self, message: str, changes: list[tuple[str, str]]):
         user_session = UserSession()
         if user_session.role_id != RoleID.ADMIN.value:
             self.log_message.emit("Animator user is not allowed to upload files either compile .py -> .pyc")
 
         self.uploading_anim_files.emit()
-        self.compile_files(changes)
+        to_delete_files, to_compile_files = self.get_separate_changes(changes)
 
-        FileManager.delete_empty_sub_dirs_with_name(self.source_path, "__pycache__", self.log_message)
-        deleted_files = FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
-        changes += deleted_files
-        self._commit_and_push(message, changes)
+        self.compile_files(to_compile_files)
+
+        FileManager.remove_files_in_path(self.raw_working_path, ".py", self.log_message)
+        FileManager.delete_empty_sub_dirs(self.source_path, self.log_message)
+        FileManager.delete_empty_sub_dirs(self.raw_working_path, self.log_message)
+        if len(changes) > 0:
+            FileManager.remove_files(to_delete_files, self.raw_working_path, self.log_message)
+        else:
+            to_delete_files = FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
+            changes += to_delete_files
+        changes_files = [change_file for change_file, change in changes]
+        self._commit_and_push(message, changes_files)
 
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
@@ -208,12 +210,18 @@ class AnimatorGitController(GitController):
         else:
             self.error_message.emit("An error occur while trying to publish repository")
 
+    @staticmethod
+    def get_separate_changes(changes: list[tuple[str, str]]) -> tuple[list[str], list[str]]:
+        deleted_files = [change_file for change_file, change in changes if change == "D"]
+        others = [change_file for change_file, change in changes if change != "D"]
+
+        return deleted_files, others
+
     @Slot()
     def setup(self) -> bool:
         self.check_working_path()
-
+        self.setup_started.emit()
         print(f"class: {self.__class__.__name__} working in path: {self.raw_working_path}")
-        self.publishing_anim_rep.emit()
 
         try:
             anim_project = self.looking_for_project_remote()
@@ -231,6 +239,3 @@ class AnimatorGitController(GitController):
         except Exception as e:
             self.error_message.emit(f"Error trying to create animation repository, error: {e}")
             return False
-
-        finally:
-            self.publishing_anim_rep_completed.emit()

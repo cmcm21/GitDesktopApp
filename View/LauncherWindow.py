@@ -349,8 +349,8 @@ class LauncherWindow(BaseWindow):
             self.publish_window.close()
             self.publish_window = None
 
-    def on_setup_completed(self, success: bool):
-        self.git_tab.on_repository_path_updated()
+    def on_setup_completed(self, success: bool, path: str):
+        self.git_tab.on_repository_path_updated(path)
 
     def on_push_and_commit_completed(self, message, changes):
         if self.user_session.role_id == RoleID.ADMIN.value:

@@ -6,6 +6,7 @@ from Utils.FileManager import FileManager
 from Utils.ConfigFileManager import ConfigFileManager
 from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
 import subprocess
+import time
 import requests
 import os
 import asyncio
@@ -14,9 +15,11 @@ import asyncio
 class GitController(QObject):
     """Signals"""
     setup_started = Signal()
-    setup_completed = Signal(bool)
+    setup_completed = Signal(bool, str)
     push_and_commit_started = Signal()
     push_and_commit_completed = Signal(str, list)
+    auto_publish_started = Signal()
+    auto_publish_completed = Signal()
     get_latest_started = Signal()
     get_latest_completed = Signal()
     accept_merge_started = Signal()
@@ -49,6 +52,15 @@ class GitController(QObject):
 
     def __init__(self):
         super(GitController, self).__init__()
+        self.user_session = None
+        self.attends = 0
+        self.reset_ssh = False
+        self.config()
+        # avoid circular import
+        from Controller.GitProtocol.GitProtocols import GitProtocolSSH
+        self.git_protocol = GitProtocolSSH(self, self.repository_url_ssh)
+
+    def config(self):
         self.config_manager = ConfigFileManager()
         config = self.config_manager.get_config()
         self.repository_name = config["git"]["repository_name"]
@@ -62,13 +74,6 @@ class GitController(QObject):
         self.git_api_url = config["git"]["gitlab_api_url"]
         self.git_hosts = config["git"]["git_hosts"]
         self.project_id = config["git"]["project_id"]
-        self.user_session = None
-        self.attends = 0
-        self.reset_ssh = False
-
-        # avoid circular import
-        from Controller.GitProtocol.GitProtocols import GitProtocolSSH
-        self.git_protocol = GitProtocolSSH(self, self.repository_url_ssh)
 
     def repo_exist(self) -> bool:
         git_directory = self.working_path.joinpath(".git/")
@@ -273,7 +278,6 @@ class GitController(QObject):
         return f"branch_{self.user_session.username}"
 
     def add_all(self, changes: list[str]):
-        self.log_message.emit(f"Adding all changes to git...")
         if len(changes) > 0:
             for change in changes:
                 change = change.strip()
@@ -283,6 +287,7 @@ class GitController(QObject):
                 except Exception as e:
                     self.log_message.emit(f"An exception occur trying to add {change} file: {e}")
         else:
+            self.log_message.emit(f"Adding all changes to git...")
             try:
                 self.run_command(['git', 'add', '.', '-f'])
                 self.log_message.emit(f"added all changes successfully")
@@ -426,19 +431,20 @@ class GitController(QObject):
                 self.get_latest(False)
 
             if send_end_process_signal:
-                self.setup_completed.emit(self.repo_exist())
+                self.setup_completed.emit(self.repo_exist(), self.raw_working_path)
         except Exception as e:
             self.log_message.emit(f"An error occurred : {e}")
 
     @Slot(str, list)
-    def commit_and_push_changes(self, message: str, changes: list[str]):
+    def commit_and_push_changes(self, message: str, changes: list[tuple[str,str]]):
         self.push_and_commit_started.emit()
         self.check_user_session()
         self.log_message.emit("pushing changes...")
+        changes_files = [change[0] for change in changes]
         if self.user_session.role_id == RoleID.DEV.value:
-            self.arrange_dev_push(message, changes)
+            self.arrange_dev_push(message, changes_files)
         else:
-            self._commit_and_push(message, changes)
+            self._commit_and_push(message, changes_files)
 
         self.get_latest(False)
         self.get_repository_changes()
@@ -610,13 +616,23 @@ class GitController(QObject):
             self.send_repository_history.emit(commits)
 
     @Slot()
-    def get_repository_changes(self, send_end_process_signal=True) -> tuple[list, list]:
+    def get_repository_changes(self) -> tuple[list, list]:
+        """
+        :return: (modifications, changes)
+        a tuple of list where the first element is a list of the
+        files with modification and the second list is a list of files with others changes
+        each element of the first list is a tuple where the first element is the file path and the second element is
+        the differences between the old and the new file
+        each element of the second list is a tuple where the first element is the file path and the second element
+        is the type of change
+        """
         changes_modified = []
         other_changes = []
         self.log_message.emit("Getting Changes in repository...")
         changed_files_out = self._run_git_command_get_output(['git', 'status', '--porcelain'])
         if changed_files_out:
-            changed_files = [(line[:3].replace(" ", ""), line[3:]) for line in changed_files_out.splitlines() if line]
+            changed_files = [
+                (line[:3].replace(" ", ""), line[3:]) for line in changed_files_out.splitlines() if line]
             for change, changed_file in changed_files:
                 changed_file = changed_file.strip('""')
                 if change == "M":
@@ -681,5 +697,4 @@ class GitController(QObject):
             self.setup()
             self.get_latest(False)
         self.refreshing_completed.emit()
-
         self.log_message.emit("Refreshing windows completed")

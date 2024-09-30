@@ -126,11 +126,11 @@ class UIManager(QObject):
     def on_git_setup_started(self):
         self.launcher_window.loading.show_anim_screen()
 
-    @Slot(bool)
-    def on_setup_completed(self, success: bool):
+    @Slot(bool, str)
+    def on_setup_completed(self, success: bool, path: str):
         if self.launcher_window.window_id != WindowID.LAUNCHER:
             return
-        self.launcher_window.on_setup_completed(success)
+        self.launcher_window.on_setup_completed(success, path)
         self.launcher_window.loading.stop_anim_screen()
         self.launcher_window.git_tab.send_starting_signals()
 

@@ -1,8 +1,8 @@
 import logging
 from PySide6.QtCore import Qt, QMetaObject, Q_ARG
 from PySide6.QtWidgets import QWidget, QTextEdit, QLabel, QVBoxLayout, QPushButton
+from PySide6.QtGui import QFont, QAction
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
-from PySide6.QtGui import QFont
 from Utils.FileManager import FileManager
 import os
 
@@ -37,6 +37,23 @@ class QTextEditLogger(logging.Handler):
         msg = self.format(record)
         QMetaObject.invokeMethod(self.text_edit, "append", Qt.QueuedConnection, Q_ARG(str, msg))
 
+class CustomQTextEdit(QTextEdit):
+    def __init__(self, parent):
+        super().__init__(parent)
+        return
+
+    def contextMenuEvent(self, event):
+        menu = self.createStandardContextMenu()
+
+        clear_action = QAction("Clear Action", self)
+        clear_action.triggered.connect(lambda: self.clear())
+
+        menu.addSeparator()
+        menu.addAction(clear_action)
+
+        menu.exec(event.globalPos())
+
+
 class LoggerWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -51,7 +68,7 @@ class LoggerWidget(QWidget):
 
     def _build(self):
         """Text edit"""
-        self.text_edit = QTextEdit(self)
+        self.text_edit = CustomQTextEdit(self)
         self.text_edit.setReadOnly(True)
         CustomStyleSheetApplier.set_q_text_edit_style_and_colour(self.text_edit, "Black", textColour="White")
 
