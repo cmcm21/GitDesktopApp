@@ -124,15 +124,17 @@ class UIManager(QObject):
 
     @Slot()
     def on_git_setup_started(self):
-        self.launcher_window.loading.show_anim_screen()
+        #self.launcher_window.loading.show_anim_screen()
+        self.launcher_window.long_process_started()
 
     @Slot(bool, str)
     def on_setup_completed(self, success: bool, path: str):
         if self.launcher_window.window_id != WindowID.LAUNCHER:
             return
         self.launcher_window.on_setup_completed(success, path)
-        self.launcher_window.loading.stop_anim_screen()
+        #self.launcher_window.loading.stop_anim_screen()
         self.launcher_window.git_tab.send_starting_signals()
+        self.launcher_window.long_process_ended()
 
     @Slot(str, list)
     def on_push_and_commit_completed(self, message: str, changes: list[str]):
@@ -204,9 +206,16 @@ class UIManager(QObject):
 
     @Slot()
     def loading_process_started(self):
-        self.launcher_window.loading.show_anim_screen()
+        self.launcher_window.start_loading_process()
 
     @Slot()
     def loading_process_completed(self):
         self.launcher_window.loading.stop_anim_screen()
 
+    @Slot()
+    def long_process_started(self):
+        self.launcher_window.long_process_started()
+
+    @Slot()
+    def long_process_ended(self):
+        self.launcher_window.long_process_ended()

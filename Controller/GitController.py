@@ -1,3 +1,4 @@
+import git
 from PySide6.QtCore import QObject, Signal, Slot
 from pathlib import Path
 from Utils.UserSession import UserSession
@@ -6,10 +7,8 @@ from Utils.FileManager import FileManager
 from Utils.ConfigFileManager import ConfigFileManager
 from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
 import subprocess
-import time
 import requests
 import os
-import asyncio
 
 
 class GitController(QObject):
@@ -100,11 +99,8 @@ class GitController(QObject):
         try:
             process = subprocess.Popen(
                 command,
-                stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True,
-                bufsize=1,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
 
@@ -112,6 +108,7 @@ class GitController(QObject):
             if stdout or "push" in command or "pull" in command:
                 self.log_message.emit(stdout)
                 return True
+
             elif stderr:
                 if "WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!" in stderr:
                     self.reset_ssh = True
@@ -176,12 +173,15 @@ class GitController(QObject):
     def create_local_branch(self, branch_name: str, source_branch: str):
         # Fetch latest changes from remote
         if not self.run_command(['git', 'fetch', 'origin']):
-            print("git fetch error")
+            self.log_message.emit("git fetch error")
+
         # Checkout to source branch and pull latest changes
         if not self.run_command(['git', 'checkout', source_branch]):
-            print("git checkout error")
+            self.log_message.emit("git checkout error")
+
         if not self.run_command(['git', 'pull', 'origin', source_branch]):
-            print("git pull origin error")
+            self.log_message.emit("git pull origin error")
+
         # Create and checkout to the new branch
         if not self.check_branch_exists(branch_name):
             self.run_command(['git', 'checkout', '-b', branch_name])
@@ -202,7 +202,6 @@ class GitController(QObject):
                 if branch.get("default"):
                     main_branch = branch['name']
                     return main_branch
-
             return "main"
 
     def _get_main_branch_name_local(self) -> str:
@@ -365,11 +364,6 @@ class GitController(QObject):
     def _get_merge_request_url(self):
         return f"{self.git_api_url}/projects/{self.project_id}/merge_requests"
 
-    def clone_repository(self):
-        clone_command = f'git clone {self.git_protocol.repository_url} {self.working_path}'
-        self.log_message.emit(clone_command)
-        self.run_command(['git', 'clone', self.git_protocol.repository_url, self.raw_working_path])
-
     def check_and_add_origin(self, url):
         result = self._run_git_command_get_output(['git', 'remote'])
         remotes = result.splitlines()
@@ -394,8 +388,9 @@ class GitController(QObject):
             self.setup()
 
     @Slot()
-    def setup(self, send_end_process_signal=True):
-        self.setup_started.emit()
+    def setup(self, send_process_signal=True):
+        if send_process_signal:
+            self.setup_started.emit()
         self.check_working_path()
 
         no_errors = True
@@ -418,7 +413,7 @@ class GitController(QObject):
             # Verify remote repository
             self.run_command(['git', 'ls-remote', '--get-url', 'origin'])
             # Fetch updates from the remote repository
-            self.run_command(['git', 'fetch', 'origin'])
+            self.run_command(['git', 'fetch', '--progress',  'origin'])
             # Send setup signal
             self.log_message.emit(f" Setup Completed ")
 
@@ -430,7 +425,7 @@ class GitController(QObject):
             if len(changes) <= 0 and len(modifications) <= 0:
                 self.get_latest(False)
 
-            if send_end_process_signal:
+            if send_process_signal:
                 self.setup_completed.emit(self.repo_exist(), self.raw_working_path)
         except Exception as e:
             self.log_message.emit(f"An error occurred : {e}")
@@ -651,8 +646,9 @@ class GitController(QObject):
         return changes_modified, other_changes
 
     @Slot()
-    def get_latest(self, send_end_process_signal=True):
-        self.get_latest_started.emit()
+    def get_latest(self, send_process_signal=True):
+        if send_process_signal:
+            self.get_latest_started.emit()
         # restore all the modified files before get latest
         # self.restore_git_repository()
 
@@ -661,26 +657,15 @@ class GitController(QObject):
         os.chdir(self.raw_working_path)
 
         # Fetch changes from the remote repository
-        self.run_command(['git', 'fetch', 'origin'])
+        self.run_command(['git', 'fetch', '--progress',  'origin'])
 
         # Pull the changes directly
-        self.run_command(['git', 'pull', 'origin', self._get_main_branch_name()])
+        self.run_command(['git', 'pull', '--progress' ,'origin', self._get_main_branch_name()])
 
         # Check the status of the repository
         self.run_command(['git', 'status'])
-        if send_end_process_signal:
+        if send_process_signal:
             self.get_latest_completed.emit()
-
-    @Slot(str)
-    def on_setup_working_path(self, path: str):
-        real_path = os.path.join(path, self.working_path_prefix, "default")
-        animator_path = os.path.join(path, self.working_path_prefix, "animator")
-        self.raw_working_path = real_path
-        self.working_path = Path(real_path)
-
-        self.config_manager.add_value("general", "working_path", real_path)
-        self.config_manager.add_value("general", "animator_path", animator_path)
-        self.setup()
 
     @Slot()
     def on_log_out(self):
@@ -692,9 +677,9 @@ class GitController(QObject):
         self.log_message.emit("Refreshing windows")
         modifications, changes = self.get_repository_changes()
         if len(modifications) > 0 or len(changes) > 0:
-            self.setup()
+            self.setup(False)
         else:
-            self.setup()
+            self.setup(False)
             self.get_latest(False)
         self.refreshing_completed.emit()
         self.log_message.emit("Refreshing windows completed")

@@ -9,7 +9,6 @@ from Utils.ConfigFileManager import ConfigFileManager
 import requests
 from pathlib import Path
 import os
-import time
 
 class AnimatorGitController(GitController):
     config_rep_ssh_key = "repository_url_ssh"
@@ -24,6 +23,16 @@ class AnimatorGitController(GitController):
 
     def __init__(self):
         super().__init__()
+        self.config()
+        self.ssh_setup = False
+        self.user_session = None
+        self.fresh_new_rep = False
+
+        # avoid circular import
+        from Controller.GitProtocol.GitProtocols import GitProtocolSSH
+        self.git_protocol = GitProtocolSSH(self, self.repository_url_ssh)
+
+    def config(self):
         self.config_manager = ConfigFileManager()
         config = self.config_manager.get_config()
 
@@ -38,13 +47,6 @@ class AnimatorGitController(GitController):
         self.git_api_url = config["git_anim"]["gitlab_api_url"]
         self.git_hosts = config["git_anim"]["git_hosts"]
         self.project_id = config["git_anim"]["project_id"]
-        self.ssh_setup = False
-        self.user_session = None
-        self.fresh_new_rep = False
-
-        # avoid circular import
-        from Controller.GitProtocol.GitProtocols import GitProtocolSSH
-        self.git_protocol = GitProtocolSSH(self, self.repository_url_ssh)
 
     def run_command(self, command: list) -> bool:
         return super().run_command(command)
@@ -149,19 +151,12 @@ class AnimatorGitController(GitController):
         else:
             to_delete_files = FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
             changes += to_delete_files
+
         changes_files = [change_file for change_file, change in changes]
         self._commit_and_push(message, changes_files)
 
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
         self.uploading_anim_files_completed.emit()
-
-    def get_changes_from_default_rep(self) -> tuple[list, list]:
-        temp_url = self.raw_working_path
-        self.raw_working_path = self.config_manager.get_config()["general"]["working_path"]
-        modifies, changes = self.get_repository_changes()
-        self.raw_working_path = temp_url
-
-        return modifies, changes
 
     def check_working_path(self):
         if not os.path.exists(self.raw_working_path):
@@ -171,44 +166,18 @@ class AnimatorGitController(GitController):
             self.working_path = Path(self.raw_working_path)
             self.source_path = self.config_manager.get_config()["general"]["working_path"]
 
-    @staticmethod
-    def extract_just_file_paths(modifies, changes) -> tuple[list, list]:
-        file_paths = []
-        deleted_files = []
-
-        for file, modification in modifies:
-            if modification != "D":
-                file_paths.append(file)
-            else:
-                deleted_files.append(file)
-
-        for file, change in changes:
-            if change != "D":
-                file_paths.append(file)
-            else:
-                deleted_files.append(file)
-
-        return file_paths, deleted_files
-
-    @Slot(str)
-    def on_setup_working_path(self, path: str):
-        real_path = os.path.join(path, self.working_path_prefix, "animator")
-        self.raw_working_path = real_path
-        self.working_path = Path(real_path)
-
-        self.config_manager.add_value("general", "animator_path", real_path)
-        self.setup()
-
     @Slot()
     def verify_user_branch(self):
         return
 
     @Slot(str, list)
-    def publish_rep(self, message: str, changes: list[str]):
+    def publish_rep(self, message: str, changes: list[tuple[str,str]]):
+        self.publishing_anim_rep.emit()
         if self.setup():
             self.upload_files(message, changes)
         else:
             self.error_message.emit("An error occur while trying to publish repository")
+        self.publishing_anim_rep_completed.emit()
 
     @staticmethod
     def get_separate_changes(changes: list[tuple[str, str]]) -> tuple[list[str], list[str]]:
@@ -222,6 +191,7 @@ class AnimatorGitController(GitController):
         self.check_working_path()
         self.setup_started.emit()
         print(f"class: {self.__class__.__name__} working in path: {self.raw_working_path}")
+        setup_success = False
 
         try:
             anim_project = self.looking_for_project_remote()
@@ -234,8 +204,10 @@ class AnimatorGitController(GitController):
                 self.fresh_new_rep = True
 
             super().setup()
-            return True
-
+            setup_success = True
         except Exception as e:
             self.error_message.emit(f"Error trying to create animation repository, error: {e}")
-            return False
+            setup_success = False
+        finally:
+            self.setup_completed.emit(setup_success, self.raw_working_path)
+            return setup_success

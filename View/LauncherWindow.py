@@ -1,9 +1,10 @@
-from PySide6.QtCore import Qt, Signal, Slot, QSize
+from PySide6.QtCore import Qt, Signal, Slot, QSize, QPoint
 from PySide6.QtGui import QAction, QFont
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QGridLayout,
+    QStackedWidget,
     QWidget,
     QComboBox,
     QTabWidget,
@@ -14,6 +15,7 @@ from PySide6.QtWidgets import (
 )
 from Utils.ConfigFileManager import ConfigFileManager
 from View.BaseWindow import BaseWindow
+from View.UILoadingWindows import LoadingWindows
 from View.WindowID import WindowID
 from View.UILogger import LoggerWidget
 from View.UIGitTab import UIGitTab
@@ -25,8 +27,8 @@ from View.PublishWindow import PublishWindow
 from View.CustomSplitter import CustomSplitter
 from Utils.UserSession import UserSession
 from Utils.Environment import RoleID
-import Utils.Environment as Env
 from Utils.SignalManager import SignalManager
+import Utils.Environment as Env
 
 
 class LauncherWindow(BaseWindow):
@@ -44,6 +46,7 @@ class LauncherWindow(BaseWindow):
 
     def __init__(self, window_id: WindowID, width=900, height=500):
         super().__init__("Puppet Launcher", window_id, width, height)
+        self.loading_window = None
         self.admin_window = None
         self.user_session = None
         self.publish_window = None
@@ -62,8 +65,10 @@ class LauncherWindow(BaseWindow):
         self.user_session = None
         self.project_combo_box_actions = {}
         self.admin_window = None
+        self.loading_window = None
         self.commit_window = None
         self.publish_window = None
+        self.stack_widget = QStackedWidget()
 
     def _create_all_elements(self):
         self._create_layouts()
@@ -170,9 +175,10 @@ class LauncherWindow(BaseWindow):
         self._build_main_layout()
         self._build_menu_bar()
 
-        widget = QWidget()
-        widget.setLayout(self.main_layout)
-        self.setCentralWidget(widget)
+        self.central_widget = QWidget()
+        self.central_widget.setLayout(self.main_layout)
+        self.stack_widget.addWidget(self.central_widget)
+        self.setCentralWidget(self.stack_widget)
 
     def _build_header(self):
         self.loading_layout.addWidget(self.loading, 0, Qt.AlignmentFlag.AlignRight)
@@ -385,3 +391,47 @@ class LauncherWindow(BaseWindow):
 
     def create_project_item(self, project_id):
         return
+
+    def disable_window(self, value: bool):
+        self.setDisabled(value)
+        self.logger_widget.setDisabled(False)
+
+    def start_loading_process(self):
+        if self.loading_window is not None:
+            return
+
+        self.loading.show_anim_screen()
+
+    def stop_loading_process(self):
+        self.loading.stop_anim_screen()
+
+    def long_process_started(self):
+        if self.loading_window is None:
+            self.loading_window = LoadingWindows(self)
+            self.stack_widget.addWidget(self.loading_window)
+            self.stack_widget.setCurrentIndex(1)
+
+            self.loading_window.close_event.connect(self._on_loading_windows_close_event)
+            self.loading_window.start()
+
+        #self.center_widget(self.loading_window)
+
+    def long_process_ended(self):
+        if self.loading_window is None:
+            return
+        self.stack_widget.setCurrentIndex(0)
+        self.loading_window.stop()
+        message_box = QMessageBox()
+        message_box.setWindowTitle("Confirmation")
+        message_box.setIcon(QMessageBox.Icon.Information)
+        message_box.setText("Process Completed!!")
+        message_box.setStandardButtons(QMessageBox.StandardButton.Ok)
+
+        reply = message_box.exec()
+
+
+    def _on_loading_windows_close_event(self):
+        if self.loading_window is not None:
+            self.stack_widget.removeWidget(self.loading_window)
+            self.loading_window = None
+

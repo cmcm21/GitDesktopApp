@@ -1,6 +1,6 @@
 from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtGui import QPainter, QColor, QPen, QFont, QLinearGradient
-from PySide6.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QLabel
+from PySide6.QtGui import QPainter, QColor, QPen, QLinearGradient
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 import time
 
 
@@ -76,6 +76,13 @@ class LoadingWidget(QWidget):
             return
         # Start the progress bar animation
         self.custom_parent.setDisabled(True)
+
+        # To avoid circular import
+        from View.LauncherWindow import LauncherWindow
+        if isinstance(self.custom_parent, LauncherWindow):
+            self.custom_parent.disable_window(True)
+        else:
+            self.custom_parent.setDisabled(True)
         self.progress_thread.start()
         self.progress_thread.set_run()
         self.showing = True
@@ -86,7 +93,14 @@ class LoadingWidget(QWidget):
             self.progress_thread.stop()
 
         self.showing = False
-        self.custom_parent.setDisabled(False)
+
+        # To avoid circular import
+        from View.LauncherWindow import LauncherWindow
+        if isinstance(self.custom_parent, LauncherWindow):
+            self.custom_parent.disable_window(False)
+        else:
+            self.setDisabled(False)
+
         self.close()
 
 
