@@ -138,6 +138,7 @@ class UIManager(QObject):
 
     @Slot(str, list)
     def on_push_and_commit_completed(self, message: str, changes: list[str]):
+        self.launcher_window.long_process_ended()
         self.launcher_window.on_push_and_commit_completed(message, changes)
 
     @Slot(str)

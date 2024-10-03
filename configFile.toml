@@ -23,8 +23,8 @@ git_hosts = [
 ]
 
 [general]
-working_path = ""
-animator_path = ""
+working_path = "C:\\Users\\m-correa\\PycharmProjects\\PuppetLauncher/workspaces/default"
+animator_path = "C:\\Users\\m-correa\\PycharmProjects\\PuppetLauncher/workspaces/animator"
 repository_prefix = "PuppetLauncher/workspaces/"
 maya25_path = "C://Program Files/Autodesk/Maya2025/bin/maya.exe"
 maya24_path = "C://Program Files/Autodesk/Maya2024/bin/maya.exe"
@@ -34,7 +34,7 @@ git_installer_url = "https://github.com/git-for-windows/git/releases/download/v2
 python2_installer_url = "https://www.python.org/ftp/python/2.7.18/python-2.7.18.amd64.msi"
 selected_maya_bat = "C:\\Users\\m-correa\\PycharmProjects\\PuppetLauncher/workspaces/default\\Tempura\\AdminMaya2023.bat"
 selected_bat = "C:\\Users\\m-correa\\PycharmProjects\\PuppetLauncher/workspaces/default\\Tempura"
-python2_alias = ""
+python2_alias = "C:\\Users\\m-correa\\PycharmProjects\\pythonProject\\Utils\\../Resources\\ExternalScripts\\python2.bat"
 
 [db.roles]
 names = [
@@ -60,7 +60,7 @@ roles = [
 ]
 
 [test]
-debug = false
+debug = true
 debug_user = "m-correa"
 
 [projects]

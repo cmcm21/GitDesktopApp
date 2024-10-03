@@ -107,7 +107,6 @@ class Application(QApplication):
             (self.git_controller.setup_completed, self.ui_manager.on_setup_completed),
 
             (self.git_controller.push_and_commit_started, self.ui_manager.long_process_started),
-            (self.git_controller.push_and_commit_completed, self.ui_manager.long_process_ended),
             (self.git_controller.push_and_commit_completed, self.ui_manager.on_push_and_commit_completed),
 
             (self.git_controller.get_latest_started, self.ui_manager.long_process_started),
@@ -240,7 +239,6 @@ class Application(QApplication):
             (self.git_controller.setup_completed, self.on_git_setup_completed),
 
             (self.git_controller.push_and_commit_started, self.ui_manager.loading_process_started),
-            (self.git_controller.push_and_commit_completed, self.ui_manager.loading_process_completed),
             (self.git_controller.push_and_commit_completed, self.ui_manager.on_push_and_commit_completed),
 
             (self.git_controller.get_latest_started, self.ui_manager.long_process_started),
