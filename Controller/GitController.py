@@ -23,6 +23,8 @@ class GitController(QObject):
     get_latest_completed = Signal()
     accept_merge_started = Signal()
     accept_merge_completed = Signal()
+    reset_started = Signal()
+    reset_completed = Signal()
     branching_started = Signal()
     branching_completed = Signal()
     load_mr_started = Signal()
@@ -101,6 +103,8 @@ class GitController(QObject):
                 command,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
+                stdin=subprocess.PIPE,
+                text=True,
                 creationflags=subprocess.CREATE_NO_WINDOW
             )
 
@@ -114,7 +118,8 @@ class GitController(QObject):
                     self.reset_ssh = True
                 if "dubious ownership"  in stderr:
                     self.run_command(["git", "config", "--global", "--add", "safe.directory", self.raw_working_path])
-                    return self.run_command(command)
+                    self.log_message.emit(f"an error occur running the command: {stderr}")
+                    return False
                 elif "fatal" in stderr:
                     self.error_message.emit(f"An error occurred executing command: {command_str}, {stderr}")
                     return False
@@ -413,7 +418,7 @@ class GitController(QObject):
             # Verify remote repository
             self.run_command(['git', 'ls-remote', '--get-url', 'origin'])
             # Fetch updates from the remote repository
-            self.run_command(['git', 'fetch', '--progress',  'origin'])
+            self.run_command(['git', 'fetch',  'origin'])
             # Send setup signal
             self.log_message.emit(f" Setup Completed ")
 
@@ -649,6 +654,7 @@ class GitController(QObject):
     def get_latest(self, send_process_signal=True):
         if send_process_signal:
             self.get_latest_started.emit()
+
         # restore all the modified files before get latest
         # self.restore_git_repository()
 
@@ -656,14 +662,21 @@ class GitController(QObject):
         # Change to the repository directory
         os.chdir(self.raw_working_path)
 
+        # Set or update the remote URL (if needed)
+        self.run_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
+
+        # Verify remote repository
+        self.run_command(['git', 'ls-remote', '--get-url', 'origin'])
+
         # Fetch changes from the remote repository
-        self.run_command(['git', 'fetch', '--progress',  'origin'])
+        self.run_command(['git', 'fetch', 'origin'])
 
         # Pull the changes directly
-        self.run_command(['git', 'pull', '--progress' ,'origin', self._get_main_branch_name()])
+        self.run_command(['git', 'pull' ,'origin', self._get_main_branch_name()])
 
         # Check the status of the repository
         self.run_command(['git', 'status'])
+
         if send_process_signal:
             self.get_latest_completed.emit()
 
@@ -672,14 +685,22 @@ class GitController(QObject):
         self.attends = 0
 
     @Slot()
+    def reset(self):
+        self.reset_started.emit()
+        self.restore_git_repository()
+        self.reset_completed.emit()
+
+    @Slot()
     def on_refresh(self):
         self.refreshing.emit()
         self.log_message.emit("Refreshing windows")
         modifications, changes = self.get_repository_changes()
+
         if len(modifications) > 0 or len(changes) > 0:
-            self.setup(False)
+            GitController.setup(self, False)
         else:
-            self.setup(False)
+            GitController.setup(self, False)
             self.get_latest(False)
+
         self.refreshing_completed.emit()
         self.log_message.emit("Refreshing windows completed")

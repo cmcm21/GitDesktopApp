@@ -77,8 +77,8 @@ class BaseWindow(QMainWindow):
         )
 
     @staticmethod
-    def throw_message_box(title: str, text: str, icon = QMessageBox.Icon.Information) -> bool:
-        message_box = QMessageBox()
+    def throw_message_box(title: str, text: str, parent=None, icon=QMessageBox.Icon.Information) -> bool:
+        message_box = QMessageBox(parent)
         message_box.setWindowTitle(title)
         message_box.setIcon(icon)
         message_box.setText(text)

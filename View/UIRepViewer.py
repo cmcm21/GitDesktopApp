@@ -159,7 +159,7 @@ class RepositoryViewerWidget(QWidget):
             f"Are you sure to Delete file(s) : {len(selected_files)}" \
                 if len(selected_files) > 0 else f"Are you sure to Delete file: {file}"
 
-        if BaseWindow.throw_message_box(f"Delete file", box_message, QMessageBox.Icon.Warning):
+        if BaseWindow.throw_message_box(f"Delete file", box_message, self, QMessageBox.Icon.Warning):
             for file in selected_files:
                 self.delete_file.emit(file)
 

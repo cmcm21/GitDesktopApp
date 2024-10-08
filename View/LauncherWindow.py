@@ -12,10 +12,10 @@ from PySide6.QtWidgets import (
     QFrame,
     QMessageBox,
     QPushButton,
+    QGraphicsOpacityEffect
 )
 from Utils.ConfigFileManager import ConfigFileManager
 from View.BaseWindow import BaseWindow
-from View.UILoadingWindows import LoadingWindows
 from View.WindowID import WindowID
 from View.UILogger import LoggerWidget
 from View.UIGitTab import UIGitTab
@@ -28,13 +28,15 @@ from View.CustomSplitter import CustomSplitter
 from Utils.UserSession import UserSession
 from Utils.Environment import RoleID
 from Utils.SignalManager import SignalManager
+from View.UILoadingWindow import LoadingWindows
 import Utils.Environment as Env
 
 
 class LauncherWindow(BaseWindow):
     push_and_commit = Signal(str, list)
-    get_latest = Signal()
     publish_to_anim_rep = Signal(str, list)
+    get_latest = Signal()
+    reset_changes = Signal()
     project_changed = Signal(str)
     window_closed = Signal()
     admin_window_clicked = Signal()
@@ -68,7 +70,7 @@ class LauncherWindow(BaseWindow):
         self.loading_window = None
         self.commit_window = None
         self.publish_window = None
-        self.stack_widget = QStackedWidget()
+
 
     def _create_all_elements(self):
         self._create_layouts()
@@ -113,7 +115,7 @@ class LauncherWindow(BaseWindow):
         self.pv4_tab_frame = self._create_frame("Pv4TabFrame")
 
     def refresh_clicked(self):
-        if self.throw_message_box("Reload", "Are you sure to Reload window?"):
+        if self.throw_message_box("Reload", "Are you sure to Reload window?", self):
             self.refresh_signal.emit()
 
     def open_settings(self):
@@ -177,8 +179,7 @@ class LauncherWindow(BaseWindow):
 
         self.central_widget = QWidget()
         self.central_widget.setLayout(self.main_layout)
-        self.stack_widget.addWidget(self.central_widget)
-        self.setCentralWidget(self.stack_widget)
+        self.setCentralWidget(self.central_widget)
 
     def _build_header(self):
         self.loading_layout.addWidget(self.loading, 0, Qt.AlignmentFlag.AlignRight)
@@ -239,8 +240,9 @@ class LauncherWindow(BaseWindow):
 
     def _connect_signals(self):
         self.git_tab.git_sniffer.push_and_commit_clicked.connect(self.on_git_commit_and_push)
-        self.git_tab.download_btn.clicked.connect(self.on_get_latest_clicked)
+        self.git_tab.get_latest_btn.clicked.connect(self.on_get_latest_clicked)
         self.git_tab.publish_btn.clicked.connect(self.create_publish_window)
+        self.git_tab.reset_btn.clicked.connect(self.on_reset_changes_clicked)
         self.user_session_widget.logout_signal.connect(self._log_out)
 
     def _log_out(self):
@@ -252,7 +254,7 @@ class LauncherWindow(BaseWindow):
             return
 
         if (self.throw_message_box("Confirm get latest",
-                               "You're going to lose your changes. Are you Sure to Get Latest?")):
+                               "You're going to lose your changes. Are you Sure to Get Latest?"), self):
             self.get_latest.emit()
 
     def create_publish_window(self):
@@ -265,8 +267,12 @@ class LauncherWindow(BaseWindow):
         self.publish_window.cancel_signal.connect(self._on_publish_window_cancel)
         self.publish_window.show()
 
+    def on_reset_changes_clicked(self):
+        if self.throw_message_box("Reset changes", "Are you sure to reset everything?", self):
+            self.reset_changes.emit()
+
     def on_git_commit_and_push(self, message, changes):
-        if self.throw_message_box("Commit and Push", "Are you sure to commit and push changes?"):
+        if self.throw_message_box("Commit and Push", "Are you sure to commit and push changes?", self):
             self.push_and_commit.emit(self.add_username(message), changes)
 
     def set_user_session(self, user_session: UserSession):
@@ -360,7 +366,7 @@ class LauncherWindow(BaseWindow):
 
     def on_push_and_commit_completed(self, message, changes):
         if self.user_session.role_id == RoleID.ADMIN.value:
-            if self.throw_message_box("Animator repository", "Would you like to publish to animators"):
+            if self.throw_message_box("Animator repository", "Would you like to publish to animators", self):
                 self.publish_to_anim_rep.emit(message, changes)
 
     @Slot(str)
@@ -408,20 +414,19 @@ class LauncherWindow(BaseWindow):
     def long_process_started(self):
         if self.loading_window is None:
             self.loading_window = LoadingWindows(self)
-            self.stack_widget.addWidget(self.loading_window)
-            self.stack_widget.setCurrentIndex(1)
 
             self.loading_window.close_event.connect(self._on_loading_windows_close_event)
             self.loading_window.start()
+            self.loading_window.setWindowModality(Qt.WindowModality.WindowModal)  # Optional: Makes the second window modal
+            self.loading_window.show()
 
-        #self.center_widget(self.loading_window)
 
     def long_process_ended(self):
         if self.loading_window is None:
             return
-        self.stack_widget.setCurrentIndex(0)
+
         self.loading_window.stop()
-        message_box = QMessageBox()
+        message_box = QMessageBox(self)
         message_box.setWindowTitle("Confirmation")
         message_box.setIcon(QMessageBox.Icon.Information)
         message_box.setText("Process Completed!!")
@@ -432,6 +437,6 @@ class LauncherWindow(BaseWindow):
 
     def _on_loading_windows_close_event(self):
         if self.loading_window is not None:
-            self.stack_widget.removeWidget(self.loading_window)
+            self.loading_window.close()
             self.loading_window = None
 

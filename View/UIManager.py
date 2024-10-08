@@ -11,6 +11,7 @@ from PySide6.QtCore import Slot, Signal, QObject, QTimer
 class UIManager(QObject):
     """Launcher window buttons signals"""
     lw_get_latest_clicked = Signal()
+    lw_reset_changes = Signal()
     lw_open_maya_clicked = Signal()
     lw_log_out = Signal()
     lw_new_workspace_clicked = Signal()
@@ -101,6 +102,7 @@ class UIManager(QObject):
             (self.launcher_window.get_latest, self.lw_get_latest_clicked),
             (self.launcher_window.switch_account, self.lw_switch_account.emit),
             (self.launcher_window.push_and_commit, self.lw_commit_and_push_clicked.emit),
+            (self.launcher_window.reset_changes, self.lw_reset_changes.emit),
             (self.launcher_window.open_maya, self.lw_open_maya_clicked.emit),
             (self.launcher_window.window_closed, self.lw_window_closed.emit),
             (self.launcher_window.application_destroyed, self.lw_destroy_application.emit),
@@ -139,7 +141,7 @@ class UIManager(QObject):
     @Slot(str, list)
     def on_push_and_commit_completed(self, message: str, changes: list[str]):
         self.launcher_window.long_process_ended()
-        self.launcher_window.on_push_and_commit_completed(message, changes)
+        # self.launcher_window.on_push_and_commit_completed(message, changes)
 
     @Slot(str)
     def on_log_signal_received(self, log_message: str):

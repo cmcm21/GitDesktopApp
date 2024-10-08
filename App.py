@@ -86,6 +86,7 @@ class Application(QApplication):
             (self.ui_manager.lw_merge_request_add_comment, self.git_controller.merge_request_add_comment),
             (self.ui_manager.lw_accept_merge_request_and_merge, self.git_controller.merge_request_accept_and_merge),
             (self.ui_manager.lw_get_latest_clicked, self.git_controller.get_latest),
+            (self.ui_manager.lw_reset_changes, self.git_controller.reset),
             (self.ui_manager.lw_commit_and_push_clicked, self.git_controller.commit_and_push_changes),
             (self.ui_manager.lw_git_history_tab_clicked, self.git_controller.get_repository_history),
             (self.ui_manager.lw_git_changes_list_tab_clicked, self.git_controller.get_repository_changes),
@@ -107,7 +108,7 @@ class Application(QApplication):
             (self.git_controller.setup_completed, self.ui_manager.on_setup_completed),
 
             (self.git_controller.push_and_commit_started, self.ui_manager.long_process_started),
-            (self.git_controller.push_and_commit_completed, self.ui_manager.on_push_and_commit_completed),
+            (self.git_controller.push_and_commit_completed, self.ui_manager.long_process_ended),
 
             (self.git_controller.get_latest_started, self.ui_manager.long_process_started),
             (self.git_controller.get_latest_completed, self.ui_manager.long_process_ended),
@@ -120,6 +121,9 @@ class Application(QApplication):
 
             (self.git_controller.add_comment_started, self.ui_manager.loading_process_started),
             (self.git_controller.add_comment_completed, self.ui_manager.loading_process_completed),
+
+            (self.git_controller.reset_started, self.ui_manager.loading_process_started),
+            (self.git_controller.reset_completed, self.ui_manager.loading_process_completed),
 
             (self.git_controller.get_mr_changes_started, self.ui_manager.loading_process_started),
             (self.git_controller.get_mr_changes_completed, self.ui_manager.loading_process_completed),
@@ -214,8 +218,11 @@ class Application(QApplication):
             (self.anim_git_controller.get_latest_started, self.ui_manager.long_process_started),
             (self.anim_git_controller.get_latest_completed, self.ui_manager.long_process_ended),
 
-            (self.anim_git_controller.refreshing, self.ui_manager.loading_process_started),
-            (self.anim_git_controller.refreshing_completed, self.ui_manager.loading_process_completed),
+            (self.anim_git_controller.refreshing, self.ui_manager.long_process_started),
+            (self.anim_git_controller.refreshing_completed, self.ui_manager.long_process_ended),
+
+            (self.anim_git_controller.reset_started, self.ui_manager.loading_process_started),
+            (self.anim_git_controller.reset_completed, self.ui_manager.loading_process_completed),
 
             (self.anim_git_controller.load_mr_started, self.ui_manager.loading_process_started),
             (self.anim_git_controller.load_mr_completed, self.ui_manager.loading_process_completed),
@@ -225,12 +232,12 @@ class Application(QApplication):
 
             (self.anim_git_controller.get_mr_changes_started, self.ui_manager.loading_process_started),
             (self.anim_git_controller.get_mr_changes_completed, self.ui_manager.loading_process_completed),
-
         ])
 
         SignalManager.connect_signals(self.ui_manager,[
             (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest),
-            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.on_refresh)
+            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.on_refresh),
+            (self.ui_manager.lw_reset_changes, self.anim_git_controller.reset)
         ])
 
     def _disconnect_git_controller(self):
@@ -252,6 +259,9 @@ class Application(QApplication):
 
             (self.git_controller.add_comment_started, self.ui_manager.loading_process_started),
             (self.git_controller.add_comment_completed, self.ui_manager.loading_process_completed),
+
+            (self.git_controller.reset_started, self.ui_manager.loading_process_started),
+            (self.git_controller.reset_completed, self.ui_manager.loading_process_completed),
 
             (self.git_controller.get_mr_changes_started, self.ui_manager.loading_process_started),
             (self.git_controller.get_mr_changes_completed, self.ui_manager.loading_process_completed),
@@ -316,14 +326,17 @@ class Application(QApplication):
             (self.anim_git_controller.get_latest_started, self.ui_manager.long_process_started),
             (self.anim_git_controller.get_latest_completed, self.ui_manager.long_process_ended),
 
-            (self.anim_git_controller.refreshing, self.ui_manager.loading_process_started),
-            (self.anim_git_controller.refreshing_completed, self.ui_manager.loading_process_completed),
+            (self.anim_git_controller.refreshing, self.ui_manager.long_process_started),
+            (self.anim_git_controller.refreshing_completed, self.ui_manager.long_process_ended),
 
             (self.anim_git_controller.load_mr_started, self.ui_manager.loading_process_started),
             (self.anim_git_controller.load_mr_completed, self.ui_manager.loading_process_completed),
 
             (self.anim_git_controller.add_comment_started, self.ui_manager.loading_process_started),
             (self.anim_git_controller.add_comment_completed, self.ui_manager.loading_process_completed),
+
+            (self.anim_git_controller.reset_started, self.ui_manager.loading_process_started),
+            (self.anim_git_controller.reset_completed, self.ui_manager.loading_process_completed),
 
             (self.anim_git_controller.get_mr_changes_started, self.ui_manager.loading_process_started),
             (self.anim_git_controller.get_mr_changes_completed, self.ui_manager.loading_process_completed),
@@ -337,7 +350,8 @@ class Application(QApplication):
 
         SignalManager.disconnect_signals(self.ui_manager, [
             (self.ui_manager.lw_get_latest_clicked, self.anim_git_controller.get_latest),
-            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.on_refresh)
+            (self.ui_manager.lw_refresh_clicked, self.anim_git_controller.on_refresh),
+            (self.ui_manager.lw_reset_changes, self.anim_git_controller.reset)
         ])
 
     def on_git_setup_completed(self, success: bool):

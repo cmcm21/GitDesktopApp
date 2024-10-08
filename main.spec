@@ -46,6 +46,7 @@ a = Analysis(
         'View/PublishWindow.py',
         'View/UICustomTable.py',
         'View/WindowID.py',
+        'View/UILoadingWindow.py',
         'View/__init__.py'
     ],
     pathex=['.'],
@@ -68,6 +69,7 @@ a = Analysis(
         ('Resources/Img/plus.png', 'Resources/Img/'),
         ('Resources/Img/singleplayer.png', 'Resources/Img/'),
         ('Resources/Img/soleil_default.jpg', 'Resources/Img/'),
+        ('Resources/Img/loading_2.gif', 'Resources/Img/'),
         ('configFile.toml', '.')
     ],
     hiddenimports=[],

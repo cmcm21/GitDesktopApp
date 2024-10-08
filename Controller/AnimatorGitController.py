@@ -1,6 +1,4 @@
 from PySide6.QtCore import Signal, Slot
-from bottle import delete
-
 from Utils.FileManager import FileManager
 from Utils.UserSession import UserSession
 from Utils.Environment import RoleID, FILE_CHANGE_DIC
@@ -140,19 +138,21 @@ class AnimatorGitController(GitController):
 
         self.uploading_anim_files.emit()
         to_delete_files, to_compile_files = self.get_separate_changes(changes)
+        changes_files = []
 
         self.compile_files(to_compile_files)
 
         FileManager.remove_files_in_path(self.raw_working_path, ".py", self.log_message)
         FileManager.delete_empty_sub_dirs(self.source_path, self.log_message)
         FileManager.delete_empty_sub_dirs(self.raw_working_path, self.log_message)
+
         if len(changes) > 0:
             FileManager.remove_files(to_delete_files, self.raw_working_path, self.log_message)
+            changes_files = [change_file for change_file, change in changes]
         else:
             to_delete_files = FileManager.sync_directories(self.source_path, self.raw_working_path, self.log_message)
             changes += to_delete_files
 
-        changes_files = [change_file for change_file, change in changes]
         self._commit_and_push(message, changes_files)
 
         self.log_message.emit(f"Repository {self.repository_name} created and pushed successfully.")
@@ -165,6 +165,36 @@ class AnimatorGitController(GitController):
             self.config_manager.add_value("general","animator_path", self.raw_working_path)
             self.working_path = Path(self.raw_working_path)
             self.source_path = self.config_manager.get_config()["general"]["working_path"]
+
+    @Slot()
+    def get_latest(self, send_process_signal=True):
+        if send_process_signal:
+            self.get_latest_started.emit()
+
+        # restore all the modified files before get latest
+        self.restore_git_repository()
+
+        self.log_message.emit("getting latest...")
+        # Change to the repository directory
+        os.chdir(self.raw_working_path)
+
+        # Set or update the remote URL (if needed)
+        self.run_command(['git', 'remote', 'set-url', 'origin', self.git_protocol.repository_url])
+
+        # Verify remote repository
+        self.run_command(['git', 'ls-remote', '--get-url', 'origin'])
+
+        # Fetch changes from the remote repository
+        self.run_command(['git', 'fetch', 'origin'])
+
+        # Pull the changes directly
+        self.run_command(['git', 'pull' ,'origin', self._get_main_branch_name()])
+
+        # Check the status of the repository
+        self.run_command(['git', 'status'])
+
+        if send_process_signal:
+            self.get_latest_completed.emit()
 
     @Slot()
     def verify_user_branch(self):

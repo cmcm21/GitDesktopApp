@@ -165,10 +165,13 @@ class UIGitTab(QWidget):
         self.repository_path = working_path
         """ Toolbar build """
         self.header = QHBoxLayout()
-        self.download_btn: QPushButton = BaseWindow.create_button(
+        self.get_latest_btn: QPushButton = BaseWindow.create_button(
             self, "arrowDown.png", "Get Latest")
         self.publish_btn: QPushButton = BaseWindow.create_button(
             self, "publish.png", "Publish to Animators")
+        self.reset_btn: QPushButton = BaseWindow.create_button(
+            self, "reset.png", "Reset"
+        )
         """ Layouts """
         self.main_layout = QVBoxLayout()
         self.body_layout = QHBoxLayout()
@@ -188,11 +191,13 @@ class UIGitTab(QWidget):
 
     def build(self):
         """Buttons"""
-        self.download_btn.setFixedSize(QSize(120, 35))
+        self.get_latest_btn.setFixedSize(QSize(120, 35))
+        self.reset_btn.setFixedSize(QSize(120, 35))
         self.publish_btn.setFixedSize(QSize(200, 35))
         """ Header Layout """
-        self.repository_viewer.buttons_layout.addWidget(self.download_btn, 0, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.get_latest_btn, 0, Qt.AlignmentFlag.AlignLeft)
         self.repository_viewer.buttons_layout.addWidget(self.publish_btn, 0, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self.reset_btn, 0, Qt.AlignmentFlag.AlignRight)
         """ Body layout """
         self.splitter.addWidget(self.repository_viewer)
         self.splitter.addWidget(self.git_sniffer)
@@ -205,8 +210,9 @@ class UIGitTab(QWidget):
         self.setLayout(self.main_layout)
 
     def apply_styles(self):
-        CustomStyleSheetApplier.set_buttons_style_and_colour(self.download_btn, "Blue")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.get_latest_btn, "Blue")
         CustomStyleSheetApplier.set_buttons_style_and_colour(self.publish_btn, "Brown")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self.reset_btn, "White")
 
         publish_font = self.publish_btn.font()
         publish_font.setBold(True)

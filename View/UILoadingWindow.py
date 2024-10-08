@@ -2,27 +2,33 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QPushButton,
+    QDialog,
     QLabel
 )
 from PySide6.QtCore import QTimer, Qt, QSize, Signal
 from PySide6.QtGui import QMovie
+from PySide6.QtWidgets import QGraphicsOpacityEffect
 from Utils.FileManager import FileManager
 
 
-class LoadingWindows(QWidget):
+class LoadingWindows(QDialog):
     close_event = Signal()
 
     def __init__(self, parent: QWidget):
-        super().__init__()
+        super().__init__(parent)
         self.custom_parent = parent
+
         # Create a QLabel widget
         self.label = QLabel(self)
         self.setWindowFlag(Qt.WindowType.FramelessWindowHint)
-        # Set window opacity (0.0 = fully transparent, 1.0 = fully opaque)
-        self.setWindowOpacity(0.3)
-
-        # Make the background of the window transparent
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+
+        # Set window opacity (0.0 = fully transparent, 1.0 = fully opaque)
+        self.setWindowOpacity(0.5)
+        self.setStyleSheet("background-color: rgba(0, 0, 0, 150);")
+        opacity_effect = QGraphicsOpacityEffect()
+        opacity_effect.setOpacity(0.5)
+        self.setGraphicsEffect(opacity_effect)
 
         # Create QMovie object and load the GIF
         gif_path = FileManager.get_img_path("loading_2.gif")
@@ -40,10 +46,7 @@ class LoadingWindows(QWidget):
         layout = QVBoxLayout()
         layout.addWidget(self.label, alignment=Qt.AlignmentFlag.AlignJustify)
         self.setLayout(layout)
-
-        # Window settings
-        self.setGeometry(100, 100, 300, 200)
-        #self.resize(self.custom_parent.size())
+        self.maximumSize()
 
     def start(self):
         self.movie.start()

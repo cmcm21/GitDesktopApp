@@ -99,7 +99,7 @@ class LoadingWidget(QWidget):
         if isinstance(self.custom_parent, LauncherWindow):
             self.custom_parent.disable_window(False)
         else:
-            self.setDisabled(False)
+            self.custom_parent.setDisabled(False)
 
         self.close()
 
