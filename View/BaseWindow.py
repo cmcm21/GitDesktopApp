@@ -5,7 +5,7 @@ from PySide6.QtCore import Signal, QSize
 from View.WindowID import WindowID
 from View.UILoadingWidget import LoadingWidget
 from View.EnterButton import EnterButton
-from Utils.FileManager import FileManager
+from Utils import FileManager
 
 
 class BaseWindow(QMainWindow):

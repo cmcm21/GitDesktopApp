@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, QMetaObject, Q_ARG
 from PySide6.QtWidgets import QWidget, QTextEdit, QLabel, QVBoxLayout, QPushButton
 from PySide6.QtGui import QFont, QAction
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
-from Utils.FileManager import FileManager
+from Utils import FileManager
 import os
 
 

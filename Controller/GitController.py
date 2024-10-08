@@ -3,7 +3,7 @@ from PySide6.QtCore import QObject, Signal, Slot
 from pathlib import Path
 from Utils.UserSession import UserSession
 from Utils.Environment import RoleID, FILE_CHANGE_DIC, CreateDir
-from Utils.FileManager import FileManager
+from Utils import FileManager
 from Utils.ConfigFileManager import ConfigFileManager
 from Exceptions.AppExceptions import GitProtocolException, GitProtocolErrorCode
 import subprocess

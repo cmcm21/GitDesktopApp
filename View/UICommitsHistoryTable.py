@@ -7,7 +7,6 @@ from PySide6.QtWidgets import (
     QHeaderView
 )
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
-from dateutil import parser
 
 
 class HistoryWidget(QWidget):

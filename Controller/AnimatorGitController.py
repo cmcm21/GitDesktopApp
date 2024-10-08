@@ -1,5 +1,5 @@
 from PySide6.QtCore import Signal, Slot
-from Utils.FileManager import FileManager
+from Utils import FileManager
 from Utils.UserSession import UserSession
 from Utils.Environment import RoleID, FILE_CHANGE_DIC
 from Controller.GitController import GitController

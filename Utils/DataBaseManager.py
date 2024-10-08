@@ -3,7 +3,7 @@ from Model.UserModel import UserModel
 from Model.UserRolesModel import UserRolesModel
 from Utils.ConfigFileManager import ConfigFileManager
 from Utils.DataBaseConnection import DataBaseConnection
-from Utils.FileManager import FileManager
+from Utils import FileManager
 import Utils.Environment as Env
 
 

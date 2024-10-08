@@ -1,5 +1,5 @@
 from Utils.SingletonMeta import SingletonMeta
-from Utils.FileManager import FileManager
+from Utils import FileManager
 import os
 import tomli
 import tomli_w

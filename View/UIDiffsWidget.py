@@ -1,7 +1,6 @@
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QTextEdit, QWidget, QVBoxLayout, QLabel
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
-from PySide6.QtGui import QFont
 
 
 class DiffsWidget(QWidget):

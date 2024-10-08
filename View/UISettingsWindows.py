@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QComboBox, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QSizePolicy
 from PySide6.QtCore import Qt, Signal
 from Utils.ConfigFileManager import ConfigFileManager
-from Utils.FileManager import FileManager
+from Utils import FileManager
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier

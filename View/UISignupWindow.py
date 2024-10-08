@@ -1,5 +1,3 @@
-from webbrowser import Error
-
 from PySide6.QtWidgets import (
     QWidget,
     QLabel,

@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QAction, QIcon, QPixmap
 from PySide6.QtCore import Signal
 from Utils.UserSession import UserSession
-from Utils.FileManager import FileManager
+from Utils import FileManager
 from Utils.Environment import RoleID
 from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 

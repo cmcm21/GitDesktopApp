@@ -11,7 +11,7 @@ import platform
 import urllib.request
 import sys
 
-from Utils.FileManager import FileManager
+from Utils import FileManager
 
 
 class SystemController(QObject):

@@ -2,7 +2,7 @@ import sqlite3
 from Utils.Environment import *
 from contextlib import contextmanager
 from Utils.SingletonMeta import SingletonMeta
-from Utils.FileManager import FileManager
+from Utils import FileManager
 
 
 class DataBaseConnection(metaclass=SingletonMeta):

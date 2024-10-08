@@ -2,7 +2,6 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QWidget,
-    QListWidget,
     QTabWidget,
     QListWidgetItem,
     QLabel,
