@@ -5,16 +5,17 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QFormLayout,
     QComboBox,
-    QMainWindow
+    QMainWindow,
+    QMessageBox
 )
-
 from Utils.Environment import RoleID
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.EnterButton import EnterButton
+from View import CustomStyleSheetApplier
 from Model.UserRolesModel import UserRolesModel
 from Controller.UserController import UserController
 from PySide6.QtCore import Signal, Qt
 from enum import Enum
+import re
 
 
 class ErrorInputCode(Enum):
@@ -116,7 +117,7 @@ class SignUpForm(QMainWindow):
         re_password = self.reenter_password_input.text()
 
         role_model = UserRolesModel()
-        if self.validate_form(username, password, email, re_password):
+        if self.validate_inputs(username, email, password ,re_password):
             role_id = self.role_combo_box.currentData(Qt.ItemDataRole.UserRole)
             default_role_id = role_model.get_role_id(role_id)
             if default_role_id:
@@ -128,32 +129,29 @@ class SignUpForm(QMainWindow):
                 self.error_message.emit(f"Error trying to add user: {username} user role invalid")
         return
 
-    def validate_form(self, username, password, email, re_password) -> bool:
-        if username == "" or password == "" or email == "" or re_password == "":
-            self.input_error(ErrorInputCode.EMPTY_FIELDS)
-            return False
-        if " " in email:
-            self.input_error(ErrorInputCode.INVALID_EMAIL)
-            return False
-        if len(username) > 10:
-            self.input_error(ErrorInputCode.LONG_USERNAME)
-            return False
-        if password != re_password:
-            self.input_error(ErrorInputCode.INVALID_PASSWD)
+    def validate_inputs(self, username: str, email: str, password: str, reenter_password: str):
+        # Validate username
+        if not username.strip():
+            QMessageBox.warning(self, "Input Error", "Username cannot be empty.")
             return False
 
+        # Validate email
+        if not re.match(r"[^@]+@[^@]+\.[^@]+", email):
+            QMessageBox.warning(self, "Input Error", "Please enter a valid email address.")
+            return False
+
+        # Validate password
+        if len(password) < 6:
+            QMessageBox.warning(self, "Input Error", "Password must be at least 6 characters long.")
+            return False
+
+        # Validate re-enter password
+        if password != reenter_password:
+            QMessageBox.warning(self, "Input Error", "Passwords do not match.")
+            return False
+
+        QMessageBox.information(self, "Success", "All inputs are valid!")
         return True
-
-    def input_error(self, error_code):
-        if error_code == ErrorInputCode.EMPTY_FIELDS:
-            self.error_message.emit("There are empty fields forms inside the sign up form")
-        elif error_code == ErrorInputCode.INVALID_EMAIL:
-            self.error_message.emit("The email is invalid")
-        elif error_code == ErrorInputCode.LONG_USERNAME:
-            self.error_message.emit("Username limit is 10 characters")
-        elif error_code == ErrorInputCode.INVALID_PASSWD:
-            self.error_message.emit("Error in the password/re-enter password, confirm before continue")
-
 
     def apply_styles(self):
         CustomStyleSheetApplier.set_line_edit_style_and_colour(self.username_input)

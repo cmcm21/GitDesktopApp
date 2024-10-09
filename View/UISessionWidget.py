@@ -11,7 +11,7 @@ from PySide6.QtCore import Signal
 from Utils.UserSession import UserSession
 from Utils import FileManager
 from Utils.Environment import RoleID
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View import CustomStyleSheetApplier
 
 
 class UserSessionWidget(QWidget):

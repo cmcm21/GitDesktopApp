@@ -4,7 +4,7 @@ from Utils.ConfigFileManager import ConfigFileManager
 from Utils import FileManager
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View import CustomStyleSheetApplier
 from View.UILogger import LoggerWidget
 
 Maya_Versions = {

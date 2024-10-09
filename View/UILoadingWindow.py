@@ -1,11 +1,10 @@
 from PySide6.QtWidgets import (
     QVBoxLayout,
     QWidget,
-    QPushButton,
     QDialog,
     QLabel
 )
-from PySide6.QtCore import QTimer, Qt, QSize, Signal
+from PySide6.QtCore import Qt, QSize, Signal
 from PySide6.QtGui import QMovie
 from PySide6.QtWidgets import QGraphicsOpacityEffect
 from Utils import FileManager

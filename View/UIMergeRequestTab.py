@@ -12,11 +12,12 @@ from PySide6.QtWidgets import (
     QMessageBox
 )
 from PySide6.QtCore import Qt, QSize, Signal
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UICommitWindow import CommitWindow
 from View.UIDiffsWidget import DiffsWidget
 from Utils.UserSession import UserSession
 from Utils.Environment import RoleID
+from View import CustomStyleSheetApplier
+
 Mr_Status = [
     "Opened",
     "Closed",

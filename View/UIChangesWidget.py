@@ -12,7 +12,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtGui import QAction, QFont, QColor
 from PySide6.QtCore import Signal
 from PySide6.QtCore import Qt, QSize
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View import CustomStyleSheetApplier
 from View.BaseWindow import BaseWindow
 
 

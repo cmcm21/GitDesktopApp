@@ -4,7 +4,6 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
     QGridLayout,
-    QStackedWidget,
     QWidget,
     QComboBox,
     QTabWidget,
@@ -12,14 +11,13 @@ from PySide6.QtWidgets import (
     QFrame,
     QMessageBox,
     QPushButton,
-    QGraphicsOpacityEffect
 )
 from Utils.ConfigFileManager import ConfigFileManager
+from View import CustomStyleSheetApplier
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
 from View.UILogger import LoggerWidget
 from View.UIGitTab import UIGitTab
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UISessionWidget import UserSessionWidget
 from View.UIAdminWidget import AdminWindow
 from View.UISettingsWindows import SettingWindows
@@ -248,9 +246,9 @@ class LauncherWindow(BaseWindow):
 
     def _connect_signals(self):
         self.git_tab.git_sniffer.push_and_commit_clicked.connect(self.on_git_commit_and_push)
-        self.git_tab.get_latest_btn.clicked.connect(self.on_get_latest_clicked)
-        self.git_tab.publish_btn.clicked.connect(self.create_publish_window)
-        self.git_tab.reset_btn.clicked.connect(self.on_reset_changes_clicked)
+        self.git_tab.get_latest_clicked.connect(self.on_get_latest_clicked)
+        self.git_tab.publish_clicked.connect(self.create_publish_window)
+        self.git_tab.reset_clicked.connect(self.on_reset_changes_clicked)
         self.user_session_widget.logout_signal.connect(self._log_out)
 
     def _log_out(self):
@@ -302,18 +300,18 @@ class LauncherWindow(BaseWindow):
 
     def set_animator(self):
         self.git_tab.show_anim_tab()
-        self.git_tab._publish_btn.hide()
+        self.git_tab.publish_btn.hide()
         self.build_session_menu()
 
     def set_dev_user(self):
         self.git_tab.git_sniffer.merge_request.accept_btn.hide()
         self.git_tab.hide_anim_tab()
-        self.git_tab._publish_btn.hide()
+        self.git_tab.publish_btn.hide()
         self.build_session_menu()
 
     def set_admin_user(self):
         self.git_tab.hide_anim_tab()
-        self.git_tab._publish_btn.show()
+        self.git_tab.publish_btn.show()
         self.build_session_menu()
 
     def add_username(self, message) -> str:
@@ -425,9 +423,8 @@ class LauncherWindow(BaseWindow):
 
             self.loading_window.close_event.connect(self._on_loading_windows_close_event)
             self.loading_window.start()
-            self.loading_window.setWindowModality(Qt.WindowModality.WindowModal)  # Optional: Makes the second window modal
+            self.loading_window.setWindowModality(Qt.WindowModality.WindowModal)
             self.loading_window.show()
-
 
     def long_process_ended(self):
         if self.loading_window is None:
@@ -441,7 +438,6 @@ class LauncherWindow(BaseWindow):
         message_box.setStandardButtons(QMessageBox.StandardButton.Ok)
 
         reply = message_box.exec()
-
 
     def _on_loading_windows_close_event(self):
         if self.loading_window is not None:

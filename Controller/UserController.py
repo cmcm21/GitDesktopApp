@@ -74,7 +74,7 @@ class UserController(QObject):
     @staticmethod
     def validate_password(password):
         # Example: Password must be at least 8 characters long
-        return len(password) >= 8
+        return len(password) >= 6
 
     @staticmethod
     def validate_email(email):

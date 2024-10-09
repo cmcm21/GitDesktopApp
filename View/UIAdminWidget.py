@@ -9,7 +9,7 @@ from PySide6.QtWidgets import (
 )
 from Model.UserModel import UserModel
 from Model.UserRolesModel import UserRolesModel
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View import CustomStyleSheetApplier
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
 from View.UICustomTable import TableModel

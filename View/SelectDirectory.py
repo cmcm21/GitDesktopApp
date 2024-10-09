@@ -13,7 +13,7 @@ from PySide6.QtCore import Signal
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
 from PySide6.QtCore import Qt
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View import CustomStyleSheetApplier
 
 
 class SelectDirectoryWindow(BaseWindow):

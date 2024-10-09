@@ -11,7 +11,7 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import QModelIndex, Qt, Signal, QRect, QPoint, QFileSystemWatcher
 from PySide6.QtGui import QFont, QAction
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View import CustomStyleSheetApplier
 from View.BaseWindow import BaseWindow
 import os
 

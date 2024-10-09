@@ -3,11 +3,11 @@ from PySide6.QtGui import QIcon, QPixmap, QFont
 from PySide6.QtCore import Qt, Signal, Slot, QSize
 from View.BaseWindow import BaseWindow
 from View.WindowID import WindowID
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UISignupWindow import SignUpForm
 from View.EnterButton import EnterButton
 from Controller.UserController import UserController
 from Model.UserRolesModel import UserRolesModel
+from View import CustomStyleSheetApplier
 import Utils.Environment as Env
 
 

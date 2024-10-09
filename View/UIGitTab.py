@@ -14,11 +14,11 @@ from Utils.Environment import FILE_CHANGE_DIC
 from View.UIRepViewer import RepositoryViewerWidget
 from View.BaseWindow import BaseWindow
 from View.UIMergeRequestTab import MergeRequestTab
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
 from View.UIDiffsWidget import DiffsWidget
 from View.UIChangesWidget import ChangesWidget
 from View.UICommitsHistoryTable import HistoryWidget
 from View.CustomSplitter import CustomSplitter
+from View import CustomStyleSheetApplier
 import os
 
 
@@ -100,7 +100,6 @@ class GitSnifferWidget(QWidget):
         widget.setLayout(self.merge_request_layout)
         return widget
 
-
     @staticmethod
     def _create_tab(widget, label_text):
         """Helper method to create a tab with a layout containing a label and the provided widget."""
@@ -158,6 +157,9 @@ class UIGitTab(QWidget):
     history_tab_clicked = Signal()
     changes_list_clicked = Signal()
     merge_request_clicked = Signal()
+    get_latest_clicked = Signal()
+    publish_clicked = Signal()
+    reset_clicked = Signal()
 
     def __init__(self, working_path: str):
         super().__init__()
@@ -185,6 +187,7 @@ class UIGitTab(QWidget):
         """ Other widgets """
         self.splitter = CustomSplitter(Qt.Orientation.Horizontal)
 
+        self.connect_buttons()
         self.build()
         self.apply_styles()
         self.connect_signals()
@@ -201,6 +204,11 @@ class UIGitTab(QWidget):
     @property
     def reset_btn(self):
         return self._reset_btn
+
+    def connect_buttons(self):
+        self._get_latest_btn.clicked.connect(lambda: self.get_latest_clicked.emit())
+        self._publish_btn.clicked.connect(lambda: self.publish_clicked.emit())
+        self._reset_btn.clicked.connect(lambda: self.reset_clicked.emit())
 
     def build(self):
         """Buttons"""

@@ -2,8 +2,7 @@ from View.BaseWindow import BaseWindow
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QHBoxLayout, QLineEdit, QWidget, QMainWindow
 from PySide6.QtCore import Signal, Qt
 from PySide6.QtGui import QFont
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
-from View.WindowID import WindowID
+from View import CustomStyleSheetApplier
 
 
 class PublishWindow(QMainWindow):

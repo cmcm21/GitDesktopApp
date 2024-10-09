@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QMainWindow, QPushButton, QMessageBox,QFrame
 from PySide6.QtGui import QPixmap, QIcon
 from PySide6.QtCore import Signal, QSize
-
 from View.WindowID import WindowID
 from View.UILoadingWidget import LoadingWidget
 from View.EnterButton import EnterButton

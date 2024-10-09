@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QHeaderView
 )
-from View.CustomStyleSheetApplier import CustomStyleSheetApplier
+from View import CustomStyleSheetApplier
 
 
 class HistoryWidget(QWidget):
