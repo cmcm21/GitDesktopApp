@@ -150,7 +150,6 @@ class SignUpForm(QMainWindow):
             QMessageBox.warning(self, "Input Error", "Passwords do not match.")
             return False
 
-        QMessageBox.information(self, "Success", "All inputs are valid!")
         return True
 
     def apply_styles(self):

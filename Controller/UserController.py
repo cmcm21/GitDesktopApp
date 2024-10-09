@@ -38,8 +38,8 @@ class UserController(QObject):
             return False
 
         if not self.validate_password(password):
-            print("Invalid password, password should be at least 8 characters long")
-            self.error_message.emit("Invalid password, password shouldbe at least 8 characters long")
+            print("Invalid password, password should be at least 6 characters long")
+            self.error_message.emit("Invalid password, password should be at least 6 characters long")
             return False
 
         if not self.validate_email(email):
