@@ -164,11 +164,13 @@ class UIGitTab(QWidget):
         self.repository_path = working_path
         """ Toolbar build """
         self.header = QHBoxLayout()
-        self.get_latest_btn: QPushButton = BaseWindow.create_button(
-            self, "arrowDown.png", "Get Latest")
-        self.publish_btn: QPushButton = BaseWindow.create_button(
-            self, "publish.png", "Publish to Animators")
-        self.reset_btn: QPushButton = BaseWindow.create_button(
+        self._get_latest_btn: QPushButton = BaseWindow.create_button(
+            self, "arrowDown.png", "Get Latest"
+        )
+        self._publish_btn: QPushButton = BaseWindow.create_button(
+            self, "publish.png", "Publish to Animators"
+        )
+        self._reset_btn: QPushButton = BaseWindow.create_button(
             self, "reset.png", "Reset"
         )
         """ Layouts """
@@ -188,15 +190,27 @@ class UIGitTab(QWidget):
         self.connect_signals()
         self.user_session = None
 
+    @property
+    def get_latest_btn(self):
+        return self._get_latest_btn
+
+    @property
+    def publish_btn(self):
+        return self._publish_btn
+
+    @property
+    def reset_btn(self):
+        return self._reset_btn
+
     def build(self):
         """Buttons"""
-        self.get_latest_btn.setFixedSize(QSize(120, 35))
-        self.reset_btn.setFixedSize(QSize(120, 35))
-        self.publish_btn.setFixedSize(QSize(200, 35))
+        self._get_latest_btn.setFixedSize(QSize(120, 35))
+        self._reset_btn.setFixedSize(QSize(120, 35))
+        self._publish_btn.setFixedSize(QSize(200, 35))
         """ Header Layout """
-        self.repository_viewer.buttons_layout.addWidget(self.get_latest_btn, 0, Qt.AlignmentFlag.AlignLeft)
-        self.repository_viewer.buttons_layout.addWidget(self.publish_btn, 0, Qt.AlignmentFlag.AlignLeft)
-        self.repository_viewer.buttons_layout.addWidget(self.reset_btn, 0, Qt.AlignmentFlag.AlignRight)
+        self.repository_viewer.buttons_layout.addWidget(self._get_latest_btn, 0, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self._publish_btn, 0, Qt.AlignmentFlag.AlignLeft)
+        self.repository_viewer.buttons_layout.addWidget(self._reset_btn, 0, Qt.AlignmentFlag.AlignRight)
         """ Body layout """
         self.splitter.addWidget(self.repository_viewer)
         self.splitter.addWidget(self.git_sniffer)
@@ -209,13 +223,13 @@ class UIGitTab(QWidget):
         self.setLayout(self.main_layout)
 
     def apply_styles(self):
-        CustomStyleSheetApplier.set_buttons_style_and_colour(self.get_latest_btn, "Blue")
-        CustomStyleSheetApplier.set_buttons_style_and_colour(self.publish_btn, "Brown")
-        CustomStyleSheetApplier.set_buttons_style_and_colour(self.reset_btn, "White")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self._get_latest_btn, "Blue")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self._publish_btn, "Brown")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self._reset_btn, "White")
 
-        publish_font = self.publish_btn.font()
+        publish_font = self._publish_btn.font()
         publish_font.setBold(True)
-        self.publish_btn.setFont(publish_font)
+        self._publish_btn.setFont(publish_font)
 
     def connect_signals(self):
         self.git_sniffer.tabs.tabBarClicked.connect(self._on_git_sniffer_tab_clicked)

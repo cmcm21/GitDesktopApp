@@ -92,15 +92,27 @@ class LauncherWindow(BaseWindow):
         self.set_project_combo_box()
 
         #self.new_workspace_btn = self._create_button("plus.png", "NewWorkspaceButton", "New Workspace")
-        self.maya_btn = self._create_button("mayaico.png", "MayaButton", "Open Maya")
-        self.maya_btn.clicked.connect(lambda: self.open_maya.emit())
+        self._maya_btn = self._create_button("mayaico.png", "MayaButton", "Open Maya")
+        self._maya_btn.clicked.connect(lambda: self.open_maya.emit())
 
-        self.refresh_btn = self._create_button("refresh.png", "RefreshButton", "Refresh")
-        self.refresh_btn.clicked.connect(self.refresh_clicked)
-        self.refresh_btn.setIconSize(QSize(32,32))
+        self._refresh_btn = self._create_button("refresh.png", "RefreshButton", "Refresh")
+        self._refresh_btn.clicked.connect(self.refresh_clicked)
+        self._refresh_btn.setIconSize(QSize(32, 32))
 
-        self.settings_btn = self._create_button("gear.png", "SettingsButton", "Open Settings")
-        self.settings_btn.clicked.connect(self.open_settings)
+        self._settings_btn = self._create_button("gear.png", "SettingsButton", "Open Settings")
+        self._settings_btn.clicked.connect(self.open_settings)
+
+    @property
+    def maya_btn(self):
+        return self._maya_btn
+
+    @property
+    def refresh_btn(self):
+        return self._refresh_btn
+
+    @property
+    def settings_btn(self):
+        return self._settings_btn
 
     def _create_button(self, icon_path: str, object_name: str, tooltip: str) -> QPushButton:
         button = self.create_button(self, icon_path, "")
@@ -159,16 +171,12 @@ class LauncherWindow(BaseWindow):
         self.user_session_widget = UserSessionWidget()
 
     def _apply_styles(self):
-        self._set_button_style(self.maya_btn)
         # self._set_button_style(self.new_workspace_btn)
-        self._set_button_style(self.settings_btn)
-        self._set_button_style(self.refresh_btn)
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self._maya_btn, "Black")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self._settings_btn, "Black")
+        CustomStyleSheetApplier.set_buttons_style_and_colour(self._refresh_btn, "Black")
         CustomStyleSheetApplier.set_combo_box_style_and_colour(self.combo_box, "White")
         self.user_menu.setFont(QFont("Courier New", 10))
-
-    @staticmethod
-    def _set_button_style(button: QPushButton):
-        CustomStyleSheetApplier.set_buttons_style_and_colour(button, "Black")
 
     def _build_layouts(self):
         self._build_header()
@@ -195,9 +203,9 @@ class LauncherWindow(BaseWindow):
         layout.addWidget(self.combo_box, 0, Qt.AlignmentFlag.AlignTop)
         layout.addWidget(separator)
        # layout.addWidget(self.new_workspace_btn, 0, Qt.AlignmentFlag.AlignTop)
-        layout.addWidget(self.maya_btn, 5, Qt.AlignmentFlag.AlignTop)
-        layout.addWidget(self.refresh_btn, 0, Qt.AlignmentFlag.AlignBottom)
-        layout.addWidget(self.settings_btn, 0, Qt.AlignmentFlag.AlignBottom)
+        layout.addWidget(self._maya_btn, 5, Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(self._refresh_btn, 0, Qt.AlignmentFlag.AlignBottom)
+        layout.addWidget(self._settings_btn, 0, Qt.AlignmentFlag.AlignBottom)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
     def _build_body_right(self):
@@ -294,18 +302,18 @@ class LauncherWindow(BaseWindow):
 
     def set_animator(self):
         self.git_tab.show_anim_tab()
-        self.git_tab.publish_btn.hide()
+        self.git_tab._publish_btn.hide()
         self.build_session_menu()
 
     def set_dev_user(self):
         self.git_tab.git_sniffer.merge_request.accept_btn.hide()
         self.git_tab.hide_anim_tab()
-        self.git_tab.publish_btn.hide()
+        self.git_tab._publish_btn.hide()
         self.build_session_menu()
 
     def set_admin_user(self):
         self.git_tab.hide_anim_tab()
-        self.git_tab.publish_btn.show()
+        self.git_tab._publish_btn.show()
         self.build_session_menu()
 
     def add_username(self, message) -> str:

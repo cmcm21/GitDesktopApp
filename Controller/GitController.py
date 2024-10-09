@@ -1,4 +1,3 @@
-import git
 from PySide6.QtCore import QObject, Signal, Slot
 from pathlib import Path
 from Utils.UserSession import UserSession

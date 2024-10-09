@@ -2,7 +2,6 @@ from App import Application
 from PySide6.QtGui import QIcon
 from Utils import FileManager
 import sys
-import ctypes
 import win32event
 import win32api
 import win32con
