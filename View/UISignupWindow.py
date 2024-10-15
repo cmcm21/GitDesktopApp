@@ -68,12 +68,12 @@ class SignUpForm(QMainWindow):
     def create_password(self):
         self.password_label = QLabel('Password:')
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
 
     def create_reenter_password(self):
         self.reenter_password_label = QLabel('Re-enter Password:')
         self.reenter_password_input = QLineEdit()
-        self.reenter_password_input.setEchoMode(QLineEdit.Password)
+        self.reenter_password_input.setEchoMode(QLineEdit.EchoMode.Password)
 
     def _build(self):
         # Create form layout and add widgets

@@ -1,6 +1,6 @@
+from PySide6.QtCore import SignalInstance, QObject, Signal
 import os
 import fnmatch
-from PySide6.QtCore import SignalInstance, QObject, Signal
 from pathlib import Path
 import shutil
 import py_compile

@@ -1,5 +1,4 @@
 from Utils.SingletonMeta import SingletonMeta
-from Utils import FileManager
 import os
 import tomli
 import tomli_w
@@ -34,11 +33,11 @@ class ConfigFileManager(metaclass=SingletonMeta):
         if self._config is None:
             self.load_config()
 
-        file_path = os.path.join(FileManager.get_local_path(), "configFile.toml")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(script_dir, "configFile.toml")
 
         self._config[section][key] = value
 
         with open(file_path, 'wb') as file:
             tomli_w.dump(self._config, file)
-
 
